@@ -71,8 +71,8 @@ dependencies {
     implementation(libs.airbnb.lottie.compose)
     implementation(libs.skydoves.balloon)
     implementation(libs.compose.dialog.state)
-    api(libs.compose.dialog.calendar)
-    api(libs.compose.dialog.clock)
+    implementation(libs.compose.dialog.calendar)
+    implementation(libs.compose.dialog.clock)
     implementation(libs.compose.dialog.state)
-    api(libs.coil)
+    implementation(libs.coil)
 }
