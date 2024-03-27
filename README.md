@@ -5,7 +5,7 @@
 ### how to name a branch?
 bug fix --> bugfix/FEM-ID\
 feature --> feat/FEM-ID\
-others --> chore/FEM-ID\
+others --> chore/FEM-ID
 
 e.g.\
 feat/FEM-25, bugfix/FEM-26
