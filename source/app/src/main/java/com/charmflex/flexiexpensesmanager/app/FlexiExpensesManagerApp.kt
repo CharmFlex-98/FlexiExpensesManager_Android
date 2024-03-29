@@ -1,7 +1,9 @@
 package com.charmflex.flexiexpensesmanager.app
 
 import android.app.Application
+import androidx.collection.mutableIntListOf
 
 class FlexiExpensesManagerApp : Application() {
-    // Testing FEM-29
+    // jira - github integration test
+
 }

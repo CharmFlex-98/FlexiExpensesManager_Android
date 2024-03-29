@@ -66,9 +66,26 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
+    // ViewModel
+    implementation(libs.lifecycle.viewModel.ktx)
+    implementation(libs.lifecycle.viewModel.compose)
+
+    // Network
+    implementation(platform(libs.square.okhttp3.bom))
+    implementation(libs.square.okhttp3.loggingInterceptor)
+    implementation(libs.square.okhttp.tls)
+    implementation(libs.square.okhttp3)
+    implementation(libs.square.retrofit)
+    implementation(libs.square.retrofit.gsonConverter)
+
+    // Dagger
     implementation(libs.google.dagger)
     implementation(libs.google.daggerAP)
+
+    // Lottie
     implementation(libs.airbnb.lottie.compose)
+
+    // Dialog
     implementation(libs.skydoves.balloon)
     implementation(libs.compose.dialog.state)
     implementation(libs.compose.dialog.calendar)
