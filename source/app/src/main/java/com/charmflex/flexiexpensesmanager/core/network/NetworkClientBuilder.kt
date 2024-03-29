@@ -73,7 +73,7 @@ class DefaultNetworkClientBuilder(
 
     private fun getUrlHost(): String {
         return ""
-//        return Uri.parse(appConfig.baseUrl).host ?: appConfig.baseUrl
+//        return Uri.parse(appCon"fig.baseUrl).host ?: appConfig.baseUrl
     }
 
     private fun loggingInterceptor(): Interceptor {
