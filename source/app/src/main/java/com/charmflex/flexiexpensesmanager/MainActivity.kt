@@ -3,66 +3,59 @@ package com.charmflex.flexiexpensesmanager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.charmflex.flexiexpensesmanager.ui_common.SGLargeGhostButton
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.charmflex.flexiexpensesmanager.core.dependency_injection.MainComponentProvider
+import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
+import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigatorListener
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.AuthRoutes
+import com.charmflex.flexiexpensesmanager.features.auth.destination.AuthDestinationBuilder
+import com.charmflex.flexiexpensesmanager.ui_common.Money3DAnimation
+import com.charmflex.flexiexpensesmanager.ui_common.SGButtonGroupVertical
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargeSecondaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x3
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x30
 import com.example.compose.FlexiExpensesManagerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val routeNavigator = (application as MainComponentProvider).getMainComponent().routeNavigator()
+
         setContent {
+            val navController = rememberNavController()
+
+            RouteNavigatorListener(routeNavigator = routeNavigator, navController = navController)
+
             FlexiExpensesManagerTheme {
-                // A surface container using the 'background' color from the theme
-                SGScaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Greeting("Android")
-                    Spacer(modifier = Modifier.weight(1f))
-                    SGLargePrimaryButton(modifier = Modifier.fillMaxWidth(), text = "Primary Button") {
-                        
-                    }
-                    Spacer(modifier = Modifier.height(grid_x2))
-                    SGLargeSecondaryButton(modifier = Modifier.fillMaxWidth(), text = "Secondary Button") {
-                        
-                    }
-                    Spacer(modifier = Modifier.height(grid_x2))
-                    SGLargeGhostButton(modifier = Modifier.fillMaxWidth(), text = "ghost") {
-                        
+                NavHost(navController = navController, startDestination = AuthRoutes.ROOT) {
+                    createDestinations(navController = navController).forEach {
+                        with(it) { buildGraph() }
                     }
                 }
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FlexiExpensesManagerTheme {
-        Greeting("Android")
+    private fun createDestinations(navController: NavController): List<DestinationBuilder> {
+        return listOf(
+            AuthDestinationBuilder()
+        )
     }
 }

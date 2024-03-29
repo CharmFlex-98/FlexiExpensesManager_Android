@@ -66,6 +66,9 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
+    // Compose Navigation
+    implementation(libs.compose.navigation)
+
     // ViewModel
     implementation(libs.lifecycle.viewModel.ktx)
     implementation(libs.lifecycle.viewModel.compose)
@@ -80,7 +83,7 @@ dependencies {
 
     // Dagger
     implementation(libs.google.dagger)
-    implementation(libs.google.daggerAP)
+    kapt(libs.google.daggerAP)
 
     // Lottie
     implementation(libs.airbnb.lottie.compose)

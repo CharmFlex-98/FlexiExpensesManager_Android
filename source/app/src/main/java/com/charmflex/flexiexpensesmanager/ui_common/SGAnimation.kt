@@ -4,19 +4,15 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Surface
@@ -211,4 +207,28 @@ fun BoxScope.CircularProgressIndicatorFullScreen() {
     Box(modifier = Modifier.fillMaxSize().clickable(interactionSource = interactionSource, indication = null, onClick = {}), contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
     }
+}
+
+@Composable
+fun MoneyOutInAnimation(
+    modifier: Modifier = Modifier
+) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.money_out_in))
+    SGLottieAnimation(
+        modifier = modifier.size(grid_x10),
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
+}
+
+@Composable
+fun Money3DAnimation(
+    modifier: Modifier = Modifier
+) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.money_3d))
+    SGLottieAnimation(
+        modifier = modifier.size(grid_x10),
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
 }

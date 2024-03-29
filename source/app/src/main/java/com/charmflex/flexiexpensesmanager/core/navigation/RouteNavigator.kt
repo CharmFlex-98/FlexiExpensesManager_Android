@@ -1,5 +1,11 @@
-package com.charmflex.flexiexpensesmanager.core.navigator
+package com.charmflex.flexiexpensesmanager.core.navigation
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavController
+import com.charmflex.flexiexpensesmanager.core.utils.navigateAndPopUpTo
+import com.charmflex.flexiexpensesmanager.core.utils.navigateTo
+import com.charmflex.flexiexpensesmanager.core.utils.popWithArgs
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -40,8 +46,6 @@ class RouteNavigatorImpl @Inject constructor() : RouteNavigator {
     override fun popWithArguments(data: Map<String, Any>?) {
         _navigationEvent.tryEmit(PopWithArguments(data))
     }
-
-
 }
 
 sealed interface NavigationEvent
@@ -52,3 +56,20 @@ object Pop : NavigationEvent
 data class PopWithArguments(
     val data: Map<String, Any>? = null
 ) : NavigationEvent
+
+@Composable
+fun RouteNavigatorListener(
+    routeNavigator: RouteNavigator,
+    navController: NavController
+) {
+    LaunchedEffect(Unit) {
+        routeNavigator.navigationEvent.collect {
+            when (it) {
+                is NavigateTo -> navController.navigateTo(it.route)
+                is NavigateAndPopUpTo -> navController.navigateAndPopUpTo(it.route, it.popToRouteInclusive)
+                is Pop -> navController.popBackStack()
+                is PopWithArguments -> navController.popWithArgs(it.data)
+            }
+        }
+    }
+}

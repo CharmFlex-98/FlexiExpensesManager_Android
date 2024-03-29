@@ -20,7 +20,7 @@ interface NetworkClientBuilder {
 }
 
 // todo this shouldn't be exposed
-class DefaultNetworkClientBuilder(
+internal class DefaultNetworkClientBuilder(
     private val appContext: Context,
     private val interceptors: MutableList<Interceptor> = mutableListOf(),
 ) : NetworkClientBuilder {
