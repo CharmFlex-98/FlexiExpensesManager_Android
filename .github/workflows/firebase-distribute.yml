@@ -36,7 +36,7 @@ jobs:
         KEYSTORE_JKS_KEY: ${{ secrets.UPLOAD_KEYSTORE_JKS_ENCODED }}
         FIREBASE_SERVICE_KEY: ${{ secrets.FASTLANE_FIREBASE_SERVICE_ENCODED }}
       run: |
-        echo "decrypt keystore jks and save to file"
+        echo "decrypt keystore jks and save to file haha"
         echo "$KEYSTORE_JKS_KEY" | base64 --decode > /home/runner/work/FlexiExpensesManager_Android/FlexiExpensesManager_Android/upload-keystore.jks
         echo "decrypt firebase service key and save to file"
         echo "$FIREBASE_SERVICE_KEY" | base64 --decode > /home/runner/work/FlexiExpensesManager_Android/FlexiExpensesManager_Android/firebase_service_key.json
