@@ -23,10 +23,12 @@ jobs:
     - name: Install bundler & Fastlane
       run: |
         gem install bundler
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
 
     - uses: actions/checkout@v3
     - name: Install Firebase app distribution plugin
-      run: sudo fastlane add_plugin firebase_app_distribution
+      run: bundle exec fastlane add_plugin firebase_app_distribution
 
     - name: Decrypt keystore jks file and firebase service key
       env:
@@ -47,4 +49,4 @@ jobs:
         KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_JKS_PW }}
         KEYSTORE_ALIAS: ${{ secrets.UPLOAD_KEYSTORE_JKS_ALIAS }}
       run: |
-        fastlane distribute
+        bundle exec fastlane distribute
