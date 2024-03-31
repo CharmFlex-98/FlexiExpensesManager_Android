@@ -1,0 +1,48 @@
+name: Build App
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-distribute-to-firebase:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+        
+    - name: Set up Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: "temurin"
+        java-version: 17
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3' # Not needed with a .ruby-version file
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+    - name: Install bundler & Fastlane
+      run: |
+        gem install bundler
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
+
+    - name: Decrypt keystore jks file
+      env:
+        KEYSTORE_JKS_KEY: ${{ secrets.UPLOAD_KEYSTORE_JKS_ENCODED }}
+      run: |
+        echo "decrypt keystore jks and save to file"
+        echo "$KEYSTORE_JKS_KEY" | base64 --decode > /home/runner/work/FlexiExpensesManager_Android/FlexiExpensesManager_Android/upload-keystore.jks
+      
+
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+
+    - name: Build the app
+      env:
+        KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_JKS_PW }}
+        KEYSTORE_ALIAS: ${{ secrets.UPLOAD_KEYSTORE_JKS_ALIAS }}
+      run: |
+        bundle exec fastlane android build
