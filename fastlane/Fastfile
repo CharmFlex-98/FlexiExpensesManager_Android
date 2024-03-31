@@ -49,7 +49,7 @@ platform :android do
                 "android.injected.signing.store.file" => "/home/runner/work/FlexiExpensesManager_Android/FlexiExpensesManager_Android/upload-keystore.jks",
                 "android.injected.signing.store.password" => ENV['KEYSTORE_PASSWORD'],
                 "android.injected.signing.key.alias" => ENV['KEYSTORE_ALIAS'],
-                "android.injected.signing.key.password" => ENV['KEYSTORE_ALIAS'],
+                "android.injected.signing.key.password" => ENV['KEYSTORE_PASSWORD'],
             }
         )
         # build_android_app is a built-in fastlane action.
