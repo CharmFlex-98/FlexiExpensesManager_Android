@@ -50,4 +50,4 @@ jobs:
         KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_KEYSTORE_JKS_PW }}
         KEYSTORE_ALIAS: ${{ secrets.UPLOAD_KEYSTORE_JKS_ALIAS }}
       run: |
-        bundle exec fastlane distribute
+        bundle exec fastlane android distribute
