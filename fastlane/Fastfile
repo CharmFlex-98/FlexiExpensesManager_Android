@@ -55,7 +55,7 @@ platform :android do
         # build_android_app is a built-in fastlane action.
         release = firebase_app_distribution(
             app: ENV['FIREBASE_APP_ID'],
-            service_credentials_file: "./firebase_service_key.json"
+            service_credentials_file: "./firebase_service_key.json",
             testers: "charmflex1111@gmail.com",
             release_notes: "This app is for testing purposes"
         )
