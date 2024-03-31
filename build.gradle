@@ -5,10 +5,8 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.8.10' apply false
 
     alias(libs.plugins.kotlin.kapt) apply false
-
-    // For future use
-//    alias(libs.plugins.google.firebase.crashlytics.plugin) apply false
-//    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.google.firebase.crashlytics.plugin) apply false
+    alias(libs.plugins.google.services) apply false
 }
 
 allprojects {

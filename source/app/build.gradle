@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.google.firebase.crashlytics.plugin)
 }
 
 android {
@@ -22,11 +24,39 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+        }
         release {
             minifyEnabled false
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions = ["dimension"]
+
+    productFlavors {
+        dev {
+            resValue "string", "app_name", "SportGetherDev"
+            dimension("dimension")
+            applicationIdSuffix(".dev")
+            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:3000\"")
+        }
+
+        mock {
+            dimension("dimension")
+            applicationIdSuffix(".mock")
+            buildConfigField("String", "BASE_URL", "\"http://localhost:56789\"")
+        }
+
+        prod {
+            resValue "string", "app_name", "SportGether"
+            dimension "dimension"
+            buildConfigField("String", "BASE_URL", "\"https://app.charmflex.com\"")
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -95,4 +125,8 @@ dependencies {
     implementation(libs.compose.dialog.clock)
     implementation(libs.compose.dialog.state)
     implementation(libs.coil)
+
+    // firebase
+    implementation(libs.google.firebase.bom)
+    implementation(libs.google.firebase.crashlytics)
 }
