@@ -15,6 +15,9 @@ jobs:
       run: |
         echo "decrypt keystore jks and save to file"
         cat "$KEYSTORE_JKS_KEY" | base64 --decode > ./upload_keystore.jks
+
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
       
     - name: Build the app and distribute to firebase
       env:
