@@ -23,4 +23,4 @@ jobs:
         KEYSTORE_ALIAS: ${{ secrets.UPLOAD_KEYSTORE_JKS_ALIAS }}
       run: |
         bundle update fastlane
-        fastlane distribute
+        bundle exec fastlane distribute
