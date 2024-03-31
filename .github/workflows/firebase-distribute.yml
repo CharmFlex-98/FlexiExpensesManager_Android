@@ -38,9 +38,9 @@ jobs:
         FIREBASE_SERVICE_KEY: ${{ secrets.FASTLANE_FIREBASE_SERVICE_ENCODED }}
       run: |
         echo "decrypt keystore jks and save to file"
-        cat "$KEYSTORE_JKS_KEY" | base64 --decode > ./upload_keystore.jks
+        cat "$KEYSTORE_JKS_KEY" | base64 --decode > /home/runner/work/FlexiExpensesManager_Android/FlexiExpensesManager_Android/upload_keystore.jks
         echo "decrypt firebase service key and save to file"
-        cat "$FIREBASE_SERVICE_KEY" | base64 --decode > ./firebase_service_key.json
+        cat "$FIREBASE_SERVICE_KEY" | base64 --decode > /home/runner/work/FlexiExpensesManager_Android/FlexiExpensesManager_Android/firebase_service_key.json
 
     - name: Make gradlew executable
       run: chmod +x ./gradlew
