@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+        
     - name: Set up Java
       uses: actions/setup-java@v2
       with:
@@ -26,7 +29,6 @@ jobs:
         bundle config path vendor/bundle
         bundle install --jobs 4 --retry 3
 
-    - uses: actions/checkout@v3
     - name: Install Firebase app distribution plugin
       run: bundle exec fastlane add_plugin firebase_app_distribution
 
