@@ -89,7 +89,7 @@ google-play-service = { module = 'com.google.android.gms:play-services-location'
 #google-firebase-messaging = { module = 'com.google.firebase:firebase-messaging', version.ref = 'firebase_messaging_version'}
 #google-firebase-messaging-ktx = { module = 'com.google.firebase:firebase-messaging-ktx', version.ref = 'firebase_messaging_version'}
 google-firebase-crashlytics = { module = 'com.google.firebase:firebase-crashlytics' }
-#google-firebase-analytics = { module = 'com.google.firebase:firebase-analytics' }
+google-firebase-analytics = { module = 'com.google.firebase:firebase-analytics' }
 google-firebase-bom = { module = 'com.google.firebase:firebase-bom', version.ref = 'firebase_bom_version' }
 # lifecycle
 lifecycle-viewModel-ktx = { module = 'androidx.lifecycle:lifecycle-viewmodel-ktx', version.ref = 'lifecycle_version'}

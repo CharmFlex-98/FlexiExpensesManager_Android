@@ -40,6 +40,7 @@ default_platform(:android)
 platform :android do
     desc "Deploy app to firebase"
     lane :distribute do
+        sh('')
         build_android_app(
             task: "assemble",
             flavor: "prod",
