@@ -75,4 +75,5 @@ platform :android do
                 "android.injected.signing.key.password" => ENV['KEYSTORE_PASSWORD'],
             }
         )
+    end
 end

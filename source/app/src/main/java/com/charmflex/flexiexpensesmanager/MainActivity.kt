@@ -38,6 +38,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val routeNavigator = (application as MainComponentProvider).getMainComponent().routeNavigator()
 
+        // Test
+
         setContent {
             val navController = rememberNavController()
 
