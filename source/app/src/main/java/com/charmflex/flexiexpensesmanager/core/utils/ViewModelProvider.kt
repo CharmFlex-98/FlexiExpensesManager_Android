@@ -1,15 +1,14 @@
 package com.charmflex.flexiexpensesmanager.core.utils
 
-import android.os.Bundle
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalSavedStateRegistryOwner
-import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.createSavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.savedstate.SavedStateRegistryOwner
 
 @Composable
 inline fun <reified T: ViewModel> getViewModel(
@@ -17,26 +16,23 @@ inline fun <reified T: ViewModel> getViewModel(
         checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         },
-    savedStateRegistryOwner: SavedStateRegistryOwner =
-        checkNotNull(LocalSavedStateRegistryOwner.current) {
-            "No SavedStateRegistryOwner was provided via LocalSavedStateRegistryOwner"
-        },
-    defaultArgs: Bundle? = null,
-    crossinline factoryProvider: (SavedStateHandle) -> T
+    crossinline viewModelProvider: (SavedStateHandle) -> T
 ): T {
+    val factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(
+            modelClass: Class<T>,
+            extras: CreationExtras
+        ): T {
+            // Create a SavedStateHandle for this ViewModel from extras
+            val savedStateHandle = extras.createSavedStateHandle()
+
+            return viewModelProvider(savedStateHandle) as T
+        }
+    }
+
     return viewModel(
         viewModelStoreOwner = viewModelStoreOwner,
-        factory = object : AbstractSavedStateViewModelFactory(savedStateRegistryOwner, defaultArgs) {
-
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(
-                key: String,
-                modelClass: Class<T>,
-                handle: SavedStateHandle
-            ): T {
-                return factoryProvider(handle) as T
-            }
-
-        }
+        factory = factory
     )
 }

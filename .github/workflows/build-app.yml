@@ -5,7 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-app:
+  build-and-distribute-to-firebase:
     runs-on: ubuntu-latest
 
     steps:

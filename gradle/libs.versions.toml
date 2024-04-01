@@ -24,6 +24,12 @@ ballon_version = "1.6.4"
 # lifecycle
 lifecycle_version = '2.6.1'
 
+# activity
+activity_version = '1.8.2'
+
+# fragment
+fragment_version = "1.6.2"
+
 # compose
 compose_navigation_version = "2.6.0"
 composeCompilerVersion = "1.4.2"
@@ -91,9 +97,16 @@ google-play-service = { module = 'com.google.android.gms:play-services-location'
 google-firebase-crashlytics = { module = 'com.google.firebase:firebase-crashlytics' }
 google-firebase-analytics = { module = 'com.google.firebase:firebase-analytics' }
 google-firebase-bom = { module = 'com.google.firebase:firebase-bom', version.ref = 'firebase_bom_version' }
+
 # lifecycle
 lifecycle-viewModel-ktx = { module = 'androidx.lifecycle:lifecycle-viewmodel-ktx', version.ref = 'lifecycle_version'}
 lifecycle-viewModel-compose = { module = 'androidx.lifecycle:lifecycle-viewmodel-compose', version.ref = 'lifecycle_version'}
+
+# activity
+activity-ktx = { module = 'androidx.activity:activity-ktx', version.ref = 'activity_version'}
+
+# fragment
+fragment-ktx = { module = 'androidx.fragment:fragment-ktx', version.ref = 'fragment_version'}
 
 # compose
 compose-navigation = { module = 'androidx.navigation:navigation-compose', version.ref = 'compose_navigation_version'}

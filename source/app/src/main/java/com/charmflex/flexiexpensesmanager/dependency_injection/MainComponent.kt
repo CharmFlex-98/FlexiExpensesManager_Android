@@ -1,8 +1,8 @@
-package com.charmflex.flexiexpensesmanager.core.dependency_injection
+package com.charmflex.flexiexpensesmanager.dependency_injection
 
 import android.content.Context
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
-import com.charmflex.flexiexpensesmanager.core.dependency_injection.modules.NavigationModule
+import com.charmflex.flexiexpensesmanager.dependency_injection.modules.navigation.NavigationModule
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -23,7 +23,7 @@ interface MainComponent {
     }
 
     companion object {
-        fun build(appContext: Context): MainComponent? {
+        fun build(appContext: Context): MainComponent {
             return DaggerMainComponent.factory().create(appContext)
         }
     }

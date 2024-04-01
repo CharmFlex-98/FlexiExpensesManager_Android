@@ -1,31 +1,37 @@
 package com.charmflex.flexiexpensesmanager.features.auth.destination
 
+import android.content.Context
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AuthRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
+import com.charmflex.flexiexpensesmanager.features.auth.di.AuthComponent
 import com.charmflex.flexiexpensesmanager.features.auth.ui.landing.LandingScreen
 import com.charmflex.flexiexpensesmanager.features.auth.ui.landing.LandingScreenViewModel
 
-class AuthDestinationBuilder : DestinationBuilder{
+internal class AuthDestinationBuilder(
+    private val appContext: Context
+) : DestinationBuilder{
+    private val authComponent by lazy { AuthComponent.build(appContext = appContext) }
+
     override fun NavGraphBuilder.buildGraph() {
         navigation(
             startDestination = AuthRoutes.LANDING,
             route = AuthRoutes.ROOT
         ) {
-            LandingDestination()
+            landingDestination()
             // LOGIN
             // REGISTER
         }
     }
 
-    private fun NavGraphBuilder.LandingDestination() {
+    private fun NavGraphBuilder.landingDestination() {
         composable(
             route = AuthRoutes.LANDING
         ) {
-            val landingScreenViewModel: LandingScreenViewModel = getViewModel { LandingScreenViewModel() }
+            val landingScreenViewModel: LandingScreenViewModel = getViewModel { authComponent.landingScreenViewModel() }
             LandingScreen(landingScreenViewModel = landingScreenViewModel)
         }
     }

@@ -1,4 +1,4 @@
-package com.charmflex.flexiexpensesmanager.core.dependency_injection.modules
+package com.charmflex.flexiexpensesmanager.dependency_injection.modules.navigation
 
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigatorImpl
