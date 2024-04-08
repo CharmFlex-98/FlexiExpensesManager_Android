@@ -12,6 +12,7 @@ import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigatorListener
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AuthRoutes
 import com.charmflex.flexiexpensesmanager.features.auth.destination.AuthDestinationBuilder
+import com.charmflex.flexiexpensesmanager.features.home.destination.HomeDestinationBuilder
 import com.example.compose.FlexiExpensesManagerTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +39,8 @@ class MainActivity : ComponentActivity() {
 
     private fun createDestinations(appContext: Context): List<DestinationBuilder> {
         return listOf(
-            AuthDestinationBuilder(appContext = appContext)
+            AuthDestinationBuilder(appContext = appContext),
+            HomeDestinationBuilder(appContext = appContext)
         )
     }
 }

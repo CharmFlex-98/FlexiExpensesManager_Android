@@ -8,4 +8,6 @@
     <string name="generic_error_bottomsheet_subtitle">Oops, something is breaking up. Please try again later.</string>
     <string name="generic_ok">OK</string>
     <string name="generic_search">Search</string>
+    <string name="home_bar_item_summary">Summary</string>
+    <string name="home_bar_item_details">Detail</string>
 </resources>

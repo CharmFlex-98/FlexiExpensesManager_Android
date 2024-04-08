@@ -1,21 +1,21 @@
 package com.charmflex.flexiexpensesmanager.app
 
 import android.app.Application
-import androidx.collection.mutableIntListOf
+import com.charmflex.flexiexpensesmanager.dependency_injection.AppComponent
 import com.charmflex.flexiexpensesmanager.dependency_injection.MainComponent
 import com.charmflex.flexiexpensesmanager.dependency_injection.MainComponentProvider
-import com.charmflex.flexiexpensesmanager.core.network.DefaultNetworkClientBuilder
 
 class FlexiExpensesManagerApp : Application(), MainComponentProvider {
-    private var mainComponent: MainComponent? = null
+    private var appComponent: AppComponent? = null
 
     override fun onCreate() {
         super.onCreate()
-        mainComponent = MainComponent.build(applicationContext)
+        MainComponentProvider.instance = this
+        appComponent = AppComponent.build(applicationContext)
     }
 
     override fun getMainComponent(): MainComponent {
-        return mainComponent ?: throw Exception("MainComponent cannot be null!")
+        return appComponent ?: throw Exception("MainComponent cannot be null!")
     }
 
 }
