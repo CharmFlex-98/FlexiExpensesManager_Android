@@ -1,10 +1,10 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,12 +21,12 @@ import com.example.compose.FlexiExpensesManagerTheme
 internal fun HomeScreen(
     viewModel: HomeViewModel
 ) {
-    val navController = rememberNavController()
+    val bottomNavController = rememberNavController()
     SGScaffold(
-        bottomBar = { HomeScreenBottomNavigationBar(navController = navController) }
+        bottomBar = { HomeScreenBottomNavigationBar(bottomBarNavController = bottomNavController) }
     ) {
         NavHost(
-            navController = navController,
+            navController = bottomNavController,
             startDestination = HomeRoutes.SUMMARY
         ) {
             composable(
@@ -53,15 +53,25 @@ fun HomeScreenPreview() {
 }
 
 @Composable
-fun HomeScreenBottomNavigationBar(navController: NavController) {
+fun HomeScreenBottomNavigationBar(bottomBarNavController: NavController) {
     val item = remember { bottomBarItem() }
     SGBottomNavigationBar(
         items = item,
         isSelected = {
-            navController.currentBackStackEntry?.destination?.route == it
+            bottomBarNavController.currentBackStackEntry?.destination?.route == it
         }
     ) {
-        navController.navigate(it.route)
+        bottomBarNavController.navigate(it.route) {
+            popUpTo(bottomBarNavController.graph.findStartDestination().id) {
+                saveState = true
+            }
+            // Restore state when re-selecting a previously backstack pop by popUpTo
+            restoreState = true
+
+            // Avoid multiple copies of the same destination when
+            // re-selecting the same item
+            launchSingleTop = true
+        }
     }
 }
 
