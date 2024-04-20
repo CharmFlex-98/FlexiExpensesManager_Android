@@ -1,9 +1,9 @@
-package com.charmflex.flexiexpensesmanager.features.home.di
+package com.charmflex.flexiexpensesmanager.features.expenses.di
 
 import android.content.Context
 import com.charmflex.flexiexpensesmanager.dependency_injection.MainComponent
 import com.charmflex.flexiexpensesmanager.dependency_injection.MainComponentProvider
-import com.charmflex.flexiexpensesmanager.features.home.ui.HomeViewModel
+import com.charmflex.flexiexpensesmanager.features.expenses.ui.NewExpensesViewModel
 import dagger.BindsInstance
 import dagger.Component
 
@@ -12,21 +12,21 @@ import dagger.Component
         MainComponent::class
     ]
 )
-internal interface HomeComponent {
+internal interface ExpensesComponent {
 
     @Component.Factory
     interface Factory {
         fun create(
             @BindsInstance appContext: Context,
             mainComponent: MainComponent
-        ): HomeComponent
+        ): ExpensesComponent
     }
 
     companion object {
-        fun build(appContext: Context): HomeComponent {
-            return DaggerHomeComponent.factory().create(appContext, MainComponentProvider.instance.getMainComponent())
+        fun build(appContext: Context): ExpensesComponent {
+            return DaggerExpensesComponent.factory().create(appContext, MainComponentProvider.instance.getMainComponent())
         }
     }
 
-    fun homeViewModel(): HomeViewModel
+    fun newExpensesViewModel(): NewExpensesViewModel
 }

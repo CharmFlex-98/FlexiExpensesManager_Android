@@ -10,4 +10,8 @@
     <string name="generic_search">Search</string>
     <string name="home_bar_item_summary">Summary</string>
     <string name="home_bar_item_details">Detail</string>
+    <string name="new_expenses_name">Name</string>
+    <string name="new_expenses_name_hint">Give the record a name!</string>
+    <string name="new_expenses_amount">Amount</string>
+    <string name="new_expenses_name_amount_hint">Insert the amount spent / earned</string>
 </resources>

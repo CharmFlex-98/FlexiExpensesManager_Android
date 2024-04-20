@@ -5,7 +5,7 @@ import com.charmflex.flexiexpensesmanager.dependency_injection.AppComponent
 import com.charmflex.flexiexpensesmanager.dependency_injection.MainComponent
 import com.charmflex.flexiexpensesmanager.dependency_injection.MainComponentProvider
 
-class FlexiExpensesManagerApp : Application(), MainComponentProvider {
+internal class FlexiExpensesManagerApp : Application(), MainComponentProvider {
     private var appComponent: AppComponent? = null
 
     override fun onCreate() {

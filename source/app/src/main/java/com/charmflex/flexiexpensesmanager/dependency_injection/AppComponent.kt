@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.dependency_injection
 
 import android.content.Context
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.utils.ResourceProvider
 import com.charmflex.flexiexpensesmanager.dependency_injection.modules.navigation.NavigationModule
 import com.charmflex.flexiexpensesmanager.features.auth.di.DaggerAuthComponent
 import dagger.BindsInstance
@@ -15,7 +16,7 @@ import javax.inject.Singleton
     ]
 )
 @Singleton
-interface AppComponent : MainComponent {
+internal interface AppComponent : MainComponent {
 
     @Component.Factory
     interface Factory {
@@ -30,12 +31,14 @@ interface AppComponent : MainComponent {
 
 }
 
-interface MainComponent {
+internal interface MainComponent {
     fun routeNavigator(): RouteNavigator
+    fun resourcesProvider(): ResourceProvider
+
 }
 
 
-interface MainComponentProvider {
+internal interface MainComponentProvider {
     fun getMainComponent(): MainComponent
     companion object {
         lateinit var instance: MainComponentProvider

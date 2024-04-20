@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.ExpensesRoute
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.auth.di.AuthComponent

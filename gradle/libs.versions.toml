@@ -2,6 +2,8 @@
 # kotlin
 kotlin_kapt_version = '1.8.10'
 
+# accompanist
+accompanist_version = "0.34.0"
 # Google
 google_dagger_version = '2.47'
 google_gson_version = '2.10.1'
@@ -86,6 +88,8 @@ skydoves-balloon = { module = 'com.github.skydoves:balloon-compose', version.ref
 # jwt
 #jwt-decode-android = { module = 'com.auth0.android:jwtdecode', version.ref = 'jwt_decode_android_version'}
 
+# accompanist
+google-accompanist = { module = 'com.google.accompanist:accompanist-navigation-animation', version.ref = 'accompanist_version'}
 # google
 google-dagger = { module = 'com.google.dagger:dagger', version.ref = 'google_dagger_version'}
 google-daggerAP = { module = 'com.google.dagger:dagger-compiler', version.ref = 'google_dagger_version'}

@@ -110,6 +110,9 @@ dependencies {
     implementation(libs.lifecycle.viewModel.ktx)
     implementation(libs.lifecycle.viewModel.compose)
 
+    // Accompanist
+    implementation(libs.google.accompanist)
+
     // Network
     implementation(platform(libs.square.okhttp3.bom))
     implementation(libs.square.okhttp3.loggingInterceptor)

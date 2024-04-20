@@ -9,8 +9,15 @@ import com.charmflex.flexiexpensesmanager.R
 object SGIcons {
 
     @Composable
+    fun Add(
+        modifier: Modifier = Modifier
+    ) {
+        Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_add), contentDescription = "")
+    }
+
+    @Composable
     fun Info(
-        modifier: Modifier
+        modifier: Modifier = Modifier
     ) {
         Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_info), contentDescription = null)
     }
