@@ -4,10 +4,9 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.charmflex.flexiexpensesmanager.dependency_injection.MainComponentProvider
+import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigatorListener
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AuthRoutes
@@ -19,7 +18,7 @@ import com.example.compose.FlexiExpensesManagerTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val routeNavigator = (application as MainComponentProvider).getMainComponent().routeNavigator()
+        val routeNavigator = (application as AppComponentProvider).getAppComponent().routeNavigator()
 
         // Test
 
@@ -30,7 +29,7 @@ class MainActivity : ComponentActivity() {
 
             FlexiExpensesManagerTheme {
                 NavHost(navController = navController, startDestination = AuthRoutes.ROOT) {
-                    createDestinations(applicationContext).forEach {
+                    createDestinations().forEach {
                         with(it) { buildGraph() }
                     }
                 }
@@ -38,11 +37,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun createDestinations(appContext: Context): List<DestinationBuilder> {
+    private fun createDestinations(): List<DestinationBuilder> {
         return listOf(
-            AuthDestinationBuilder(appContext = appContext),
-            HomeDestinationBuilder(appContext = appContext),
-            ExpensesDestinationBuilder(appContext = appContext)
+            AuthDestinationBuilder(),
+            HomeDestinationBuilder(),
+            ExpensesDestinationBuilder()
         )
     }
 }

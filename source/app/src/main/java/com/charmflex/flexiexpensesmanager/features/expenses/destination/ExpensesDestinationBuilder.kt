@@ -5,17 +5,16 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.charmflex.flexiexpensesmanager.core.di.AppComponent
+import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.ExpensesRoute
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
-import com.charmflex.flexiexpensesmanager.features.expenses.di.ExpensesComponent
 import com.charmflex.flexiexpensesmanager.features.expenses.ui.NewExpensesScreen
 import javax.inject.Inject
 
-internal class ExpensesDestinationBuilder @Inject constructor(
-    private val appContext: Context
-) : DestinationBuilder{
-    private val expensesComponent by lazy { ExpensesComponent.build(appContext = appContext) }
+internal class ExpensesDestinationBuilder : DestinationBuilder{
+    private val appComponent by lazy { AppComponentProvider.instance.getAppComponent() }
     override fun NavGraphBuilder.buildGraph() {
         newExpensesScreen()
     }
@@ -36,7 +35,7 @@ internal class ExpensesDestinationBuilder @Inject constructor(
                 )
             }
         ) {
-            val viewModel = getViewModel { expensesComponent.newExpensesViewModel() }
+            val viewModel = getViewModel { appComponent.newExpensesViewModel() }
             NewExpensesScreen(viewModel = viewModel)
         }
     }

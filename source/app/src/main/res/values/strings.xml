@@ -14,4 +14,13 @@
     <string name="new_expenses_name_hint">Give the record a name!</string>
     <string name="new_expenses_amount">Amount</string>
     <string name="new_expenses_name_amount_hint">Insert the amount spent / earned</string>
+    <string name="new_expenses_type">Record Type</string>
+    <string name="new_expenses_type_hint">Type of the record</string>
+    <string name="new_expenses_date">Date</string>
+    <string name="new_expenses_date_hint">Date of this record</string>
+    <string name="new_expenses_confirm_button">Confirm</string>
+    <string name="new_expenses_cancel_button">Cancel</string>
+    <string name="new_expenses_create_success_dialog_title">Congrats!</string>
+    <string name="new_expenses_create_success_dialog_subtitle">You have create a new record!</string>
+    <string name="generic_back_to_home">Back to Home</string>
 </resources>
