@@ -4,6 +4,5 @@ import com.charmflex.flexiexpensesmanager.features.expenses.provider.ExpensesTyp
 import com.charmflex.flexiexpensesmanager.features.expenses.ui.NewExpensesViewModel
 
 internal interface ExpensesInjector {
-//    fun newExpensesViewModel(): NewExpensesViewModel
-    fun expensesTypeProvider(): ExpensesTypeProvider
+    fun newExpensesViewModel(): NewExpensesViewModel
 }

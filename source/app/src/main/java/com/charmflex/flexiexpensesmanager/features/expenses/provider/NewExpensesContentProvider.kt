@@ -8,6 +8,7 @@ import javax.inject.Named
 
 internal class NewExpensesContentProvider @Inject constructor(
     // TODO: Change this to provide by remote later
+    @Named("mock")
     private val expensesTypeProvider: ExpensesTypeProvider
 ) {
     fun getContent(): List<FEField> {
