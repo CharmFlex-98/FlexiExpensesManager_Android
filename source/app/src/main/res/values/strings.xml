@@ -23,4 +23,6 @@
     <string name="new_expenses_create_success_dialog_title">Congrats!</string>
     <string name="new_expenses_create_success_dialog_subtitle">You have create a new record!</string>
     <string name="generic_back_to_home">Back to Home</string>
+    <string name="upper_summary_title">Your spending summary</string>
+    <string name="lower_summary_title">HeatMap</string>
 </resources>

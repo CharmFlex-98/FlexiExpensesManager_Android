@@ -26,6 +26,8 @@ fun <T> unwrapResult(result: Result<T>): T {
 
 const val DEFAULT_DATE_TIME_PATTERN = "dd MMMM yyyy hh:mm a"
 const val DATE_ONLY_DEFAULT_PATTERN = "dd MMMM yyyy"
+const val MONTH_ONLY_DEFAULT_PATTERN = "MMMM"
+const val YEAR_ONLY_DEFAULT_PATTERN = "yyyy"
 const val MONTH_YEAR_PATTERN = "MMMM/yyyy"
 const val TIME_ONLY_DEFAULT_PATTERN = "hh:mm a"
 
@@ -34,6 +36,11 @@ const val TIME_ONLY_DEFAULT_PATTERN = "hh:mm a"
 fun String.toLocalDateTime(pattern: String): LocalDateTime? {
     if (this.isEmpty()) return null
     return LocalDateTime.parse(this, getDateTimeFormatter(pattern))
+}
+
+fun String.toLocalDate(pattern: String): LocalDate? {
+    if (this.isEmpty()) return null
+    return LocalDate.parse(this, getDateTimeFormatter(pattern))
 }
 
 fun LocalDate?.toStringWithPattern(pattern: String): String {

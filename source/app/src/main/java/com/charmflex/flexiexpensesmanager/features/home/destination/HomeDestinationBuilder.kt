@@ -31,7 +31,7 @@ internal class HomeDestinationBuilder : DestinationBuilder {
                 appComponent.homeViewModel()
             }
 
-            HomeScreen(viewModel = homeViewModel)
+            HomeScreen(appComponent = appComponent)
         }
     }
 }

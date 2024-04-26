@@ -18,6 +18,12 @@ firebase_crashlytics_plugin_version = "2.9.9"
 # airbnb
 lottie_compose_version = "6.3.0"
 
+# chart
+aay_chart_version = "Beta-0.0.5"
+
+# calendar
+compose_calendar_version = "2.5.0"
+
 ballon_version = "1.6.4"
 
 # compressor
@@ -106,6 +112,11 @@ google-firebase-bom = { module = 'com.google.firebase:firebase-bom', version.ref
 lifecycle-viewModel-ktx = { module = 'androidx.lifecycle:lifecycle-viewmodel-ktx', version.ref = 'lifecycle_version'}
 lifecycle-viewModel-compose = { module = 'androidx.lifecycle:lifecycle-viewmodel-compose', version.ref = 'lifecycle_version'}
 
+# chart
+aay-chart = { module = 'io.github.thechance101:chart', version.ref = 'aay_chart_version'}
+
+# calendar
+compose-calendar = { module = 'com.kizitonwose.calendar:compose', version.ref = 'compose_calendar_version'}
 # activity
 activity-ktx = { module = 'androidx.activity:activity-ktx', version.ref = 'activity_version'}
 

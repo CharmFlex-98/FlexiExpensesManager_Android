@@ -1,17 +1,14 @@
 package com.charmflex.flexiexpensesmanager.features.expenses.destination
 
-import android.content.Context
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.charmflex.flexiexpensesmanager.core.di.AppComponent
 import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.ExpensesRoute
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
-import com.charmflex.flexiexpensesmanager.features.expenses.ui.NewExpensesScreen
-import javax.inject.Inject
+import com.charmflex.flexiexpensesmanager.features.expenses.ui.new_expenses.NewExpensesScreen
 
 internal class ExpensesDestinationBuilder : DestinationBuilder{
     private val appComponent by lazy { AppComponentProvider.instance.getAppComponent() }

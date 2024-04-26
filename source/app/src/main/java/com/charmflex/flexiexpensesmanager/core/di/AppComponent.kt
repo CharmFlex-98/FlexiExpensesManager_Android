@@ -5,8 +5,6 @@ import com.charmflex.flexiexpensesmanager.dependency_injection.modules.navigatio
 import com.charmflex.flexiexpensesmanager.features.auth.di.AuthInjector
 import com.charmflex.flexiexpensesmanager.features.expenses.di.ExpensesInjector
 import com.charmflex.flexiexpensesmanager.features.expenses.di.modules.AuthModules
-import com.charmflex.flexiexpensesmanager.features.expenses.di.modules.ExpensesTypeProviderModule
-import com.charmflex.flexiexpensesmanager.features.expenses.ui.NewExpensesViewModel
 import com.charmflex.flexiexpensesmanager.features.home.di.HomeInjector
 import dagger.BindsInstance
 import dagger.Component

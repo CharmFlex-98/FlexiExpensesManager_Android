@@ -1,4 +1,4 @@
-package com.charmflex.flexiexpensesmanager.features.expenses.ui
+package com.charmflex.flexiexpensesmanager.features.expenses.ui.new_expenses
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

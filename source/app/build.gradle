@@ -100,6 +100,12 @@ dependencies {
     // Compose Navigation
     implementation(libs.compose.navigation)
 
+    // Chart library
+    implementation(libs.aay.chart)
+
+    // Compose Calendar
+    implementation(libs.compose.calendar)
+
 //    // Activity
 //    implementation(libs.activity.ktx)
 //

@@ -1,20 +1,19 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui
 
-import android.graphics.Color
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
-import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -22,28 +21,45 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.charmflex.flexiexpensesmanager.R
+import com.charmflex.flexiexpensesmanager.core.di.AppComponent
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
-import com.charmflex.flexiexpensesmanager.features.home.ui.detail.ExpensesDetailScreen
-import com.charmflex.flexiexpensesmanager.features.home.ui.summary.SummaryScreen
+import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
+import com.charmflex.flexiexpensesmanager.features.home.ui.history.ExpensesHistoryScreen
+import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardScreen
+import com.charmflex.flexiexpensesmanager.features.home.ui.summary.chart.expenses_heat_map.ExpensesHeatMapPlugin
+import com.charmflex.flexiexpensesmanager.features.home.ui.summary.chart.expenses_pie_chart.ExpensesPieChartDashboardPlugin
 import com.charmflex.flexiexpensesmanager.ui_common.SGBottomNavItem
 import com.charmflex.flexiexpensesmanager.ui_common.SGBottomNavigationBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
-import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x16
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x4
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x8
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.example.compose.FlexiExpensesManagerTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeScreen(
-    viewModel: HomeViewModel
+    appComponent: AppComponent
 ) {
+    val homeViewmodel = getViewModel {
+        appComponent.homeViewModel()
+    }
+    val expensesPieChartViewModel = getViewModel {
+        appComponent.expensesPieChartViewModel()
+    }
+    val expensesHeatMapViewModel = getViewModel {
+        appComponent.expensesHeatMapViewModel()
+    }
+    val dashboardPlugins = listOf(
+        ExpensesPieChartDashboardPlugin(expensesPieChartViewModel),
+        ExpensesHeatMapPlugin(expensesHeatMapViewModel)
+    )
+
     val bottomNavController = rememberNavController()
     SGScaffold(
+        modifier = Modifier.padding(grid_x2),
         bottomBar = { HomeScreenBottomNavigationBar(bottomBarNavController = bottomNavController) },
         floatingActionButton = {
-            FloatingActionButton(onClick = viewModel::createNewExpenses) {
+            FloatingActionButton(onClick = homeViewmodel::createNewExpenses) {
                 SGIcons.Add()
             }
         },
@@ -54,14 +70,17 @@ internal fun HomeScreen(
             startDestination = HomeRoutes.SUMMARY
         ) {
             composable(
-                route = HomeRoutes.SUMMARY
+                route = HomeRoutes.SUMMARY,
             ) {
-                SummaryScreen()
+                DashboardScreen(plugins = dashboardPlugins)
             }
             composable(
-                route = HomeRoutes.DETAIL
+                route = HomeRoutes.DETAIL,
             ) {
-                ExpensesDetailScreen()
+                val viewModel = getViewModel {
+                    appComponent.expensesHistoryViewModel()
+                }
+                ExpensesHistoryScreen(expensesHistoryViewModel = viewModel)
             }
         }
     }

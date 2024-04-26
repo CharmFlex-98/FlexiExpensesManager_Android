@@ -1,7 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.expenses.di
 
-import com.charmflex.flexiexpensesmanager.features.expenses.provider.ExpensesTypeProvider
-import com.charmflex.flexiexpensesmanager.features.expenses.ui.NewExpensesViewModel
+import com.charmflex.flexiexpensesmanager.features.expenses.ui.new_expenses.NewExpensesViewModel
 
 internal interface ExpensesInjector {
     fun newExpensesViewModel(): NewExpensesViewModel
