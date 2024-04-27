@@ -100,6 +100,12 @@ dependencies {
     // Compose Navigation
     implementation(libs.compose.navigation)
 
+    // Chart library
+    implementation(libs.aay.chart)
+
+    // Compose Calendar
+    implementation(libs.compose.calendar)
+
 //    // Activity
 //    implementation(libs.activity.ktx)
 //
@@ -109,6 +115,9 @@ dependencies {
     // ViewModel
     implementation(libs.lifecycle.viewModel.ktx)
     implementation(libs.lifecycle.viewModel.compose)
+
+    // Accompanist
+    implementation(libs.google.accompanist)
 
     // Network
     implementation(platform(libs.square.okhttp3.bom))

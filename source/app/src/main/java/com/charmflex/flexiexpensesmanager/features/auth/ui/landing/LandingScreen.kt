@@ -57,15 +57,15 @@ internal fun LandingScreen(
         SGButtonGroupVertical {
             SGLargePrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Login"
+                text = "Login with Google"
             ) {
 
             }
             SGLargeSecondaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Sign Up"
+                text = "Login as Guest"
             ) {
-
+                landingScreenViewModel.onGuestLogin()
             }
         }
     }
