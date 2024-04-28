@@ -7,6 +7,15 @@ import com.charmflex.flexiexpensesmanager.features.transactions.usecases.GetAcco
 import com.charmflex.flexiexpensesmanager.features.transactions.usecases.GetCategoryOptionsUseCase
 import javax.inject.Inject
 
+internal const val TRANSACTION_NAME = "TRANSACTION_NAME"
+internal const val TRANSACTION_AMOUNT = "TRANSACTION_AMOUNT"
+internal const val TRANSACTION_DATE = "TRANSACTION_DATE"
+internal const val TRANSACTION_FROM_ACCOUNT = "TRANSACTION_FROM_ACC"
+internal const val TRANSACTION_TO_ACCOUNT = "TRANSACTION_TO_ACC"
+internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
+
+
+
 internal class NewTransactionContentProvider @Inject constructor(
     private val getAccountOptionsUseCase: GetAccountOptionsUseCase,
     private val getCategoryOptionsUseCase: GetCategoryOptionsUseCase
@@ -21,16 +30,19 @@ internal class NewTransactionContentProvider @Inject constructor(
         res.addAll(
             listOf(
                 FEField(
+                    id = TRANSACTION_NAME,
                     labelId = R.string.new_expenses_name,
                     hintId = R.string.new_expenses_name_hint,
                     type = FEField.FieldType.Text
                 ),
                 FEField(
+                    id = TRANSACTION_AMOUNT,
                     labelId = R.string.new_expenses_amount,
                     hintId = R.string.new_expenses_name_amount_hint,
                     type = FEField.FieldType.Number
                 ),
                 FEField(
+                    id = TRANSACTION_DATE,
                     labelId = R.string.new_expenses_date,
                     hintId = R.string.new_expenses_date_hint,
                     type = FEField.FieldType.Date
@@ -43,6 +55,7 @@ internal class NewTransactionContentProvider @Inject constructor(
     private suspend fun expensesFields(): List<FEField> {
         return listOf(
             FEField(
+                id = TRANSACTION_FROM_ACCOUNT,
                 labelId = R.string.new_transaction_account,
                 hintId = R.string.new_expenses_account_hint,
                 type = FEField.FieldType.SingleItemSelection(
@@ -50,6 +63,7 @@ internal class NewTransactionContentProvider @Inject constructor(
                 )
             ),
             FEField(
+                id = TRANSACTION_CATEGORY,
                 labelId = R.string.generic_category,
                 hintId = R.string.generic_category_hint,
                 type = FEField.FieldType.SingleItemSelection (

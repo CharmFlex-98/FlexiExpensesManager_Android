@@ -1,14 +1,19 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_expenses
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
-import com.charmflex.flexiexpensesmanager.core.utils.resultOf
-import com.charmflex.flexiexpensesmanager.features.account.domain.model.Account
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.NewTransactionContentProvider
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_AMOUNT
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_CATEGORY
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_DATE
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_FROM_ACCOUNT
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_NAME
+import com.charmflex.flexiexpensesmanager.features.transactions.usecases.SubmitTransactionUseCase
+import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -19,7 +24,7 @@ import javax.inject.Inject
 internal class NewTransactionViewModel @Inject constructor(
     private val contentProvider: NewTransactionContentProvider,
     private val routeNavigator: RouteNavigator,
-    private val repository: TransactionRepository,
+    private val submitTransactionUseCase: SubmitTransactionUseCase
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(NewTransactionViewState())
     val viewState = _viewState.asStateFlow()
@@ -27,6 +32,7 @@ internal class NewTransactionViewModel @Inject constructor(
         private set
     private val _currentTransactionType = MutableStateFlow(TransactionType.EXPENSES)
     val currentTransactionType = _currentTransactionType.asStateFlow()
+    val snackBarState = mutableStateOf<SnackBarState>(SnackBarState.None)
 
     init {
         viewModelScope.launch {
@@ -39,6 +45,10 @@ internal class NewTransactionViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun resetErrorState() {
+        snackBarState.value = SnackBarState.None
     }
 
     fun initContent(transactionType: TransactionType) {
@@ -69,23 +79,78 @@ internal class NewTransactionViewModel @Inject constructor(
 
     fun onConfirmed() {
         toggleLoader(true)
-        viewModelScope.launch {
-            resultOf {
-                repository.createNewExpenses()
-            }.fold(
-                onSuccess = {
-                    toggleLoader(false)
-                    _viewState.update {
-                        it.copy(
-                            success = true
-                        )
-                    }
-                },
-                onFailure = {
-                    toggleLoader(false)
+        if (isSubmissionValid()) {
+            viewModelScope.launch {
+                when (_currentTransactionType.value) {
+                    TransactionType.EXPENSES -> submitExpenses()
+                    else -> {}
                 }
+            }
+        }
+    }
+
+    private fun isSubmissionValid(): Boolean {
+        // TODO: Need to implement logic
+        return true
+    }
+
+    private suspend fun submitExpenses() {
+        val fields = _viewState.value.fields
+        val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.value
+        val fromAccount = fields.firstOrNull { it.id == TRANSACTION_FROM_ACCOUNT }?.let { feField ->
+            if (feField.type is FEField.FieldType.SingleItemSelection) {
+                feField.type.options.first {
+                    it.title == feField.value
+                }.id
+            } else ""
+        }
+        val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.value
+        val categoryId = fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.let { feField ->
+            if (feField.type is FEField.FieldType.SingleItemSelection) {
+                feField.type.options.first {
+                    it.title == feField.value
+                }.id
+            } else ""
+        }
+        val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value
+
+        if (name == null || amount == null || categoryId == null || date == null || fromAccount == null) return
+
+        viewModelScope.launch {
+            when (_currentTransactionType.value) {
+                TransactionType.EXPENSES -> {
+                    submitTransactionUseCase.submitExpenses(
+                        fromAccountId = fromAccount.toInt(),
+                        amount = amount.toInt(),
+                        categoryId = categoryId.toInt(),
+                        transactionDate = date
+                    ).fold(
+                        onSuccess = {
+                            handleSuccess()
+                        },
+                        onFailure = {
+                            handleFailure(it)
+                        }
+                    )
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    private fun handleSuccess() {
+        toggleLoader(false)
+        _viewState.update {
+            it.copy(
+                success = true
             )
         }
+    }
+
+    private fun handleFailure(throwable: Throwable) {
+        toggleLoader(false)
+        snackBarState.value = SnackBarState.Error(throwable.message)
     }
 
     private fun toggleLoader(toggle: Boolean) {

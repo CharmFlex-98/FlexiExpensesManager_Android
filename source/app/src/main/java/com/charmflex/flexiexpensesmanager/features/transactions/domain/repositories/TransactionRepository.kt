@@ -3,6 +3,12 @@ package com.charmflex.flexiexpensesmanager.features.transactions.domain.reposito
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ExpensesData
 
 internal interface TransactionRepository {
-    suspend fun createNewExpenses()
+    suspend fun addNewExpenses(
+        fromAccountId: Int,
+        amount: Int,
+        categoryId: Int,
+        transactionDate: String,
+    )
     suspend fun getHistory(): List<ExpensesData>
+
 }

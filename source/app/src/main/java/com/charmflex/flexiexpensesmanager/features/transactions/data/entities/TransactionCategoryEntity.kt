@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
     foreignKeys = [
         ForeignKey(
             entity = TransactionTypeEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["code"],
             childColumns = ["transaction_type_code"],
             onDelete = ForeignKey.CASCADE
         )

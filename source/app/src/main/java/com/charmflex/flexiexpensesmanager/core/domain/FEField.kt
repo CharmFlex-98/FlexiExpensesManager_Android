@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 internal data class FEField(
+    val id: String = "",
     @StringRes
     val labelId: Int,
     @StringRes

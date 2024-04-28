@@ -35,4 +35,5 @@
     <string name="new_transaction_from_account_hint">Transfer from</string>
     <string name="new_transaction_to_account">To</string>
     <string name="new_transaction_to_account_hint">Transfer to</string>
+    <string name="generic_error">Something went wrong.</string>
 </resources>

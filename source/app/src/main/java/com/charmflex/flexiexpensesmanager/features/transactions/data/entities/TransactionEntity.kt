@@ -22,7 +22,7 @@ import com.charmflex.flexiexpensesmanager.features.account.data.entities.Account
         ),
         ForeignKey(
             entity = TransactionTypeEntity::class,
-            parentColumns = ["id"],
+            parentColumns = ["code"],
             childColumns = ["transaction_type_code"],
             onDelete = ForeignKey.CASCADE
         ),

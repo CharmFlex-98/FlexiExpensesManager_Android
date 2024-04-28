@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_expenses
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,11 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,7 +29,7 @@ import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDateTime
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
+import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
 import com.charmflex.flexiexpensesmanager.ui_common.SGActionDialog
 import com.charmflex.flexiexpensesmanager.ui_common.SGAutoCompleteTextField
 import com.charmflex.flexiexpensesmanager.ui_common.SGButtonGroupVertical
@@ -34,9 +38,13 @@ import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargeSecondaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
+import com.charmflex.flexiexpensesmanager.ui_common.SGSnackBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
+import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
+import com.charmflex.flexiexpensesmanager.ui_common.SnackBarType
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
+import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import java.time.LocalDate
 
@@ -49,6 +57,19 @@ internal fun NewExpensesScreen(
     val currentTransactionType by viewModel.currentTransactionType.collectAsState()
     val datePickerState = UseCaseState()
     var showCalendar = viewState.calendarState.isVisible
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarState by viewModel.snackBarState
+    val genericErrorMessage = stringResource(id = R.string.generic_error)
+
+    LaunchedEffect(snackBarState) {
+        when (val state = snackBarState) {
+            is SnackBarState.Error -> {
+                snackbarHostState.showSnackBarImmediately(state.message ?: genericErrorMessage)
+                viewModel.resetErrorState()
+            }
+            else -> {}
+        }
+    }
 
     SGScaffold(
         topBar = {
@@ -78,12 +99,19 @@ internal fun NewExpensesScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     viewModel.transactionType.forEach {
-                        RadioButton(
-                            selected = currentTransactionType == it,
-                            onClick = {
-                                viewModel.initContent(it)
+                        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                FEBody3(text = it.name)
+                                RadioButton(
+                                    selected = currentTransactionType == it,
+                                    onClick = {
+                                        viewModel.initContent(it)
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
                 }
                 viewState.fields.forEach { feField ->
@@ -176,4 +204,6 @@ internal fun NewExpensesScreen(
             viewModel.onBack()
         }
     }
+
+    SGSnackBar(snackBarHostState = snackbarHostState, snackBarType = SnackBarType.Error)
 }
