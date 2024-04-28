@@ -119,6 +119,11 @@ dependencies {
     // Accompanist
     implementation(libs.google.accompanist)
 
+    // Room
+    implementation(libs.android.room)
+    kapt(libs.android.room.compiler)
+    implementation(libs.android.room.ktx)
+
     // Network
     implementation(platform(libs.square.okhttp3.bom))
     implementation(libs.square.okhttp3.loggingInterceptor)

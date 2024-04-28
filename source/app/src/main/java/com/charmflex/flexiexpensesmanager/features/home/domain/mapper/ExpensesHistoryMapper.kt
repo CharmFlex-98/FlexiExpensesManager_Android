@@ -5,7 +5,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.MONTH_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_YEAR_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.Mapper
 import com.charmflex.flexiexpensesmanager.core.utils.fromISOToStringWithPattern
-import com.charmflex.flexiexpensesmanager.features.expenses.domain.model.ExpensesData
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ExpensesData
 import com.charmflex.flexiexpensesmanager.features.home.ui.history.ExpensesHistoryHeader
 import com.charmflex.flexiexpensesmanager.features.home.ui.history.ExpensesHistoryItem
 import com.charmflex.flexiexpensesmanager.features.home.ui.history.ExpensesHistorySection

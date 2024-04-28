@@ -24,6 +24,7 @@ import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.di.AppComponent
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
+import com.charmflex.flexiexpensesmanager.features.home.ui.account.AccountHomeScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.history.ExpensesHistoryScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.chart.expenses_heat_map.ExpensesHeatMapPlugin
@@ -82,6 +83,14 @@ internal fun HomeScreen(
                 }
                 ExpensesHistoryScreen(expensesHistoryViewModel = viewModel)
             }
+            composable(
+                route = HomeRoutes.ACCOUNTS,
+            ) {
+                val viewModel = getViewModel {
+                    appComponent.accountHomeViewModel()
+                }
+                AccountHomeScreen(viewModel = viewModel)
+            }
         }
     }
 }
@@ -133,6 +142,12 @@ internal fun bottomBarItem(): List<SGBottomNavItem> {
             titleId = R.string.home_bar_item_details,
             iconId = R.drawable.ic_wallet,
             route = HomeRoutes.DETAIL
+        ),
+        SGBottomNavItem(
+            index = 2,
+            titleId = R.string.home_bar_item_accounts,
+            iconId = R.drawable.ic_wallet,
+            route = HomeRoutes.ACCOUNTS
         )
     )
 }

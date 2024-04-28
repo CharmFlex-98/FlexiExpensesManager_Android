@@ -25,4 +25,14 @@
     <string name="generic_back_to_home">Back to Home</string>
     <string name="upper_summary_title">Your spending summary</string>
     <string name="lower_summary_title">HeatMap</string>
+    <string name="home_bar_item_accounts">Accounts</string>
+    <string name="new_transaction_account">Account</string>
+    <string name="new_expenses_account_hint">Account you spent from</string>
+    <string name="generic_category">Category</string>
+    <string name="generic_category_hint">Select category</string>
+    <string name="new_transaction_from_account">From</string>
+    <string name="new_income_account_hint">The account income goes</string>
+    <string name="new_transaction_from_account_hint">Transfer from</string>
+    <string name="new_transaction_to_account">To</string>
+    <string name="new_transaction_to_account_hint">Transfer to</string>
 </resources>

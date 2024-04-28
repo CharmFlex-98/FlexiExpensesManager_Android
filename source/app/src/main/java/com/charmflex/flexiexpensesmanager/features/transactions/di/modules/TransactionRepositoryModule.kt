@@ -1,0 +1,25 @@
+package com.charmflex.flexiexpensesmanager.features.transactions.di.modules
+
+import com.charmflex.flexiexpensesmanager.features.transactions.data.repositories.TransactionCategoryRepositoryImpl
+import com.charmflex.flexiexpensesmanager.features.transactions.data.repositories.TransactionConfigRepositoryImpl
+import com.charmflex.flexiexpensesmanager.features.transactions.data.repositories.TransactionRepositoryImpl
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionConfigRepository
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
+import dagger.Binds
+import dagger.Module
+import javax.inject.Singleton
+
+@Module
+internal interface TransactionRepositoryModule {
+    @Binds
+    @Singleton
+    fun bindsTransactionRepository(transactionRepositoryImpl: TransactionRepositoryImpl): TransactionRepository
+    @Binds
+    @Singleton
+    fun bindsTransactionConfigRepository(transactionConfigRepositoryImpl: TransactionConfigRepositoryImpl): TransactionConfigRepository
+
+    @Binds
+    @Singleton
+    fun bindsTransactionCategoryRepository(transactionCategoryRepositoryImpl: TransactionCategoryRepositoryImpl): TransactionCategoryRepository
+}

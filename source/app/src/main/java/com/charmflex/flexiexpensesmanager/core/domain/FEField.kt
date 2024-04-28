@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.core.domain
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 internal data class FEField(
@@ -21,8 +22,16 @@ internal data class FEField(
 
         sealed interface Selection : FieldType
         object Date : Selection
-        data class SingleSelection(
-            val options: List<String>
-        ) : Selection
+        data class SingleItemSelection(
+            val options: List<Option>
+        ) : Selection {
+            interface Option {
+                val id: String
+                val title: String
+                val subtitle: String?
+                @get:DrawableRes
+                val icon: Int?
+            }
+        }
     }
 }

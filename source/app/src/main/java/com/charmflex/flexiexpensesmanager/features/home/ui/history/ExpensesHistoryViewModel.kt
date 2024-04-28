@@ -7,9 +7,8 @@ import com.charmflex.flexiexpensesmanager.core.utils.MONTH_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.YEAR_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
-import com.charmflex.flexiexpensesmanager.core.utils.toLocalDateTime
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
-import com.charmflex.flexiexpensesmanager.features.expenses.domain.repositories.ExpensesRepository
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import com.charmflex.flexiexpensesmanager.features.home.domain.mapper.ExpensesHistoryMapper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +19,7 @@ import javax.inject.Inject
 
 internal class ExpensesHistoryViewModel @Inject constructor(
     private val mapper: ExpensesHistoryMapper,
-    private val expensesRepository: ExpensesRepository
+    private val transactionRepository: TransactionRepository
 ) : ViewModel() {
 
     private val _tabState = MutableStateFlow(TabState())
@@ -34,7 +33,7 @@ internal class ExpensesHistoryViewModel @Inject constructor(
             toggleLoader(true)
             delay(1000)
             resultOf {
-                expensesRepository.getHistory()
+                transactionRepository.getHistory()
             }.fold(
                 onSuccess = {
                     val res = mapper.map(it)

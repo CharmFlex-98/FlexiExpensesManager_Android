@@ -1,6 +1,5 @@
 package com.charmflex.flexiexpensesmanager
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,7 +10,7 @@ import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigatorListener
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AuthRoutes
 import com.charmflex.flexiexpensesmanager.features.auth.destination.AuthDestinationBuilder
-import com.charmflex.flexiexpensesmanager.features.expenses.destination.ExpensesDestinationBuilder
+import com.charmflex.flexiexpensesmanager.features.transactions.destination.TransactionDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.home.destination.HomeDestinationBuilder
 import com.example.compose.FlexiExpensesManagerTheme
 
@@ -41,7 +40,7 @@ class MainActivity : ComponentActivity() {
         return listOf(
             AuthDestinationBuilder(),
             HomeDestinationBuilder(),
-            ExpensesDestinationBuilder()
+            TransactionDestinationBuilder()
         )
     }
 }

@@ -5,4 +5,5 @@ object HomeRoutes {
     const val HOME = "HOME"
     const val SUMMARY = "$ROOT/SUMMARY"
     const val DETAIL = "$ROOT/DETAIL"
+    const val ACCOUNTS = "$ROOT/ACCOUNTS"
 }

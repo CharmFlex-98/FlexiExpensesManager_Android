@@ -1,10 +1,12 @@
 package com.charmflex.flexiexpensesmanager.core.di
 
 import android.content.Context
+import com.charmflex.flexiexpensesmanager.db.di.modules.DBModule
 import com.charmflex.flexiexpensesmanager.dependency_injection.modules.navigation.NavigationModule
+import com.charmflex.flexiexpensesmanager.features.account.di.modules.AccountModule
 import com.charmflex.flexiexpensesmanager.features.auth.di.AuthInjector
-import com.charmflex.flexiexpensesmanager.features.expenses.di.ExpensesInjector
-import com.charmflex.flexiexpensesmanager.features.expenses.di.modules.AuthModules
+import com.charmflex.flexiexpensesmanager.features.transactions.di.TransactionInjector
+import com.charmflex.flexiexpensesmanager.features.transactions.di.modules.TransactionModule
 import com.charmflex.flexiexpensesmanager.features.home.di.HomeInjector
 import dagger.BindsInstance
 import dagger.Component
@@ -14,11 +16,14 @@ import javax.inject.Singleton
 @Component(
     modules = [
         NavigationModule::class,
-        AuthModules::class,
+        TransactionModule::class,
+        AccountModule::class,
+        DBModule::class,
+        MainModule::class
     ]
 )
 @Singleton
-internal interface AppComponent : MainInjector, AuthInjector, ExpensesInjector, HomeInjector {
+internal interface AppComponent : MainInjector, AuthInjector, TransactionInjector, HomeInjector {
 
     @Component.Factory
     interface Factory {
