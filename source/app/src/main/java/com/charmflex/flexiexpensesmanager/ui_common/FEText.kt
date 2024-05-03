@@ -78,13 +78,15 @@ fun FEHeading4(
 @Composable
 fun FEHeading5(
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
+    color: Color = Color.Unspecified
 ) {
     Text(
         modifier = modifier,
         text = text,
         style = TextStyle(
             fontWeight = FontWeight.SemiBold,
+            color = color,
             fontSize = 18.sp,
             lineHeight = 24.sp
         )
@@ -126,13 +128,15 @@ fun FEBody2(
 @Composable
 fun FEBody3(
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
+    color: Color = Color.Unspecified
 ) {
     Text(
         modifier = modifier,
         text = text,
         style = TextStyle(
             fontWeight = FontWeight.Normal,
+            color = color,
             fontSize = 14.sp,
             lineHeight = 20.sp
         )

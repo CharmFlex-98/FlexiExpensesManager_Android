@@ -4,16 +4,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -23,27 +21,29 @@ import androidx.navigation.compose.rememberNavController
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.di.AppComponent
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.account.AccountHomeScreen
-import com.charmflex.flexiexpensesmanager.features.home.ui.history.ExpensesHistoryScreen
+import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.chart.expenses_heat_map.ExpensesHeatMapPlugin
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.chart.expenses_pie_chart.ExpensesPieChartDashboardPlugin
+import com.charmflex.flexiexpensesmanager.features.category.category.ui.CategoryEditorScreen
+import com.charmflex.flexiexpensesmanager.features.home.ui.setting.SettingScreen
 import com.charmflex.flexiexpensesmanager.ui_common.SGBottomNavItem
 import com.charmflex.flexiexpensesmanager.ui_common.SGBottomNavigationBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.example.compose.FlexiExpensesManagerTheme
+import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeScreen(
-    appComponent: AppComponent
+    homeViewModel: HomeViewModel,
+    shouldRefresh: Boolean = false,
+    appComponent: AppComponent,
 ) {
-    val homeViewmodel = getViewModel {
-        appComponent.homeViewModel()
-    }
     val expensesPieChartViewModel = getViewModel {
         appComponent.expensesPieChartViewModel()
     }
@@ -57,10 +57,9 @@ internal fun HomeScreen(
 
     val bottomNavController = rememberNavController()
     SGScaffold(
-        modifier = Modifier.padding(grid_x2),
         bottomBar = { HomeScreenBottomNavigationBar(bottomBarNavController = bottomNavController) },
         floatingActionButton = {
-            FloatingActionButton(onClick = homeViewmodel::createNewExpenses) {
+            FloatingActionButton(onClick = homeViewModel::createNewExpenses) {
                 SGIcons.Add()
             }
         },
@@ -81,7 +80,13 @@ internal fun HomeScreen(
                 val viewModel = getViewModel {
                     appComponent.expensesHistoryViewModel()
                 }
-                ExpensesHistoryScreen(expensesHistoryViewModel = viewModel)
+                LaunchedEffect(shouldRefresh) {
+                    if (shouldRefresh) {
+                        viewModel.refresh()
+                    }
+                }
+
+                TransactionHistoryScreen(transactionHistoryViewModel = viewModel)
             }
             composable(
                 route = HomeRoutes.ACCOUNTS,
@@ -90,6 +95,14 @@ internal fun HomeScreen(
                     appComponent.accountHomeViewModel()
                 }
                 AccountHomeScreen(viewModel = viewModel)
+            }
+            composable(
+                route = HomeRoutes.SETTING,
+            ) {
+                val viewModel = getViewModel {
+                    appComponent.settingViewModel()
+                }
+                SettingScreen(viewModel = viewModel)
             }
         }
     }
@@ -148,6 +161,12 @@ internal fun bottomBarItem(): List<SGBottomNavItem> {
             titleId = R.string.home_bar_item_accounts,
             iconId = R.drawable.ic_wallet,
             route = HomeRoutes.ACCOUNTS
+        ),
+        SGBottomNavItem(
+            index = 3,
+            titleId = R.string.home_bar_item_setting,
+            iconId = R.drawable.icon_people,
+            route = HomeRoutes.SETTING
         )
     )
 }

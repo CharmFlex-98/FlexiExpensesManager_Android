@@ -2,6 +2,3 @@ package com.charmflex.flexiexpensesmanager.features.transactions.domain.reposito
 
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 
-internal interface TransactionConfigRepository {
-    suspend fun getAllTransactionType(): List<TransactionType>
-}

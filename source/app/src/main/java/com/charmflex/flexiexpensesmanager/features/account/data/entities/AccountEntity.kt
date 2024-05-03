@@ -25,7 +25,7 @@ internal data class AccountEntity(
     @ColumnInfo("name")
     val name: String,
     @ColumnInfo("is_deleted", defaultValue = "false")
-    val isDeleted: Boolean,
+    val isDeleted: Boolean = false,
     @Embedded
     val additionalInfo: AdditionalInfo?
 ) {

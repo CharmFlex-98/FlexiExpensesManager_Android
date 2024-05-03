@@ -2,9 +2,7 @@ package com.charmflex.flexiexpensesmanager.features.transactions.provider
 
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
-import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_expenses.TransactionType
-import com.charmflex.flexiexpensesmanager.features.transactions.usecases.GetAccountOptionsUseCase
-import com.charmflex.flexiexpensesmanager.features.transactions.usecases.GetCategoryOptionsUseCase
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import javax.inject.Inject
 
 internal const val TRANSACTION_NAME = "TRANSACTION_NAME"
@@ -16,11 +14,7 @@ internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
 
 
 
-internal class NewTransactionContentProvider @Inject constructor(
-    private val getAccountOptionsUseCase: GetAccountOptionsUseCase,
-    private val getCategoryOptionsUseCase: GetCategoryOptionsUseCase
-
-) {
+internal class NewTransactionContentProvider @Inject constructor() {
     suspend fun getContent(transactionType: TransactionType): List<FEField> {
         val res = when (transactionType) {
             TransactionType.EXPENSES -> expensesFields()
@@ -45,68 +39,56 @@ internal class NewTransactionContentProvider @Inject constructor(
                     id = TRANSACTION_DATE,
                     labelId = R.string.new_expenses_date,
                     hintId = R.string.new_expenses_date_hint,
-                    type = FEField.FieldType.Date
+                    type = FEField.FieldType.Callback
                 )
             )
         )
         return res
     }
 
-    private suspend fun expensesFields(): List<FEField> {
+    private fun expensesFields(): List<FEField> {
         return listOf(
             FEField(
                 id = TRANSACTION_FROM_ACCOUNT,
                 labelId = R.string.new_transaction_account,
                 hintId = R.string.new_expenses_account_hint,
-                type = FEField.FieldType.SingleItemSelection(
-                    options = getAccountOptionsUseCase()
-                )
+                type = FEField.FieldType.Callback
             ),
             FEField(
                 id = TRANSACTION_CATEGORY,
                 labelId = R.string.generic_category,
                 hintId = R.string.generic_category_hint,
-                type = FEField.FieldType.SingleItemSelection (
-                    options = getCategoryOptionsUseCase("EXPENSES")
-                )
+                type = FEField.FieldType.Callback
             )
         )
     }
 
-    private suspend fun incomeFields(): List<FEField> {
+    private fun incomeFields(): List<FEField> {
         return listOf(
             FEField(
                 labelId = R.string.new_transaction_account,
                 hintId = R.string.new_income_account_hint,
-                type = FEField.FieldType.SingleItemSelection(
-                    options = getAccountOptionsUseCase()
-                )
+                type = FEField.FieldType.Callback
             ),
             FEField(
                 labelId = R.string.generic_category,
                 hintId = R.string.generic_category_hint,
-                type = FEField.FieldType.SingleItemSelection(
-                    options = getCategoryOptionsUseCase("INCOME")
-                )
+                type = FEField.FieldType.Callback
             )
         )
     }
 
-    private suspend fun transferFields(): List<FEField> {
+    private fun transferFields(): List<FEField> {
         return listOf(
             FEField(
                 labelId = R.string.new_transaction_from_account,
                 hintId = R.string.new_transaction_from_account_hint,
-                type = FEField.FieldType.SingleItemSelection(
-                    options = getAccountOptionsUseCase()
-                )
+                type = FEField.FieldType.Callback
             ),
             FEField(
                 labelId = R.string.new_transaction_to_account,
                 hintId = R.string.new_transaction_to_account_hint,
-                type = FEField.FieldType.SingleItemSelection(
-                    options = getAccountOptionsUseCase()
-                )
+                type = FEField.FieldType.Callback
             )
         )
     }

@@ -9,16 +9,15 @@ import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
-import com.charmflex.flexiexpensesmanager.features.home.domain.mapper.ExpensesHistoryMapper
-import kotlinx.coroutines.delay
+import com.charmflex.flexiexpensesmanager.features.home.domain.mapper.TransactionHistoryMapper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-internal class ExpensesHistoryViewModel @Inject constructor(
-    private val mapper: ExpensesHistoryMapper,
+internal class TransactionHistoryViewModel @Inject constructor(
+    private val mapper: TransactionHistoryMapper,
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
 
@@ -29,11 +28,14 @@ internal class ExpensesHistoryViewModel @Inject constructor(
     val viewState = _viewState.asStateFlow()
 
     init {
+        refresh()
+    }
+
+    fun refresh() {
         viewModelScope.launch {
             toggleLoader(true)
-            delay(1000)
             resultOf {
-                transactionRepository.getHistory()
+                transactionRepository.getTransactions()
             }.fold(
                 onSuccess = {
                     val res = mapper.map(it)
@@ -52,7 +54,7 @@ internal class ExpensesHistoryViewModel @Inject constructor(
         }
     }
 
-    private fun updateTabList(items: List<ExpensesHistoryItem>) {
+    private fun updateTabList(items: List<TransactionHistoryItem>) {
         val tabs = items.map {
             val localDate = it.dateKey.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)
             TabState.TabItem(
@@ -87,7 +89,7 @@ internal class ExpensesHistoryViewModel @Inject constructor(
         }
     }
 
-    fun onReachHistoryItem(item: ExpensesHistoryItem?) {
+    fun onReachHistoryItem(item: TransactionHistoryItem?) {
         if (item == null) return
 
         val localDate = item.dateKey.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)
@@ -104,7 +106,7 @@ internal class ExpensesHistoryViewModel @Inject constructor(
 }
 
 internal data class ExpensesHistoryViewState(
-    val items: List<ExpensesHistoryItem> = listOf(),
+    val items: List<TransactionHistoryItem> = listOf(),
     val isLoading: Boolean = false
 )
 
@@ -118,20 +120,20 @@ internal data class TabState(
     )
 }
 
-internal sealed interface ExpensesHistoryItem {
+internal sealed interface TransactionHistoryItem {
     val dateKey: String
 }
 
-internal data class ExpensesHistoryHeader(
+internal data class TransactionHistoryHeader(
     override val dateKey: String,
     val title: String?,
     val subtitle: String
-) : ExpensesHistoryItem
+) : TransactionHistoryItem
 
-internal data class ExpensesHistorySection(
+internal data class TransactionHistorySection(
     override val dateKey: String,
     val items: List<SectionItem>
-) : ExpensesHistoryItem {
+) : TransactionHistoryItem {
     data class SectionItem(
         val name: String,
         val amount: String,

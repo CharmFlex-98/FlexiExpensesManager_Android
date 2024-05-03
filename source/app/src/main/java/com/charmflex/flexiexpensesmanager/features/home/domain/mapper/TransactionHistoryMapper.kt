@@ -1,23 +1,27 @@
 package com.charmflex.flexiexpensesmanager.features.home.domain.mapper
 
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.DEFAULT_DATE_TIME_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_YEAR_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.Mapper
 import com.charmflex.flexiexpensesmanager.core.utils.fromISOToStringWithPattern
+import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
+import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ExpensesData
-import com.charmflex.flexiexpensesmanager.features.home.ui.history.ExpensesHistoryHeader
-import com.charmflex.flexiexpensesmanager.features.home.ui.history.ExpensesHistoryItem
-import com.charmflex.flexiexpensesmanager.features.home.ui.history.ExpensesHistorySection
+import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryHeader
+import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryItem
+import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistorySection
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import javax.inject.Inject
 
-internal class ExpensesHistoryMapper @Inject constructor() : Mapper<List<ExpensesData>, List<ExpensesHistoryItem>> {
-    override fun map(from: List<ExpensesData>): List<ExpensesHistoryItem> {
-        val res = mutableListOf<ExpensesHistoryItem>()
+internal class TransactionHistoryMapper @Inject constructor() : Mapper<List<Transaction>, List<TransactionHistoryItem>> {
+    override fun map(from: List<Transaction>): List<TransactionHistoryItem> {
+        val res = mutableListOf<TransactionHistoryItem>()
         val sectionSet = mutableSetOf<String>()
         from.groupBy {
-            val timeStamp = it.timeStamp
-            Pair(timeStamp.toMonthYearFormat(), timeStamp.toDateFormat())
+            val date = it.transactionDate
+            Pair(date.toMonthYearFormat(), date)
         }.map { (pair , history) ->
             val monthYear = pair.first
             val date = pair.second
@@ -26,7 +30,7 @@ internal class ExpensesHistoryMapper @Inject constructor() : Mapper<List<Expense
             }
 
             res.add(
-                ExpensesHistoryHeader(
+                TransactionHistoryHeader(
                     dateKey = date,
                     title = if (dateIncluded) null else monthYear,
                     subtitle = date
@@ -34,14 +38,14 @@ internal class ExpensesHistoryMapper @Inject constructor() : Mapper<List<Expense
             )
 
             res.add(
-                ExpensesHistorySection(
+                TransactionHistorySection(
                     dateKey = date,
                     items = history.map {
-                        ExpensesHistorySection.SectionItem(
-                            name = it.name,
-                            amount = it.amount.toString(),
-                            type = it.type,
-                            category = it.category,
+                        TransactionHistorySection.SectionItem(
+                            name = it.transactionName,
+                            amount = it.amountInCent.toString(),
+                            type = it.transactionTypeCode,
+                            category = it.categoryName,
                         )
                     }
                 )
@@ -60,5 +64,5 @@ private fun String.toDateFormat(): String {
 }
 
 private fun String.toMonthYearFormat(): String {
-    return this.fromISOToStringWithPattern(MONTH_YEAR_PATTERN)
+    return this.toLocalDate(DATE_ONLY_DEFAULT_PATTERN).toStringWithPattern(MONTH_YEAR_PATTERN)
 }

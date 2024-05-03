@@ -37,6 +37,8 @@ import com.charmflex.flexiexpensesmanager.features.account.data.entities.Account
 internal data class TransactionEntity(
     @PrimaryKey(true)
     val id: Long = 0L,
+    @ColumnInfo("transaction_name")
+    val transactionName: String,
     @ColumnInfo("account_from_id")
     val accountFromId: Int?,
     @ColumnInfo("account_to_id", index = true)

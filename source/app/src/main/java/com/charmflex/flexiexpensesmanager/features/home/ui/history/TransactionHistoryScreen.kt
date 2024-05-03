@@ -38,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
@@ -56,14 +55,14 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ExpensesHistoryScreen(
-    expensesHistoryViewModel: ExpensesHistoryViewModel
+internal fun TransactionHistoryScreen(
+    transactionHistoryViewModel: TransactionHistoryViewModel
 ) {
-    val viewState by expensesHistoryViewModel.viewState.collectAsState()
+    val viewState by transactionHistoryViewModel.viewState.collectAsState()
     val scrollItems = viewState.items
     val scrollState = rememberLazyListState()
     val tabScrollState = rememberScrollState()
-    val tabState by expensesHistoryViewModel.tabState.collectAsState()
+    val tabState by transactionHistoryViewModel.tabState.collectAsState()
     val tabHeight = with(LocalDensity.current) { grid_x8.roundToPx().toFloat() }
     val showMonthTab by remember {
         derivedStateOf { scrollState.firstVisibleItemIndex > 2 }
@@ -79,21 +78,21 @@ internal fun ExpensesHistoryScreen(
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(firstVisibleItemIndex, isScrollingUp) {
-        expensesHistoryViewModel.onReachHistoryItem(scrollItems.getOrNull(firstVisibleItemIndex))
+        transactionHistoryViewModel.onReachHistoryItem(scrollItems.getOrNull(firstVisibleItemIndex))
     }
 
     ListTable(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(grid_x2),
         items = scrollItems,
         scrollState = scrollState
     ) { index, item ->
         when (item) {
-            is ExpensesHistoryHeader -> {
+            is TransactionHistoryHeader -> {
                 Spacer(modifier = Modifier.height(grid_x2))
                 ExpensesHistoryDateHeaderView(month = item.title, date = item.subtitle)
             }
 
-            is ExpensesHistorySection -> ExpensesHistorySectionView(items = item.items)
+            is TransactionHistorySection -> ExpensesHistorySectionView(items = item.items)
         }
     }
 
@@ -116,7 +115,7 @@ internal fun ExpensesHistoryScreen(
                         selected = index == tabState.selectedTabIndex,
                         onClick = {
                             coroutineScope.launch {
-                                val scrollToIndex = expensesHistoryViewModel.findFirstItemIndexByTab(item)
+                                val scrollToIndex = transactionHistoryViewModel.findFirstItemIndexByTab(item)
                                 scrollState.scrollToItem(scrollToIndex)
                                 scrollState.scrollBy(-tabHeight)
                             }
@@ -159,7 +158,7 @@ private fun ExpensesHistoryDateHeaderView(
 
 @Composable
 private fun ExpensesHistorySectionView(
-    items: List<ExpensesHistorySection.SectionItem>
+    items: List<TransactionHistorySection.SectionItem>
 ) {
     Column(
         modifier = Modifier

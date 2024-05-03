@@ -65,6 +65,13 @@ object SGIcons {
     }
 
     @Composable
+    fun NextArrow(
+        modifier: Modifier = Modifier
+    ) {
+        Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_arrow_next), contentDescription = null)
+    }
+
+    @Composable
     fun EditIcon(
         modifier: Modifier
     ) {

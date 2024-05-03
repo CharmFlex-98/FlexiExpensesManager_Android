@@ -106,13 +106,14 @@ fun SGModalBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     onDismiss: () -> Unit,
+    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
     content: @Composable () -> Unit,
 ) {
     ModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = onDismiss,
         dragHandle = null,
-        containerColor = MaterialTheme.colorScheme.surfaceDim
+        containerColor = containerColor
     ) {
         Box(
             modifier = modifier

@@ -8,6 +8,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
     suspend fun submitExpenses(
+        name: String,
         fromAccountId: Int,
         amount: Int,
         categoryId: Int,
@@ -15,6 +16,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
     ): Result<Unit> {
         return resultOf {
             transactionRepository.addNewExpenses(
+                name,
                 fromAccountId,
                 amount,
                 categoryId,

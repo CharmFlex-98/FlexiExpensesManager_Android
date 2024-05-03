@@ -6,7 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
-import com.charmflex.flexiexpensesmanager.core.navigation.routes.ExpensesRoute
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_expenses.NewExpensesScreen
 
@@ -18,7 +18,7 @@ internal class TransactionDestinationBuilder : DestinationBuilder{
 
     private fun NavGraphBuilder.newExpensesScreen() {
         composable(
-            route = ExpensesRoute.NEW_RECORD,
+            route = TransactionRoute.NEW_RECORD,
             enterTransition = {
                 slideIntoContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Companion.Up,

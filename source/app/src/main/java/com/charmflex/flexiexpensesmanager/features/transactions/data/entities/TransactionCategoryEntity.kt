@@ -26,7 +26,7 @@ internal data class TransactionCategoryEntity(
     @ColumnInfo("parent_id")
     val parentId: Int,
     @ColumnInfo("is_deleted", defaultValue = "false")
-    val isDeleted: Boolean
+    val isDeleted: Boolean = false
 )
 
 

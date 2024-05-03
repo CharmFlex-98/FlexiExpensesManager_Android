@@ -5,13 +5,15 @@ import androidx.annotation.StringRes
 
 internal data class FEField(
     val id: String = "",
-    @StringRes
     val labelId: Int,
-    @StringRes
     val hintId: Int,
-    val value: String = "",
-    val type: FieldType,
+    val value: Value = Value(),
+    val type: FieldType
 ) {
+    data class Value(
+        val id: String = "",
+        val value: String = ""
+    )
     val isEnable: Boolean
         get() {
             return type !is FieldType.Selection
@@ -19,10 +21,12 @@ internal data class FEField(
 
     sealed interface FieldType {
         object Text : FieldType
+
         object Number : FieldType
 
         sealed interface Selection : FieldType
-        object Date : Selection
+        object Callback : Selection
+
         data class SingleItemSelection(
             val options: List<Option>
         ) : Selection {
@@ -30,9 +34,11 @@ internal data class FEField(
                 val id: String
                 val title: String
                 val subtitle: String?
+
                 @get:DrawableRes
                 val icon: Int?
             }
         }
     }
 }
+

@@ -1,0 +1,136 @@
+package com.charmflex.flexiexpensesmanager.features.category.category.ui
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import com.charmflex.flexiexpensesmanager.R
+import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
+import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
+import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
+import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
+import com.charmflex.flexiexpensesmanager.ui_common.SGMediumPrimaryButton
+import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
+import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
+
+@Composable
+internal fun CategoryEditorScreen(viewModel: CategoryEditorViewModel) {
+    val viewState by viewModel.viewState.collectAsState()
+    val title = when (val n = viewState.currentNode) {
+        null -> "Category"
+        else -> "Add Subcategory for ${n.categoryName}"
+    }
+    val items = when (val n = viewState.currentNode) {
+        null -> viewState.categoryTree.items
+        else -> n.childNodes
+    }
+    val isEditorOpened = viewState.editorState.isOpened
+    val scrollState = rememberScrollState()
+
+    BackHandler {
+        viewModel.back()
+    }
+
+    SGScaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(grid_x2),
+        topBar = {
+            BasicTopBar(title = title)
+        }
+    ) {
+        if (isEditorOpened) {
+            SGTextField(
+                modifier = Modifier.fillMaxWidth(),
+                label = "New category",
+                value = viewState.editorState.value
+            ) {
+                viewModel.updateEditorValue(it)
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            SGLargePrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = "ADD",
+                enabled = true
+            ) {
+                viewModel.addNewCategory()
+            }
+        } else {
+            Column {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(bottom = grid_x2)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(grid_x2))
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .verticalScroll(scrollState)
+                    ) {
+                        items.forEach {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        viewModel.onClickItem(it)
+                                    }
+                                    .padding(grid_x2),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    FEBody1(
+                                        modifier = Modifier.weight(1f),
+                                        text = it.categoryName
+                                    )
+                                    if (it.allowSubCategory) Icon(
+                                        painter = painterResource(id = R.drawable.ic_arrow_next),
+                                        contentDescription = ""
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                SGLargePrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "ADD"
+                ) {
+                    viewModel.openEditor()
+                }
+            }
+        }
+    }
+}

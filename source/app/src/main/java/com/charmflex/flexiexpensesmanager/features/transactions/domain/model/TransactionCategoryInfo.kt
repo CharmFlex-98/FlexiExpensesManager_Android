@@ -8,10 +8,13 @@ internal data class TransactionCategories(
     internal data class Node(
         val categoryId: Int,
         val categoryName: String,
+        val level: Int,
         val parentNodeId: Int?,
         val childNodes: List<Node>
     ) {
-        val isRoot = parentNodeId == null
-        val isLeaf = childNodes.isEmpty()
+        val isRoot get() = parentNodeId == null
+        val isLeaf get() = childNodes.isEmpty()
+
+        val allowSubCategory get() = level < 3
     }
 }
