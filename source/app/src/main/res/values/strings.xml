@@ -37,4 +37,12 @@
     <string name="new_transaction_to_account_hint">Transfer to</string>
     <string name="generic_error">Something went wrong.</string>
     <string name="home_bar_item_setting">Setting</string>
+    <string name="generic_success">Success!</string>
+    <string name="delete_transaction_success_subtitle">You have deleted the transaction.</string>
+    <string name="generic_something_went_wron">Something went wrong.</string>
+    <string name="generic_warning">Warning!</string>
+    <string name="generic_delete_warning_subtitle">You are going to delete this transaction. This can\'t be undone. Continue?</string>
+    <string name="generic_cancel">Cancel</string>
+    <string name="generic_yes">Yes</string>
+    <string name="transaction_detail_screen_title">Transaction Detail</string>
 </resources>

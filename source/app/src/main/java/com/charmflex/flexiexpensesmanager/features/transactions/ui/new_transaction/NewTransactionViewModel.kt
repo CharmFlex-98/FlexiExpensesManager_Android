@@ -105,12 +105,12 @@ internal class NewTransactionViewModel @Inject constructor(
     }
 
     fun onConfirmed() {
-        toggleLoader(true)
         if (isSubmissionValid()) {
             viewModelScope.launch {
                 when (_currentTransactionType.value) {
                     TransactionType.EXPENSES -> submitExpenses()
-                    else -> {}
+                    TransactionType.INCOME -> submitIncome()
+                    TransactionType.TRANSFER -> submitTransfer()
                 }
             }
         }
@@ -129,30 +129,86 @@ internal class NewTransactionViewModel @Inject constructor(
         val categoryId = fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.value?.id?.toIntOrNull()
         val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value?.value
 
-        if (name == null || amount == null || categoryId == null || date == null || fromAccount == null) return
-
-        viewModelScope.launch {
-            when (_currentTransactionType.value) {
-                TransactionType.EXPENSES -> {
-                    submitTransactionUseCase.submitExpenses(
-                        name = name,
-                        fromAccountId = fromAccount.toInt(),
-                        amount = amount.toInt(),
-                        categoryId = categoryId,
-                        transactionDate = date
-                    ).fold(
-                        onSuccess = {
-                            handleSuccess()
-                        },
-                        onFailure = {
-                            handleFailure(it)
-                        }
-                    )
-                }
-
-                else -> {}
-            }
+        if (name == null || amount == null || categoryId == null || date == null || fromAccount == null) {
+            handleFailure(Exception("Something wrong"))
+            toggleLoader(false)
+            return
         }
+
+        submitTransactionUseCase.submitExpenses(
+            name = name,
+            fromAccountId = fromAccount.toInt(),
+            amount = amount.toInt(),
+            categoryId = categoryId,
+            transactionDate = date
+        ).fold(
+            onSuccess = {
+                handleSuccess()
+            },
+            onFailure = {
+                handleFailure(it)
+            }
+        )
+    }
+
+    private suspend fun submitIncome() {
+        val fields = _viewState.value.fields
+        val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.value?.value
+        val toAccountId = fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.value?.id?.toIntOrNull()
+        val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.value?.value
+        val categoryId = fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.value?.id?.toIntOrNull()
+        val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value?.value
+
+        if (name == null || amount == null || categoryId == null || date == null || toAccountId == null) {
+            handleFailure(Exception("Something wrong"))
+            toggleLoader(false)
+            return
+        }
+
+        submitTransactionUseCase.submitIncome(
+            name = name,
+            toAccountId = toAccountId.toInt(),
+            amount = amount.toInt(),
+            categoryId = categoryId,
+            transactionDate = date
+        ).fold(
+            onSuccess = {
+                handleSuccess()
+            },
+            onFailure = {
+                handleFailure(it)
+            }
+        )
+    }
+
+    private suspend fun submitTransfer() {
+        val fields = _viewState.value.fields
+        val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.value?.value
+        val fromAccountId = fields.firstOrNull { it.id == TRANSACTION_FROM_ACCOUNT }?.value?.id?.toIntOrNull()
+        val toAccountId = fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.value?.id?.toIntOrNull()
+        val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.value?.value
+        val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value?.value
+
+        if (name == null || amount == null || fromAccountId == null || date == null || toAccountId == null) {
+            handleFailure(Exception("Something wrong"))
+            toggleLoader(false)
+            return
+        }
+
+        submitTransactionUseCase.submitTransfer(
+            name = name,
+            fromAccountId = fromAccountId.toInt(),
+            toAccountId = toAccountId.toInt(),
+            amount = amount.toInt(),
+            transactionDate = date
+        ).fold(
+            onSuccess = {
+                handleSuccess()
+            },
+            onFailure = {
+                handleFailure(it)
+            }
+        )
     }
 
     private fun handleSuccess() {

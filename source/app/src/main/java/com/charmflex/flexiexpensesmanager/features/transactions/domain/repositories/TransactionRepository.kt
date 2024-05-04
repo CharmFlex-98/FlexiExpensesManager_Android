@@ -13,6 +13,22 @@ internal interface TransactionRepository {
         categoryId: Int,
         transactionDate: String,
     )
+
+    suspend fun addNewIncome(
+        name: String,
+        toAccountId: Int,
+        amount: Int,
+        categoryId: Int,
+        transactionDate: String,
+    )
+
+    suspend fun addNewTransfer(
+        name: String,
+        fromAccountId: Int,
+        toAccountId: Int,
+        amount: Int,
+        transactionDate: String,
+    )
     suspend fun getHistory(): List<ExpensesData>
 
     fun getTransactions(
@@ -22,4 +38,6 @@ internal interface TransactionRepository {
     ): Flow<List<Transaction>>
 
     suspend fun getTransactionById(transactionId: Long): Transaction
+
+    suspend fun deleteTransactionById(transactionId: Long)
 }

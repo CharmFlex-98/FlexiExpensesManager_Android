@@ -27,8 +27,10 @@ internal class GetExpensesPercentageUseCase @Inject constructor(
                             it.transactionTypeCode == TransactionType.EXPENSES.name
                         }
                         .map { t -> t.amountInCent }
-                        .reduce { acc, i -> acc + i }
-                    res[date!!] = totalAmountByDate
+                        .reduceOrNull { acc, i -> acc + i }
+                    totalAmountByDate?.let {
+                        res[date!!] = totalAmountByDate
+                    }
                 }
         }
 

@@ -37,6 +37,44 @@ internal class TransactionRepositoryImpl @Inject constructor(
         transactionDao.insertTransaction(transaction = transaction)
     }
 
+    override suspend fun addNewIncome(
+        name: String,
+        toAccountId: Int,
+        amount: Int,
+        categoryId: Int,
+        transactionDate: String
+    ) {
+        val transaction = TransactionEntity(
+            transactionName = name,
+            amountInCent = amount,
+            categoryId = categoryId,
+            transactionDate = transactionDate,
+            transactionTypeCode = "INCOME",
+            accountToId = toAccountId,
+            accountFromId = null
+        )
+        transactionDao.insertTransaction(transaction = transaction)
+    }
+
+    override suspend fun addNewTransfer(
+        name: String,
+        fromAccountId: Int,
+        toAccountId: Int,
+        amount: Int,
+        transactionDate: String
+    ) {
+        val transaction = TransactionEntity(
+            transactionName = name,
+            amountInCent = amount,
+            transactionDate = transactionDate,
+            transactionTypeCode = "TRANSFER",
+            accountToId = toAccountId,
+            accountFromId = fromAccountId,
+            categoryId = null
+        )
+        transactionDao.insertTransaction(transaction)
+    }
+
     override suspend fun getHistory(): List<ExpensesData> {
         return expensesDataProvider.getData()
     }
@@ -58,6 +96,10 @@ internal class TransactionRepositoryImpl @Inject constructor(
     override suspend fun getTransactionById(transactionId: Long): Transaction {
         val res = transactionDao.getTransactionById(transactionId)
         return transactionMapper.map(res)
+    }
+
+    override suspend fun deleteTransactionById(transactionId: Long) {
+        transactionDao.deleteTransactionById(transactionId)
     }
 
 

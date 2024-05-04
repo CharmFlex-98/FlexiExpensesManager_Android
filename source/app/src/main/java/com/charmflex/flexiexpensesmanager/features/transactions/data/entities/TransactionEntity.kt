@@ -39,7 +39,7 @@ internal data class TransactionEntity(
     val id: Long = 0L,
     @ColumnInfo("transaction_name")
     val transactionName: String,
-    @ColumnInfo("account_from_id")
+    @ColumnInfo("account_from_id", index = true)
     val accountFromId: Int?,
     @ColumnInfo("account_to_id", index = true)
     val accountToId: Int?,
@@ -50,5 +50,9 @@ internal data class TransactionEntity(
     @ColumnInfo("transaction_date")
     val transactionDate: String,
     @ColumnInfo("category_id", index = true)
-    val categoryId: Int
+    val categoryId: Int?
 )
+
+fun main() {
+
+}

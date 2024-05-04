@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import javax.inject.Inject
 
-internal class ResourceProvider @Inject constructor(
+internal class ResourcesProvider @Inject constructor(
     val appContext: Context
 ) {
     fun getString(resId: Int): String {

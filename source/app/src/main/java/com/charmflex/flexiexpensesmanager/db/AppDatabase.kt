@@ -23,7 +23,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.Tr
         TransactionTagEntity::class,
         TransactionTypeEntity::class
     ],
-    version = 1,
+    version = 2,
 )
 internal abstract class AppDatabase : RoomDatabase() {
     abstract fun getAccountDao(): AccountDao

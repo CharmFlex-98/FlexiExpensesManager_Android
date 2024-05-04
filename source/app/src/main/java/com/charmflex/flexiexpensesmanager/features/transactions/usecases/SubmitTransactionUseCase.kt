@@ -24,4 +24,40 @@ internal class SubmitTransactionUseCase @Inject constructor(
             )
         }
     }
+
+    suspend fun submitIncome(
+        name: String,
+        toAccountId: Int,
+        amount: Int,
+        categoryId: Int,
+        transactionDate: String,
+    ): Result<Unit> {
+        return resultOf {
+            transactionRepository.addNewIncome(
+                name,
+                toAccountId,
+                amount,
+                categoryId,
+                transactionDate,
+            )
+        }
+    }
+
+    suspend fun submitTransfer(
+        name: String,
+        fromAccountId: Int,
+        toAccountId: Int,
+        amount: Int,
+        transactionDate: String,
+    ): Result<Unit> {
+        return resultOf {
+            transactionRepository.addNewTransfer(
+                name,
+                fromAccountId,
+                toAccountId,
+                amount,
+                transactionDate,
+            )
+        }
+    }
 }

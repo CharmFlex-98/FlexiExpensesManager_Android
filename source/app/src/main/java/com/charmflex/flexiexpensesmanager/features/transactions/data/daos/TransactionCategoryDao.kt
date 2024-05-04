@@ -15,9 +15,17 @@ internal interface TransactionCategoryDao {
     )
     fun getCategories(transactionTypeCode: String): Flow<List<TransactionCategoryEntity>>
 
+    @Query(
+        "SELECT * FROM TransactionCategoryEntity" +
+                " WHERE transaction_type_code = :transactionTypeCode"
+    )
+    fun getCategoriesIncludeDeleted(
+        transactionTypeCode: String,
+    ): Flow<List<TransactionCategoryEntity>>
+
     @Insert
     suspend fun addCategory(categoryEntity: TransactionCategoryEntity)
 
-    @Query("DELETE FROM TransactionCategoryEntity WHERE id = :categoryId")
+    @Query("UPDATE TransactionCategoryEntity SET is_deleted = 1 WHERE id = :categoryId")
     suspend fun deleteCategory(categoryId: Int)
 }

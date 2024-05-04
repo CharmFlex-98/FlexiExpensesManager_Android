@@ -26,6 +26,18 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getAllCategoriesIncludeDeleted(transactionTypeCode: String): Flow<TransactionCategories> {
+        val res = transactionCategoryDao.getCategoriesIncludeDeleted(transactionTypeCode)
+        return res.transformLatest {
+            emit(it to it.filter { entity -> entity.parentId == 0 })
+        }.map { (res, rootItems) ->
+            TransactionCategories(
+                items = rootItems.map { buildNode(1, res, it) }
+            )
+        }
+    }
+
     override suspend fun addCategory(category: String, parentId: Int, transactionTypeCode: String) {
         val entity = TransactionCategoryEntity(
             name = category,

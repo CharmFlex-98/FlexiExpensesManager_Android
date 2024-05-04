@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.ui_common
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -14,6 +15,7 @@ fun BasicTopBar(
     title: String = "",
     leadingIcon: (@Composable () -> Unit)? = null,
     leadingIconAction: (() -> Unit)? = null,
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
         title = { Text(text = title) },
@@ -21,7 +23,8 @@ fun BasicTopBar(
             if (leadingIconAction != null && leadingIcon != null) {
                 IconButton(onClick = leadingIconAction, content = leadingIcon)
             }
-        }
+        },
+        actions = actions
     )
 }
 

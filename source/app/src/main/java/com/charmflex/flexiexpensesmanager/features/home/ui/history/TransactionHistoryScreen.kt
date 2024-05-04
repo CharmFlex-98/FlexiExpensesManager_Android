@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
@@ -196,6 +197,11 @@ private fun ExpensesHistoryItem(
     type: String,
     onClick: (Long) -> Unit
 ) {
+    val signedAmount = when (type) {
+        TransactionType.EXPENSES.name -> "-$amount"
+        TransactionType.INCOME.name -> "+$amount"
+        else -> amount
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -223,7 +229,7 @@ private fun ExpensesHistoryItem(
         Box(
             contentAlignment = Alignment.Center
         ) {
-            FEBody1(text = amount)
+            FEBody1(text = signedAmount)
         }
     }
 }

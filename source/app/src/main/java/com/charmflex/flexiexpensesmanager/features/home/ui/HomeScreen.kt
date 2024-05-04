@@ -65,9 +65,12 @@ internal fun HomeScreen(
                 route = HomeRoutes.SUMMARY,
             ) {
                 val viewModel = getViewModel {
-                    appComponent.dashBoardViewModel()
+                    appComponent.dashBoardViewModel().apply {
+                        initPlugins(
+                            dashboardPlugins
+                        )
+                    }
                 }
-                viewModel.initPlugins(dashboardPlugins)
 
                 LaunchedEffect(key1 = shouldRefresh) {
                     if (shouldRefresh) viewModel.refresh()
