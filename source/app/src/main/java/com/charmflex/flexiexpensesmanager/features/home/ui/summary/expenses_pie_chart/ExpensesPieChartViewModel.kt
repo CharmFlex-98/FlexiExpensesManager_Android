@@ -17,10 +17,10 @@ internal class ExpensesPieChartViewModel @Inject constructor(
     var pieViewState = mutableStateOf<List<PieChartData>>(listOf())
         private set
     init {
-        refresh()
+        load()
     }
 
-    private fun refresh() {
+    fun load() {
         viewModelScope.launch {
             val res = getCategoryPercentageUseCase()
             res?.let {

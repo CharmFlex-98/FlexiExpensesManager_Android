@@ -64,7 +64,15 @@ internal fun HomeScreen(
             composable(
                 route = HomeRoutes.SUMMARY,
             ) {
-                DashboardScreen(plugins = dashboardPlugins)
+                val viewModel = getViewModel {
+                    appComponent.dashBoardViewModel()
+                }
+                viewModel.initPlugins(dashboardPlugins)
+
+                LaunchedEffect(key1 = shouldRefresh) {
+                    if (shouldRefresh) viewModel.refresh()
+                }
+                DashboardScreen(viewModel)
             }
             composable(
                 route = HomeRoutes.DETAIL,

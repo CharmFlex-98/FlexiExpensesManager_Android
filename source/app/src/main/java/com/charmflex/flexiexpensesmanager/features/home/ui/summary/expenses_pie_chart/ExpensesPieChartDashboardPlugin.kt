@@ -14,6 +14,6 @@ internal class ExpensesPieChartDashboardPlugin @Inject constructor(
     }
 
     override fun refresh() {
-        // TODO: to refresh
+        viewModel.load()
     }
 }

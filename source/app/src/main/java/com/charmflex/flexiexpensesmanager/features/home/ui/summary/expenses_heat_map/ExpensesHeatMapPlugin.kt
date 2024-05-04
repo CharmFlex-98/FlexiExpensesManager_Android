@@ -13,6 +13,6 @@ internal class ExpensesHeatMapPlugin(
     }
 
     override fun refresh() {
-        TODO("Not yet implemented")
+        viewModel.load()
     }
 }

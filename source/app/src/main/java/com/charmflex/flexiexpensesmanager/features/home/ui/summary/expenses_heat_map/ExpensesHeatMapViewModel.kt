@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.features.home.usecases.GetExpensesPercentageUseCase
 import com.charmflex.flexiexpensesmanager.features.transactions.data.mapper.HeatMapLevelMapper
-import com.google.j2objc.annotations.ReflectionSupport
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -18,10 +17,10 @@ internal class ExpensesHeatMapViewModel @Inject constructor(
         private set
 
     init {
-        refresh()
+        load()
     }
 
-    private fun refresh() {
+    fun load() {
         viewModelScope.launch {
             val res = getExpensesPercentageUseCase()
             heatMapState.value = heatMapLevelMapper.map(res)
