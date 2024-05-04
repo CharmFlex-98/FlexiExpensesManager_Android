@@ -4,6 +4,9 @@ kotlin_kapt_version = '1.8.10'
 
 # accompanist
 accompanist_version = "0.34.0"
+
+# Room
+room_version = '2.6.1'
 # Google
 google_dagger_version = '2.51.1'
 google_gson_version = '2.10.1'
@@ -96,6 +99,12 @@ skydoves-balloon = { module = 'com.github.skydoves:balloon-compose', version.ref
 
 # accompanist
 google-accompanist = { module = 'com.google.accompanist:accompanist-navigation-animation', version.ref = 'accompanist_version'}
+
+# Room
+android-room-compiler = { module = 'androidx.room:room-compiler', version.ref = 'room_version'}
+android-room = { module = 'androidx.room:room-runtime', version.ref = 'room_version'}
+android-room-ktx = { module = 'androidx.room:room-ktx', version.ref = "room_version"}
+
 # google
 google-dagger = { module = 'com.google.dagger:dagger', version.ref = 'google_dagger_version'}
 google-daggerAP = { module = 'com.google.dagger:dagger-compiler', version.ref = 'google_dagger_version'}

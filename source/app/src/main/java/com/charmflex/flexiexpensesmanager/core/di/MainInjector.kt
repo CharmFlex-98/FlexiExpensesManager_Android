@@ -1,10 +1,9 @@
 package com.charmflex.flexiexpensesmanager.core.di
 
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
-import com.charmflex.flexiexpensesmanager.core.utils.ResourceProvider
+import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 
 internal interface MainInjector {
     fun routeNavigator(): RouteNavigator
-    fun resourcesProvider(): ResourceProvider
-
+    fun resourcesProvider(): ResourcesProvider
 }

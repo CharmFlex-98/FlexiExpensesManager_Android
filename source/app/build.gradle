@@ -21,6 +21,12 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildTypes {
@@ -118,6 +124,11 @@ dependencies {
 
     // Accompanist
     implementation(libs.google.accompanist)
+
+    // Room
+    implementation(libs.android.room)
+    kapt(libs.android.room.compiler)
+    implementation(libs.android.room.ktx)
 
     // Network
     implementation(platform(libs.square.okhttp3.bom))

@@ -50,3 +50,9 @@ suspend fun SnackbarHostState.showSnackBarImmediately(message: String) {
     showSnackbar(message = message, duration = SnackbarDuration.Short)
     delay(500)
 }
+
+internal sealed interface SnackBarState {
+    object None : SnackBarState
+    data class Error(val message: String? = null) : SnackBarState
+    data class Success(val message: String) : SnackBarState
+}

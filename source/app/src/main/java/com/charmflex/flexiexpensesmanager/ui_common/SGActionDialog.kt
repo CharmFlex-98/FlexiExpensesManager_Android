@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,17 +41,16 @@ fun SGActionDialog(
     onConfirm: () -> Unit,
 ) {
     SGDialog(title = title, subtitle = text, icon = icon, onDismissRequest = onDismissRequest) {
-
         SGButtonGroupHorizontal {
             if (secondaryButtonText != null) {
-                SGLargeSecondaryButton(
+                SGMediumSecondaryButton(
                     modifier = Modifier.weight(1f),
                     text = secondaryButtonText
                 ) {
                     onDismissRequest()
                 }
             }
-            SGLargePrimaryButton(modifier = Modifier.weight(1f), text = primaryButtonText) {
+            SGMediumPrimaryButton(modifier = Modifier.weight(1f), text = primaryButtonText) {
                 onConfirm()
             }
         }
@@ -69,6 +71,7 @@ fun SGDialog(
                 .width(grid_x47)
                 .wrapContentHeight(),
             shape = RoundedCornerShape(grid_x2),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
         ) {
             Column(
                 modifier = Modifier

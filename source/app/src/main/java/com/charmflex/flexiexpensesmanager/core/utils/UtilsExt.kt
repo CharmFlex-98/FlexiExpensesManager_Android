@@ -25,7 +25,7 @@ fun <T> unwrapResult(result: Result<T>): T {
 }
 
 const val DEFAULT_DATE_TIME_PATTERN = "dd MMMM yyyy hh:mm a"
-const val DATE_ONLY_DEFAULT_PATTERN = "dd MMMM yyyy"
+const val DATE_ONLY_DEFAULT_PATTERN = "yyyy-MM-dd"
 const val MONTH_ONLY_DEFAULT_PATTERN = "MMMM"
 const val YEAR_ONLY_DEFAULT_PATTERN = "yyyy"
 const val MONTH_YEAR_PATTERN = "MMMM/yyyy"

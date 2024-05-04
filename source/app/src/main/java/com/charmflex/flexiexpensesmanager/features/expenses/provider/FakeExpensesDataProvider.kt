@@ -1,6 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.expenses.provider
 
-import com.charmflex.flexiexpensesmanager.features.expenses.domain.model.ExpensesData
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ExpensesData
 import javax.inject.Inject
 
 internal class FakeExpensesDataProvider @Inject constructor() {

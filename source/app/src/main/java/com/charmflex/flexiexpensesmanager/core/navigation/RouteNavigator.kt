@@ -3,6 +3,7 @@ package com.charmflex.flexiexpensesmanager.core.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.navigateAndPopUpTo
 import com.charmflex.flexiexpensesmanager.core.utils.navigateTo
 import com.charmflex.flexiexpensesmanager.core.utils.popWithArgs
@@ -72,4 +73,12 @@ fun RouteNavigatorListener(
             }
         }
     }
+}
+
+internal fun RouteNavigator.popWithHomeRefresh() {
+    this.popWithArguments(
+        mapOf(
+            HomeRoutes.Args.HOME_REFRESH to true
+        )
+    )
 }
