@@ -3,6 +3,7 @@ package com.charmflex.flexiexpensesmanager.features.transactions.domain.reposito
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ExpensesData
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
+import kotlinx.coroutines.flow.Flow
 
 internal interface TransactionRepository {
     suspend fun addNewExpenses(
@@ -14,9 +15,11 @@ internal interface TransactionRepository {
     )
     suspend fun getHistory(): List<ExpensesData>
 
-    suspend fun getTransactions(
+    fun getTransactions(
         startDate: String? = null,
         endDate: String? = null,
         offset: Int = 0
-    ): List<Transaction>
+    ): Flow<List<Transaction>>
+
+    suspend fun getTransactionById(transactionId: Long): Transaction
 }

@@ -20,12 +20,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,12 +37,18 @@ import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
+import com.charmflex.flexiexpensesmanager.ui_common.SGActionDialog
+import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGMediumPrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
+import com.charmflex.flexiexpensesmanager.ui_common.SGSnackBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
+import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
+import com.charmflex.flexiexpensesmanager.ui_common.SnackBarType
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
+import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 
 @Composable
 internal fun CategoryEditorScreen(viewModel: CategoryEditorViewModel) {
@@ -54,6 +63,21 @@ internal fun CategoryEditorScreen(viewModel: CategoryEditorViewModel) {
     }
     val isEditorOpened = viewState.editorState.isOpened
     val scrollState = rememberScrollState()
+    val snackBarState by viewModel.snackBarState.collectAsState()
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
+
+    LaunchedEffect(key1 = snackBarState) {
+        when (val state = snackBarState) {
+            is SnackBarState.Success -> snackBarHostState.showSnackBarImmediately(state.message)
+            is SnackBarState.Error -> snackBarHostState.showSnackBarImmediately(
+                state.message ?: "Something went wrong"
+            )
+
+            else -> {}
+        }
+    }
 
     BackHandler {
         viewModel.back()
@@ -114,6 +138,11 @@ internal fun CategoryEditorScreen(viewModel: CategoryEditorViewModel) {
                                         modifier = Modifier.weight(1f),
                                         text = it.categoryName
                                     )
+                                    IconButton(onClick = {
+                                        viewModel.launchDeleteDialog(it.categoryId)
+                                    }) {
+                                        SGIcons.Delete()
+                                    }
                                     if (it.allowSubCategory) Icon(
                                         painter = painterResource(id = R.drawable.ic_arrow_next),
                                         contentDescription = ""
@@ -122,6 +151,17 @@ internal fun CategoryEditorScreen(viewModel: CategoryEditorViewModel) {
                             }
                         }
                     }
+                }
+
+                if (viewState.dialogState != null) SGActionDialog(
+                    title = "Warning",
+                    text = "Are you sure you want to DELETE?",
+                    onDismissRequest = viewModel::closeDeleteDialog,
+                    primaryButtonText = "Confirm",
+                    secondaryButtonText = "Cancel"
+                ) {
+                    viewModel.deleteCategory()
+                    viewModel.closeDeleteDialog()
                 }
 
                 SGLargePrimaryButton(
@@ -133,4 +173,9 @@ internal fun CategoryEditorScreen(viewModel: CategoryEditorViewModel) {
             }
         }
     }
+
+    SGSnackBar(
+        snackBarHostState = snackBarHostState,
+        snackBarType = if (snackBarState is SnackBarState.Error) SnackBarType.Error else SnackBarType.Success
+    )
 }

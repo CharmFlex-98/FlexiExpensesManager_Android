@@ -1,15 +1,11 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -21,22 +17,18 @@ import androidx.navigation.compose.rememberNavController
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.di.AppComponent
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
-import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.account.AccountHomeScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardScreen
-import com.charmflex.flexiexpensesmanager.features.home.ui.summary.chart.expenses_heat_map.ExpensesHeatMapPlugin
-import com.charmflex.flexiexpensesmanager.features.home.ui.summary.chart.expenses_pie_chart.ExpensesPieChartDashboardPlugin
-import com.charmflex.flexiexpensesmanager.features.category.category.ui.CategoryEditorScreen
+import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_heat_map.ExpensesHeatMapPlugin
+import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_chart.ExpensesPieChartDashboardPlugin
 import com.charmflex.flexiexpensesmanager.features.home.ui.setting.SettingScreen
 import com.charmflex.flexiexpensesmanager.ui_common.SGBottomNavItem
 import com.charmflex.flexiexpensesmanager.ui_common.SGBottomNavigationBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.example.compose.FlexiExpensesManagerTheme
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 internal fun HomeScreen(

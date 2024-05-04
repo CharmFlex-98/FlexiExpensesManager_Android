@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
+import com.charmflex.flexiexpensesmanager.features.account.ui.AccountEditorViewState
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -20,19 +22,19 @@ internal class CategoryEditorViewModel @Inject constructor(
 ) : ViewModel() {
     private var editorTypeCode: TransactionType = TransactionType.EXPENSES
 
+    private val _snackBarState: MutableStateFlow<SnackBarState> =
+        MutableStateFlow(SnackBarState.None)
+    val snackBarState = _snackBarState.asStateFlow()
+
     private val _viewState = MutableStateFlow(CategoryEditorViewState())
     val viewState = _viewState.asStateFlow()
 
     fun setType(type: String) {
-        val transactionType = when {
+        editorTypeCode = when {
             type == TransactionType.INCOME.name -> TransactionType.INCOME
             type == TransactionType.EXPENSES.name -> TransactionType.EXPENSES
             else -> TransactionType.EXPENSES
         }
-        editorTypeCode = transactionType
-    }
-
-    init {
         listenCategoryList()
     }
 
@@ -58,6 +60,11 @@ internal class CategoryEditorViewModel @Inject constructor(
     }
 
     fun back() {
+        if (_viewState.value.editorState.isOpened) {
+            closeEditor()
+            return
+        }
+
         val currentNode = _viewState.value.currentNode
         if (currentNode == null) routeNavigator.pop()
         else {
@@ -77,7 +84,10 @@ internal class CategoryEditorViewModel @Inject constructor(
         }
     }
 
-    private fun getNode(categoryId: Int, currentNode: TransactionCategories.Node): TransactionCategories.Node? {
+    private fun getNode(
+        categoryId: Int,
+        currentNode: TransactionCategories.Node
+    ): TransactionCategories.Node? {
         if (currentNode.categoryId == categoryId) return currentNode
         else {
             for (item in currentNode.childNodes) {
@@ -87,6 +97,40 @@ internal class CategoryEditorViewModel @Inject constructor(
 
             return null
         }
+    }
+
+    fun launchDeleteDialog(id: Int) {
+        _viewState.update {
+            it.copy(
+                dialogState = CategoryEditorViewState.DeleteDialogState(
+                    categoryId = id
+                )
+            )
+        }
+    }
+
+    fun closeDeleteDialog() {
+        _viewState.update {
+            it.copy(
+                dialogState = null
+            )
+        }
+    }
+
+    fun deleteCategory() {
+        val id = _viewState.value.dialogState?.categoryId ?: return
+        resultOf {
+            viewModelScope.launch {
+                categoryRepository.deleteCategory(id)
+            }
+        }.fold(
+            onSuccess = {
+                _snackBarState.update { SnackBarState.Success("Delete success") }
+            },
+            onFailure = {
+                _snackBarState.update { SnackBarState.Success("Something went wrong") }
+            }
+        )
     }
 
     fun onClickItem(node: TransactionCategories.Node) {
@@ -134,11 +178,12 @@ internal class CategoryEditorViewModel @Inject constructor(
         }
     }
 
-    fun closeEditor() {
+    private fun closeEditor() {
         _viewState.update {
             it.copy(
                 editorState = it.editorState.copy(
-                    isOpened = false
+                    isOpened = false,
+                    value = ""
                 )
             )
         }
@@ -167,10 +212,16 @@ internal data class CategoryEditorViewState(
     val categoryTree: TransactionCategories = TransactionCategories(items = listOf()),
     val currentNode: TransactionCategories.Node? = null,
     val isLoading: Boolean = false,
-    val editorState: EditorState = EditorState()
+    val editorState: EditorState = EditorState(),
+    val dialogState: DeleteDialogState? = null
 ) {
     data class EditorState(
         val isOpened: Boolean = false,
         val value: String = ""
     )
+
+    data class DeleteDialogState(
+        val categoryId: Int
+    )
+
 }

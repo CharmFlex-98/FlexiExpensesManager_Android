@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -112,7 +113,8 @@ fun FEBody1(
 @Composable
 fun FEBody2(
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
+    textAlign: TextAlign? = null
 ) {
     Text(
         modifier = modifier,
@@ -120,8 +122,9 @@ fun FEBody2(
         style = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
-            lineHeight = 24.sp
-        )
+            lineHeight = 24.sp,
+        ),
+        textAlign = textAlign
     )
 }
 

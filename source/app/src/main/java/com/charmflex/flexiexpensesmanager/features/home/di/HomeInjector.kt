@@ -5,8 +5,8 @@ import com.charmflex.flexiexpensesmanager.features.home.ui.account.AccountHomeVi
 import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.setting.SettingViewModel
-import com.charmflex.flexiexpensesmanager.features.home.ui.summary.chart.expenses_heat_map.ExpensesHeatMapViewModel
-import com.charmflex.flexiexpensesmanager.features.home.ui.summary.chart.expenses_pie_chart.ExpensesPieChartViewModel
+import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_heat_map.ExpensesHeatMapViewModel
+import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_chart.ExpensesPieChartViewModel
 
 internal interface HomeInjector {
     fun homeViewModel(): HomeViewModel

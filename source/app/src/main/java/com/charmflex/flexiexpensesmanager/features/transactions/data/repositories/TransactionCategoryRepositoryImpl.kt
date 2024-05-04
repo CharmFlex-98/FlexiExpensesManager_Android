@@ -35,6 +35,10 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
         return transactionCategoryDao.addCategory(entity)
     }
 
+    override suspend fun deleteCategory(categoryId: Int) {
+        transactionCategoryDao.deleteCategory(categoryId)
+    }
+
     private fun buildNode(
         level: Int,
         items: List<TransactionCategoryEntity>,

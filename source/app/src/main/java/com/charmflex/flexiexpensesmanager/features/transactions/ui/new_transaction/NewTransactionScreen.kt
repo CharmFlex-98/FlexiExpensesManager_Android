@@ -1,4 +1,4 @@
-package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_expenses
+package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

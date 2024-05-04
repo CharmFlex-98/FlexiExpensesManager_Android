@@ -1,8 +1,10 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.di
 
-import com.charmflex.flexiexpensesmanager.features.category.category.ui.CategoryEditorViewModel
-import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_expenses.NewTransactionViewModel
+import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction.NewTransactionViewModel
+import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_detail.TransactionDetailViewModel
 
 internal interface TransactionInjector {
     fun newTransactionViewModel(): NewTransactionViewModel
+
+    fun transactionDetailViewModelFactory(): TransactionDetailViewModel.Factory
 }

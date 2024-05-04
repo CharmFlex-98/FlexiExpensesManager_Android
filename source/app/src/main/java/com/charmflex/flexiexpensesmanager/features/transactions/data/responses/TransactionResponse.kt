@@ -9,8 +9,12 @@ internal data class TransactionResponse(
     val transactionName: String,
     @ColumnInfo("account_from_id")
     val accountFromId: Int?,
+    @ColumnInfo("account_from_name")
+    val accountFromName: String?,
     @ColumnInfo("account_to_id")
     val accountToId: Int?,
+    @ColumnInfo("account_to_name")
+    val accountToName: String?,
     @ColumnInfo("transaction_type_code")
     val transactionTypeCode: String,
     @ColumnInfo("amount_in_cent")
@@ -18,7 +22,7 @@ internal data class TransactionResponse(
     @ColumnInfo("transaction_date")
     val transactionDate: String,
     @ColumnInfo("category_id")
-    val categoryId: Int,
+    val categoryId: Int?,
     @ColumnInfo("category_name")
-    val categoryName: String
+    val categoryName: String?
 )

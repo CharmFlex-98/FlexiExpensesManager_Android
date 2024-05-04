@@ -2,6 +2,9 @@ package com.charmflex.flexiexpensesmanager.features.home.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.charmflex.flexiexpensesmanager.business_core.transactions.domain.Transaction
+import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.YEAR_ONLY_DEFAULT_PATTERN
@@ -10,47 +13,69 @@ import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import com.charmflex.flexiexpensesmanager.features.home.domain.mapper.TransactionHistoryMapper
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class TransactionHistoryViewModel @Inject constructor(
     private val mapper: TransactionHistoryMapper,
-    private val transactionRepository: TransactionRepository
+    private val transactionRepository: TransactionRepository,
+    private val routeNavigator: RouteNavigator
 ) : ViewModel() {
 
     private val _tabState = MutableStateFlow(TabState())
     val tabState = _tabState.asStateFlow()
 
-    private val _viewState = MutableStateFlow(ExpensesHistoryViewState())
+    private val _offset = MutableStateFlow(0)
+    val offset = _offset.asStateFlow()
+
+    private val _viewState = MutableStateFlow(TransactionHistoryViewState())
     val viewState = _viewState.asStateFlow()
 
     init {
-        refresh()
+        viewModelScope.launch {
+            offset.flatMapLatest {
+                transactionRepository.getTransactions(offset = it)
+            }.collectLatest { list ->
+                _viewState.update {
+                    it.copy(
+                        items = mapper.map(list),
+                        isLoading = false
+                    )
+                }
+            }
+        }
     }
 
     fun refresh() {
         viewModelScope.launch {
             toggleLoader(true)
-            resultOf {
-                transactionRepository.getTransactions()
-            }.fold(
-                onSuccess = {
-                    val res = mapper.map(it)
-                    _viewState.update {
-                        it.copy(
-                            items = res
-                        )
-                    }
-                    updateTabList(res)
-                    toggleLoader(false)
-                },
-                onFailure = {
+            transactionRepository.getTransactions(offset = offset.value)
+                .catch {
                     toggleLoader(false)
                 }
-            )
+                .firstOrNull()?.let { list ->
+                    _viewState.update {
+                        it.copy(
+                            items = mapper.map(list),
+                            isLoading = false
+                        )
+                    }
+                }
         }
     }
 
@@ -80,6 +105,10 @@ internal class TransactionHistoryViewModel @Inject constructor(
         }
     }
 
+    fun onNavigateTransactionDetail(transactionId: Long) {
+        routeNavigator.navigateTo(TransactionRoute.transactionDetailDestination(transactionId))
+    }
+
     fun findFirstItemIndexByTab(tab: TabState.TabItem): Int {
         return _viewState.value.items.indexOfFirst {
             val localDate = it.dateKey.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)
@@ -105,7 +134,7 @@ internal class TransactionHistoryViewModel @Inject constructor(
     }
 }
 
-internal data class ExpensesHistoryViewState(
+internal data class TransactionHistoryViewState(
     val items: List<TransactionHistoryItem> = listOf(),
     val isLoading: Boolean = false
 )
@@ -135,6 +164,7 @@ internal data class TransactionHistorySection(
     val items: List<SectionItem>
 ) : TransactionHistoryItem {
     data class SectionItem(
+        val id: Long,
         val name: String,
         val amount: String,
         val category: String,

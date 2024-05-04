@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,6 +36,7 @@ fun SGTextField(
     onClicked: (() -> Unit)? = null,
     onValueChange: (String) -> Unit
 ) {
+    val onClick by rememberUpdatedState(newValue = onClicked)
     val interactionSource = remember {
         object : MutableInteractionSource {
             override val interactions = MutableSharedFlow<Interaction>(
@@ -44,7 +46,7 @@ fun SGTextField(
 
             override suspend fun emit(interaction: Interaction) {
                 when (interaction) {
-                    is PressInteraction.Release -> if (readOnly && onClicked != null) onClicked()
+                    is PressInteraction.Release -> if (readOnly) onClick?.let { it() }
                     else -> {}
                 }
 

@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.account.data.daos
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
@@ -41,6 +42,12 @@ internal interface AccountDao {
     @Insert
     suspend fun insertAccountGroup(accountGroupEntity: AccountGroupEntity)
 
+    @Query("DELETE FROM AccountGroupEntity WHERE id = :accountGroupId")
+    suspend fun deleteAccountGroup(accountGroupId: Int)
+
     @Insert
     suspend fun insertAccount(accountEntity: AccountEntity)
+
+    @Query("DELETE FROM AccountEntity WHERE id = :accountId")
+    suspend fun deleteAccount(accountId: Int)
 }

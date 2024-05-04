@@ -1,8 +1,7 @@
-package com.charmflex.flexiexpensesmanager.features.home.ui.summary.chart.expenses_heat_map
+package com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_heat_map
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardPlugin
 
 internal class ExpensesHeatMapPlugin(

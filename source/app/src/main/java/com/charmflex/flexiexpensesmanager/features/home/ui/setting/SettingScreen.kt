@@ -17,31 +17,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
+import com.charmflex.flexiexpensesmanager.ui_common.FEHeading4
+import com.charmflex.flexiexpensesmanager.ui_common.FeColumnContainer
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 
 @Composable
 internal fun SettingScreen(viewModel: SettingViewModel) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(grid_x2)
-            .clip(RoundedCornerShape(grid_x2))
-            .background(
-                MaterialTheme.colorScheme.secondaryContainer
-            )
-    ) {
+    FeColumnContainer {
         viewModel.getSettingActionable().forEachIndexed { index, it ->
             if (index != 0) HorizontalDivider(color = Color.White, thickness = 0.5.dp)
             Box(
                 modifier = Modifier
-                    .padding(grid_x2)
+                    .padding(vertical = grid_x2)
                     .fillMaxWidth()
                     .clickable {
                         viewModel.onTap(it.action)
                     }
             ) {
-                FEBody2(text = it.title)
+                FEHeading4(text = it.title)
             }
         }
     }

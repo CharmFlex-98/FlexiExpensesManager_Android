@@ -42,10 +42,11 @@ internal class TransactionHistoryMapper @Inject constructor() : Mapper<List<Tran
                     dateKey = date,
                     items = history.map {
                         TransactionHistorySection.SectionItem(
+                            id = it.transactionId,
                             name = it.transactionName,
                             amount = it.amountInCent.toString(),
                             type = it.transactionTypeCode,
-                            category = it.categoryName,
+                            category = it.transactionCategory?.name ?: "",
                         )
                     }
                 )

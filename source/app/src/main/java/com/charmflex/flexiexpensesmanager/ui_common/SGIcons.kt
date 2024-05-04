@@ -9,6 +9,13 @@ import com.charmflex.flexiexpensesmanager.R
 object SGIcons {
 
     @Composable
+    fun Delete(
+        modifier: Modifier = Modifier
+    ) {
+        Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_delete), contentDescription = "")
+    }
+
+    @Composable
     fun Add(
         modifier: Modifier = Modifier
     ) {

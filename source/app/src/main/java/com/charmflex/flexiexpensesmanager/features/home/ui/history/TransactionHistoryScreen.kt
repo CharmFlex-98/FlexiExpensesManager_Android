@@ -1,10 +1,12 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.history
 
+import android.util.Log
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -92,7 +94,9 @@ internal fun TransactionHistoryScreen(
                 ExpensesHistoryDateHeaderView(month = item.title, date = item.subtitle)
             }
 
-            is TransactionHistorySection -> ExpensesHistorySectionView(items = item.items)
+            is TransactionHistorySection -> ExpensesHistorySectionView(items = item.items) { id ->
+                transactionHistoryViewModel.onNavigateTransactionDetail(id)
+            }
         }
     }
 
@@ -158,7 +162,8 @@ private fun ExpensesHistoryDateHeaderView(
 
 @Composable
 private fun ExpensesHistorySectionView(
-    items: List<TransactionHistorySection.SectionItem>
+    items: List<TransactionHistorySection.SectionItem>,
+    onClick: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -168,10 +173,14 @@ private fun ExpensesHistorySectionView(
     ) {
         items.forEachIndexed { index, it ->
             ExpensesHistoryItem(
+                id = it.id,
                 name = it.name,
                 amount = it.amount,
                 category = it.category,
-                type = it.type
+                type = it.type,
+                onClick = {
+                    onClick(it)
+                }
             )
             if (index != items.size - 1) HorizontalDivider(color = Color.Gray, thickness = 0.5.dp)
         }
@@ -180,14 +189,19 @@ private fun ExpensesHistorySectionView(
 
 @Composable
 private fun ExpensesHistoryItem(
+    id: Long,
     name: String,
     amount: String,
     category: String,
-    type: String
+    type: String,
+    onClick: (Long) -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable {
+                onClick(id)
+            }
             .background(
                 MaterialTheme.colorScheme.tertiaryContainer
             )

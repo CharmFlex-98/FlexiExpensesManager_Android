@@ -17,4 +17,7 @@ internal interface TransactionCategoryDao {
 
     @Insert
     suspend fun addCategory(categoryEntity: TransactionCategoryEntity)
+
+    @Query("DELETE FROM TransactionCategoryEntity WHERE id = :categoryId")
+    suspend fun deleteCategory(categoryId: Int)
 }

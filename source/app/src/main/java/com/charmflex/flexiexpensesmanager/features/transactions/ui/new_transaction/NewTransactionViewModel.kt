@@ -1,4 +1,4 @@
-package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_expenses
+package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -18,15 +18,13 @@ import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSAC
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_FROM_ACCOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_NAME
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_TO_ACCOUNT
-import com.charmflex.flexiexpensesmanager.features.transactions.usecases.GetAccountOptionsUseCase
 import com.charmflex.flexiexpensesmanager.features.transactions.usecases.SubmitTransactionUseCase
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -48,24 +46,7 @@ internal class NewTransactionViewModel @Inject constructor(
     val snackBarState = mutableStateOf<SnackBarState>(SnackBarState.None)
 
     init {
-        viewModelScope.launch {
-            currentTransactionType
-                .flatMapConcat { transactionType ->
-                    _viewState.update {
-                        it.copy(
-                            fields = contentProvider.getContent(transactionType)
-                        )
-                    }
-                    transactionCategoryRepository.getAllCategories(transactionType.name)
-                }
-                .collectLatest { transactionCategories ->
-                    _viewState.update {
-                        it.copy(
-                            transactionCategories = transactionCategories
-                        )
-                    }
-                }
-        }
+        initContent(_currentTransactionType.value)
 
         viewModelScope.launch {
             accountRepository.getAllAccounts().collectLatest { accGroup ->
@@ -82,8 +63,20 @@ internal class NewTransactionViewModel @Inject constructor(
         snackBarState.value = SnackBarState.None
     }
 
-    fun initContent(transactionType: TransactionType) {
+    fun initContent(transactionType: TransactionType = TransactionType.EXPENSES) {
         _currentTransactionType.update { transactionType }
+        viewModelScope.launch {
+            val fields = contentProvider.getContent(transactionType)
+            val categories = transactionCategoryRepository.getAllCategories(transactionType.name).firstOrNull()
+            categories?.let { cats ->
+                _viewState.update {
+                    it.copy(
+                        fields = fields,
+                        transactionCategories = cats
+                    )
+                }
+            }
+        }
     }
 
     fun onFieldValueChanged(field: FEField?, newValue: String, id: String? = null) {

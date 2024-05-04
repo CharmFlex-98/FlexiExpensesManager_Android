@@ -89,7 +89,7 @@ fun SGLargePrimaryButton(
 fun SGMediumPrimaryButton(
     modifier: Modifier = Modifier,
     text: String,
-    enabled: Boolean,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     SGPrimaryButton(
@@ -104,7 +104,7 @@ fun SGMediumPrimaryButton(
 @Composable
 fun SGMediumSecondaryButton(
     modifier: Modifier = Modifier,
-    enabled: Boolean,
+    enabled: Boolean = true,
     text: String,
     onClick: () -> Unit
 ) {

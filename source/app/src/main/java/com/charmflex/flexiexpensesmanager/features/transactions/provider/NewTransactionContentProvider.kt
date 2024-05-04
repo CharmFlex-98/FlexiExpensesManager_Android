@@ -15,7 +15,7 @@ internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
 
 
 internal class NewTransactionContentProvider @Inject constructor() {
-    suspend fun getContent(transactionType: TransactionType): List<FEField> {
+    fun getContent(transactionType: TransactionType): List<FEField> {
         val res = when (transactionType) {
             TransactionType.EXPENSES -> expensesFields()
             TransactionType.INCOME -> incomeFields()
@@ -66,11 +66,13 @@ internal class NewTransactionContentProvider @Inject constructor() {
     private fun incomeFields(): List<FEField> {
         return listOf(
             FEField(
+                id = TRANSACTION_TO_ACCOUNT,
                 labelId = R.string.new_transaction_account,
                 hintId = R.string.new_income_account_hint,
                 type = FEField.FieldType.Callback
             ),
             FEField(
+                id = TRANSACTION_CATEGORY,
                 labelId = R.string.generic_category,
                 hintId = R.string.generic_category_hint,
                 type = FEField.FieldType.Callback
@@ -81,11 +83,13 @@ internal class NewTransactionContentProvider @Inject constructor() {
     private fun transferFields(): List<FEField> {
         return listOf(
             FEField(
+                id = TRANSACTION_FROM_ACCOUNT,
                 labelId = R.string.new_transaction_from_account,
                 hintId = R.string.new_transaction_from_account_hint,
                 type = FEField.FieldType.Callback
             ),
             FEField(
+                id = TRANSACTION_TO_ACCOUNT,
                 labelId = R.string.new_transaction_to_account,
                 hintId = R.string.new_transaction_to_account_hint,
                 type = FEField.FieldType.Callback
