@@ -13,15 +13,16 @@ internal class HeatMapLevelMapper @Inject constructor() {
         }
 
         return from.mapValues {
-            (it.value/total).toFloat().toLevel()
+            (it.value.toFloat()/total).toLevel()
         }
     }
 
     private fun Float.toLevel(): Level {
         return when {
-            this <= 0 -> Level.One
-            this > 0f && this <= 0.3f -> Level.Two
-            this > 0.3f && this <= 0.7f -> Level.Three
+            this <= 0 -> Level.Zero
+            this > 0f && this <= 0.25f -> Level.One
+            this > 0.25f && this <= 0.5f -> Level.Two
+            this > 0.5f && this <= 0.75f -> Level.Three
             else -> Level.Four
         }
     }
