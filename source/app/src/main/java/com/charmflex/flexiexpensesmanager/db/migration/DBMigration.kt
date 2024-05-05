@@ -3,6 +3,8 @@ package com.charmflex.flexiexpensesmanager.db.migration
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
+// The migration here basically just change the type of categoryId from not nullable to nullable.
+// Because transfer type transaction does not support category.
 val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("BEGIN TRANSACTION;")
@@ -25,5 +27,12 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 
         // End
         db.execSQL("COMMIT;");
+    }
+}
+
+// The migration here is to add initial amount for each account created.
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE AccountEntity ADD initial_amount INTEGER NOT NULL DEFAULT 0")
     }
 }

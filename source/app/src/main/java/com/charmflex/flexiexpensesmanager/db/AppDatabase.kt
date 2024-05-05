@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_1_2
+import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_2_3
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountGroupEntity
@@ -27,7 +29,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.Tr
         TransactionTagEntity::class,
         TransactionTypeEntity::class
     ],
-    version = 2,
+    version = 3,
 )
 internal abstract class AppDatabase : RoomDatabase() {
     abstract fun getAccountDao(): AccountDao
@@ -44,7 +46,7 @@ internal abstract class AppDatabase : RoomDatabase() {
                 AppDatabase::class.java,
                 "FlexiExpensesManagerDB"
             )
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(*migrationList().toTypedArray())
                 .addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
@@ -57,6 +59,13 @@ internal abstract class AppDatabase : RoomDatabase() {
                 .build()
         }
     }
+}
+
+private fun migrationList(): List<Migration> {
+    return listOf(
+        MIGRATION_1_2,
+        MIGRATION_2_3
+    )
 }
 
 private const val INIT_ACCOUNT_GROUP_SCRIPT =
