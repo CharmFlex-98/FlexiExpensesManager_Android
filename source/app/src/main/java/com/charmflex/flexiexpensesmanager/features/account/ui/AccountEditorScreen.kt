@@ -25,12 +25,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
 import com.charmflex.flexiexpensesmanager.ui_common.SGActionDialog
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
-import com.charmflex.flexiexpensesmanager.ui_common.SGMediumPrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.SGSnackBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
@@ -38,7 +40,6 @@ import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarType
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 internal fun AccountEditorScreen(
@@ -50,12 +51,12 @@ internal fun AccountEditorScreen(
         null -> "Account Group"
         else -> "Accounts in ${selectedAccountGroup.accountGroupName}"
     }
-    val type = viewState.editorState.type
-    val editorLabel = when (type) {
-        AccountEditorViewState.Type.ACCOUNT -> "Account Name"
-        AccountEditorViewState.Type.ACCOUNT_GROUP -> "Subgroup Name"
+    val editorLabel = when (viewState.editorState) {
+        is AccountEditorViewState.AccountEditorState -> "Account Name"
+        is AccountEditorViewState.AccountGroupEditorState -> "Account Group Name"
+        else -> ""
     }
-    val isEditorOpened = viewState.editorState.isEditorOpened
+    val isEditorOpened = viewState.editorState != null
     val scrollState = rememberScrollState()
     val snackBarHostState = remember { SnackbarHostState() }
     val snackBarState by viewModel.snackBarState.collectAsState()
@@ -87,7 +88,8 @@ internal fun AccountEditorScreen(
             EditorScreen(
                 editorLabel = editorLabel,
                 viewState = viewState,
-                updateEditorValue = viewModel::updateEditorValue
+                updateAccountName = viewModel::updateAccountName,
+                updateInitialAmount = viewModel::updateInitialAmount
             ) {
                 viewModel.addNewItem()
             }
@@ -199,15 +201,30 @@ internal fun AccountEditorScreen(
 private fun ColumnScope.EditorScreen(
     editorLabel: String,
     viewState: AccountEditorViewState,
-    updateEditorValue: (String) -> Unit,
+    updateAccountName: (String) -> Unit,
+    updateInitialAmount: (String) -> Unit,
     addNewItem: () -> Unit,
 ) {
     SGTextField(
         modifier = Modifier.fillMaxWidth(),
         label = editorLabel,
-        value = viewState.editorState.value
+        value = when (val vs = viewState.editorState) {
+            is AccountEditorViewState.AccountGroupEditorState -> vs.accountGroupName
+            is AccountEditorViewState.AccountEditorState -> vs.accountName
+            null -> ""
+        }
     ) {
-        updateEditorValue(it)
+        updateAccountName(it)
+    }
+    if (viewState.editorState is AccountEditorViewState.AccountEditorState) {
+        SGTextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = stringResource(id = R.string.account_editor_initial_amount_label),
+            value = viewState.editorState.initialValue,
+            keyboardType = KeyboardType.Number
+        ) {
+            updateInitialAmount(it)
+        }
     }
     Spacer(modifier = Modifier.weight(1f))
     SGLargePrimaryButton(

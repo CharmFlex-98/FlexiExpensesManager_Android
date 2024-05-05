@@ -1,7 +1,5 @@
 package com.charmflex.flexiexpensesmanager.features.account.ui
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
@@ -9,10 +7,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
@@ -111,7 +106,7 @@ internal class AccountEditorViewModel @Inject constructor(
             _viewState.update {
                 it.copy(
                     selectedAccountGroup = null,
-                    editorState = AccountEditorViewState.EditorState(isEditorOpened = false)
+                    editorState = null
                 )
             }
         }
@@ -134,38 +129,51 @@ internal class AccountEditorViewModel @Inject constructor(
     }
 
     fun toggleEditor(open: Boolean) {
+        val shouldToggleAccountEditor = _viewState.value.selectedAccountGroup != null
         _viewState.update {
             it.copy(
-                editorState = it.editorState.copy(
-                    isEditorOpened = open,
-                    type = it.selectedAccountGroup?.let { AccountEditorViewState.Type.ACCOUNT }
-                        ?: AccountEditorViewState.Type.ACCOUNT_GROUP,
-                    value = if (!open) "" else it.editorState.value
-                )
+               editorState = if (open) {
+                   if (shouldToggleAccountEditor) AccountEditorViewState.AccountEditorState()
+                   else AccountEditorViewState.AccountGroupEditorState()
+               } else null
             )
         }
     }
 
-    fun updateEditorValue(newValue: String) {
+    fun updateAccountName(newValue: String) {
         _viewState.update {
             it.copy(
-                editorState = it.editorState.copy(
-                    value = newValue
-                )
+                editorState = when (val vs = it.editorState) {
+                    is AccountEditorViewState.AccountEditorState -> vs.copy(accountName = newValue)
+                    is AccountEditorViewState.AccountGroupEditorState -> vs.copy(accountGroupName = newValue)
+                    else -> vs
+                }
+            )
+        }
+    }
+
+    fun updateInitialAmount(newValue: String) {
+        _viewState.update {
+            it.copy(
+                editorState =  when (val vs = it.editorState) {
+                    is AccountEditorViewState.AccountEditorState -> vs.copy(initialValue = newValue)
+                    else -> vs
+                }
             )
         }
     }
 
     fun addNewItem() {
-        if (_viewState.value.isSubGroupEditor) addNewSubGroup()
+        if (_viewState.value.isAccountGroupEditor) addNewSubGroup()
         else if (_viewState.value.isAccountEditor) addNewAccount()
     }
 
     private fun addNewSubGroup() {
-        val name = _viewState.value.editorState.value
+        val accountGroupEditor = _viewState.value.editorState as? AccountEditorViewState.AccountGroupEditorState ?: return
+
         viewModelScope.launch {
             resultOf {
-                accountRepository.addAccountGroup(name)
+                accountRepository.addAccountGroup(accountGroupEditor.accountGroupName)
             }.fold(
                 onSuccess = {
                     _snackBarState.emit(SnackBarState.Success("Add success!"))
@@ -181,23 +189,23 @@ internal class AccountEditorViewModel @Inject constructor(
     }
 
     private fun addNewAccount() {
-        val name = _viewState.value.editorState.value
-        val selectedAccountGroupId = _viewState.value.selectedAccountGroup?.accountGroupId
-        selectedAccountGroupId?.let {
-            viewModelScope.launch {
-                resultOf {
-                    accountRepository.addAccount(name, it)
-                }.fold(
-                    onSuccess = {
-                        _snackBarState.emit(SnackBarState.Success("Add success!"))
-                        toggleEditor(false)
-                    },
-                    onFailure = {
-                        _snackBarState.emit(SnackBarState.Success("Add failed!"))
-                        toggleEditor(false)
-                    }
-                )
-            }
+        val accountEditorState = _viewState.value.editorState as? AccountEditorViewState.AccountEditorState
+            ?: return
+        val selectedAccountGroupId = _viewState.value.selectedAccountGroup?.accountGroupId ?: return
+
+        viewModelScope.launch {
+            resultOf {
+                accountRepository.addAccount(accountEditorState.accountName, selectedAccountGroupId, accountEditorState.initialValue.toInt())
+            }.fold(
+                onSuccess = {
+                    _snackBarState.emit(SnackBarState.Success("Add success!"))
+                    toggleEditor(false)
+                },
+                onFailure = {
+                    _snackBarState.emit(SnackBarState.Success("Add failed!"))
+                    toggleEditor(false)
+                }
+            )
         }
     }
 }
@@ -206,17 +214,20 @@ internal data class AccountEditorViewState(
     val isLoading: Boolean = false,
     val accountGroups: List<AccountGroup> = listOf(),
     val selectedAccountGroup: AccountGroup? = null,
-    val editorState: EditorState = EditorState(),
+    val editorState: EditorState? = null,
     val deleteDialogState: DeleteDialogState? = null
 ) {
-    val isSubGroupEditor get() = editorState.type == Type.ACCOUNT_GROUP && editorState.isEditorOpened
-    val isAccountEditor get() = editorState.type == Type.ACCOUNT && editorState.isEditorOpened
+    val isAccountGroupEditor get() = editorState is AccountGroupEditorState
+    val isAccountEditor get() = editorState is AccountEditorState
 
-    data class EditorState(
-        val isEditorOpened: Boolean = false,
-        val value: String = "",
-        val type: Type = Type.ACCOUNT_GROUP
-    )
+    sealed interface EditorState
+    data class AccountGroupEditorState(
+        val accountGroupName: String = ""
+    ) : EditorState
+    data class AccountEditorState(
+        val accountName: String = "",
+        val initialValue: String = "0",
+    ) : EditorState
 
     enum class Type {
         ACCOUNT_GROUP, ACCOUNT

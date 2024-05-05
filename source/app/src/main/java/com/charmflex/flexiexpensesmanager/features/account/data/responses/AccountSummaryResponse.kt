@@ -14,5 +14,7 @@ internal data class AccountSummaryResponse(
     @ColumnInfo("out_amount")
     val outAmount: Int,
     @ColumnInfo("in_amount")
-    val inAmount: Int
+    val inAmount: Int,
+    @ColumnInfo("account_initial_amount")
+    val initialAmount: Int
 )

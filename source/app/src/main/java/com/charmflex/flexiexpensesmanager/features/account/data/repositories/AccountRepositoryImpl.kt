@@ -61,7 +61,7 @@ internal class AccountRepositoryImpl @Inject constructor(
                                     AccountGroupSummary.AccountSummary(
                                         accountId = acc.accountId!!,
                                         accountName = acc.accountName!!,
-                                        balance = acc.inAmount - acc.outAmount
+                                        balance = acc.inAmount - acc.outAmount + acc.initialAmount
                                     )
                                 }
                         )
@@ -80,11 +80,12 @@ internal class AccountRepositoryImpl @Inject constructor(
         accountDao.deleteAccountGroup(accountGroupId = accountGroupId)
     }
 
-    override suspend fun addAccount(accountName: String, accountGroupId: Int) {
+    override suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Int) {
         val entity = AccountEntity(
             name = accountName,
             accountGroupId = accountGroupId,
             additionalInfo = null,
+            initialAmount = initialAmount
         )
 
         accountDao.insertAccount(entity)
