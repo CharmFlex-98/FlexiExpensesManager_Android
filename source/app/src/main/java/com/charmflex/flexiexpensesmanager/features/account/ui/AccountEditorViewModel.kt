@@ -100,16 +100,19 @@ internal class AccountEditorViewModel @Inject constructor(
     }
 
     fun back() {
-        if (_viewState.value.selectedAccountGroup == null) {
-            routeNavigator.pop()
-        } else {
+        if (_viewState.value.isAccountEditor || _viewState.value.isAccountGroupEditor) {
             _viewState.update {
                 it.copy(
-                    selectedAccountGroup = null,
                     editorState = null
                 )
             }
-        }
+        } else if (_viewState.value.selectedAccountGroup != null) {
+            _viewState.update {
+                it.copy(
+                    selectedAccountGroup = null
+                )
+            }
+        } else routeNavigator.pop()
     }
 
     private fun toggleLoader(isLoading: Boolean) {
