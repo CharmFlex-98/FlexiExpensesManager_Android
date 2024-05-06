@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import javax.inject.Inject
 
@@ -21,6 +22,9 @@ internal class SettingViewModel @Inject constructor(
             }
             SettingAction.ACCOUNT -> {
                 routeNavigator.navigateTo(AccountRoutes.editorDestination())
+            }
+            SettingAction.CURRENCY -> {
+                routeNavigator.navigateTo(CurrencyRoutes.SETTING)
             }
         }
 
@@ -40,6 +44,10 @@ internal class SettingViewModel @Inject constructor(
             SettingActionable(
                 title = "Set account",
                 action = SettingAction.ACCOUNT
+            ),
+            SettingActionable(
+                "Set currency",
+                action = SettingAction.CURRENCY
             )
         )
     }
@@ -50,5 +58,5 @@ internal data class SettingActionable(
     val action: SettingAction
 )
 internal enum class SettingAction {
-    EXPENSES_CAT, INCOME_CAT, ACCOUNT
+    EXPENSES_CAT, INCOME_CAT, ACCOUNT, CURRENCY
 }
