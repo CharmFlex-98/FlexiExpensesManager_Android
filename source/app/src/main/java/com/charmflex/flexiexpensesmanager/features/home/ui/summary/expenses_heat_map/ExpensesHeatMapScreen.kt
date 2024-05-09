@@ -65,7 +65,7 @@ internal fun ColumnScope.ExpensesHeatMapScreen(
         val endDate = remember { LocalDate.now() }
         // GitHub only shows contributions for the past 12 months
         val startDate = remember { endDate.minusMonths(12) }
-        var selection by remember { mutableStateOf<Pair<LocalDate, Level>?>(null) }
+        var selection by remember { mutableStateOf<Pair<LocalDate, Color>?>(null) }
         Column(
             modifier = Modifier
                 .fillMaxSize(),
@@ -87,9 +87,9 @@ internal fun ColumnScope.ExpensesHeatMapScreen(
                         startDate = startDate,
                         endDate = endDate,
                         week = week,
-                        level = data.value[day.date] ?: Level.Zero,
+                        color = data.value[day.date] ?: Level.Zero.color,
                     ) { clicked ->
-                        selection = Pair(clicked, data.value[clicked] ?: Level.Zero)
+                        selection = Pair(clicked, data.value[clicked] ?: Level.Zero.color)
                     }
                 },
                 weekHeader = { WeekHeader(it) },
@@ -171,7 +171,7 @@ private fun Day(
     startDate: LocalDate,
     endDate: LocalDate,
     week: HeatMapWeek,
-    level: Level,
+    color: Color,
     onClick: (LocalDate) -> Unit,
 ) {
     // We only want to draw boxes on the days that are in the
@@ -182,7 +182,7 @@ private fun Day(
     // so the items are laid out properly as the column is top to bottom.
     val weekDates = week.days.map { it.date }
     if (day.date in startDate..endDate) {
-        LevelBox(level.color) { onClick(day.date) }
+        LevelBox(color) { onClick(day.date) }
     } else if (weekDates.contains(startDate)) {
         LevelBox(Color.Transparent)
     }
