@@ -9,6 +9,7 @@ import com.charmflex.flexiexpensesmanager.features.account.di.modules.AccountMod
 import com.charmflex.flexiexpensesmanager.features.auth.di.AuthInjector
 import com.charmflex.flexiexpensesmanager.features.category.category.di.CategoryInjector
 import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyInjector
+import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyModule
 import com.charmflex.flexiexpensesmanager.features.transactions.di.TransactionInjector
 import com.charmflex.flexiexpensesmanager.features.transactions.di.modules.TransactionModule
 import com.charmflex.flexiexpensesmanager.features.home.di.HomeInjector
@@ -23,7 +24,8 @@ import javax.inject.Singleton
         TransactionModule::class,
         AccountModule::class,
         DBModule::class,
-        MainModule::class
+        MainModule::class,
+        CurrencyModule::class
     ]
 )
 @Singleton

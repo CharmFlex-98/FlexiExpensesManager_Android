@@ -1,0 +1,26 @@
+package com.charmflex.flexiexpensesmanager.features.currency.usecases
+
+import com.charmflex.flexiexpensesmanager.core.storage.FileStorage
+import com.charmflex.flexiexpensesmanager.features.currency.data.local.CurrencyKeyStorage
+import com.charmflex.flexiexpensesmanager.features.currency.domain.models.CurrencyRate
+import kotlinx.serialization.json.Json
+import javax.inject.Inject
+
+internal class GetCurrencyUseCase @Inject constructor(
+    private val keyStorage: CurrencyKeyStorage,
+    private val fileStorage: FileStorage
+) {
+
+    suspend operator fun invoke(currency: String): Float? {
+        val userSet = keyStorage.getUserSetCurrencyRate(currency = currency)
+        return if (userSet.isValid()) userSet
+        else {
+            val cache = fileStorage.read(CURRENCY_FILE_NAME)
+            return Json.decodeFromString<CurrencyRate>(cache).rates.firstOrNull { it.currency == currency }?.rate
+        }
+    }
+}
+
+private fun Float.isValid(): Boolean {
+    return this >= 0
+}

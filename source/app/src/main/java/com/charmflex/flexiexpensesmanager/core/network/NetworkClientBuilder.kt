@@ -1,13 +1,12 @@
 package com.charmflex.flexiexpensesmanager.core.network
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 interface NetworkClientBuilder {
 
@@ -43,7 +42,7 @@ internal class DefaultNetworkClientBuilder(
                 .Builder()
                 .baseUrl(baseUrl)
                 .client(okHttpClient())
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(MoshiConverterFactory.create())
                 .build()
         }
     }
