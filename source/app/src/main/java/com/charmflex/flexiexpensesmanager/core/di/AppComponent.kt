@@ -1,6 +1,5 @@
 package com.charmflex.flexiexpensesmanager.core.di
 
-import android.accounts.Account
 import android.content.Context
 import com.charmflex.flexiexpensesmanager.db.di.modules.DBModule
 import com.charmflex.flexiexpensesmanager.dependency_injection.modules.navigation.NavigationModule
@@ -25,7 +24,7 @@ import javax.inject.Singleton
         AccountModule::class,
         DBModule::class,
         MainModule::class,
-        CurrencyModule::class
+        CurrencyModule::class,
     ]
 )
 @Singleton

@@ -4,8 +4,9 @@ import dagger.Module
 
 @Module(
     includes = [
-        NetworkModule::class,
-        CurrencyRepositoryModule::class
+        CurrencyNetworkModule::class,
+        CurrencyRepositoryModule::class,
+        CurrencyToolsModule::class
     ]
 )
 internal interface CurrencyModule {

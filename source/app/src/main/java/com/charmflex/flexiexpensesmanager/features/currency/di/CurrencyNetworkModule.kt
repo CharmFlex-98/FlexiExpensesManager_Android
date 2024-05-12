@@ -7,7 +7,7 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-internal interface NetworkModule {
+internal interface CurrencyNetworkModule {
     companion object {
 
         @Provides

@@ -16,7 +16,7 @@ internal class GetCurrencyUseCase @Inject constructor(
         return if (userSet.isValid()) userSet
         else {
             val cache = fileStorage.read(CURRENCY_FILE_NAME)
-            return Json.decodeFromString<CurrencyRate>(cache).rates.firstOrNull { it.currency == currency }?.rate
+            return Json.decodeFromString<CurrencyRate>(cache).rates[currency]
         }
     }
 }

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.google.firebase.crashlytics.plugin)
+    alias(libs.plugins.kotlin.serialization.plugin)
 }
 
 android {
@@ -104,6 +105,8 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
     implementation(libs.kotlin.serialization)
+    implementation(libs.squareup.moshi)
+    kapt(libs.moshi.kotlin.codegen)
 
     // Compose Navigation
     implementation(libs.compose.navigation)

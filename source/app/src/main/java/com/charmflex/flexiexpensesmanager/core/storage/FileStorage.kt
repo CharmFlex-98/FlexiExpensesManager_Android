@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.core.storage
 
+import android.content.Context
 import com.charmflex.flexiexpensesmanager.core.di.Dispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -19,11 +20,13 @@ internal interface FileStorage {
 }
 
 internal class FileStorageImpl @Inject constructor(
+    private val appContext: Context,
     @Dispatcher(dispatcherType = Dispatcher.Type.IO)
     private val dispatcher: CoroutineDispatcher
 ) : FileStorage {
     override suspend fun write(fileName: String, byteArray: ByteArray) = withContext(dispatcher) {
-        val file = File(FOLDER_NAME, fileName)
+        val filesDir = appContext.filesDir
+        val file = File(filesDir, fileName).apply { createNewFile() }
         FileOutputStream(file).use {
             it.write(byteArray)
         }

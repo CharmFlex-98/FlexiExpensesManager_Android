@@ -15,11 +15,8 @@ internal class CurrencyRepositoryImpl @Inject constructor(
             timestamp = res.timestamp,
             date = res.date,
             base = res.base,
-            rates = res.rates.map {
-                CurrencyRate.Currency(
-                    it.key,
-                    it.value.toFloat()
-                )
+            rates = res.rates.mapValues {
+                it.value.toFloat()
             }
         )
     }

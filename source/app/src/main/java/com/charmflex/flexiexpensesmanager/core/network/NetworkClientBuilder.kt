@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.core.network
 
 import android.content.Context
 import android.util.Log
+import com.squareup.moshi.Moshi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,7 +26,7 @@ internal class DefaultNetworkClientBuilder(
 ) : NetworkClientBuilder {
 
     private val baseUrl: String
-        get() = ""
+        get() = "https://charmflex.com"
 
     override fun addInterceptor(interceptor: Interceptor): NetworkClientBuilder {
         interceptors.add(interceptor)
