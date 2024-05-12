@@ -33,7 +33,8 @@ internal class FileStorageImpl @Inject constructor(
     }
 
     override suspend fun read(fileName: String): String = withContext(dispatcher) {
-        val file = File(FOLDER_NAME, fileName)
+        val filesDir = appContext.filesDir
+        val file = File(filesDir, fileName)
         FileInputStream(file).bufferedReader().use {
             it.readText()
         }
