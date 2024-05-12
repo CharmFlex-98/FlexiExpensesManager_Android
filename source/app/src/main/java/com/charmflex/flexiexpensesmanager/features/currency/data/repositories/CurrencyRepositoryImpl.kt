@@ -12,9 +12,6 @@ internal class CurrencyRepositoryImpl @Inject constructor(
     override suspend fun getAvailableCurrency(): CurrencyRate {
         val res = currencyApi.getCurrencyRate()
         return CurrencyRate(
-            success = res.success,
-            terms = res.terms,
-            privacy = res.privacy,
             timestamp = res.timestamp,
             date = res.date,
             base = res.base,
