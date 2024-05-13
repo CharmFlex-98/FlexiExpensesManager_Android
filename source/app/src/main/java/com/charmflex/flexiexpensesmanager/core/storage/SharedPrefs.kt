@@ -22,6 +22,9 @@ internal interface SharedPrefs {
 
     fun getBoolean(key: String, default: Boolean): Boolean
 
+    fun setStringSet(key: String, value: Set<String>)
+    fun getStringSet(key: String): Set<String>
+
     fun clearAllData()
 }
 
@@ -74,6 +77,15 @@ internal class SharedPrefsImpl @Inject constructor(
     override fun getBoolean(key: String, default: Boolean): Boolean {
         return sharedPrefs.getBoolean(key, default)
     }
+
+    override fun setStringSet(key: String, value: Set<String>) {
+        return sharedPrefs.edit().putStringSet(key, value).apply()
+    }
+
+    override fun getStringSet(key: String): Set<String> {
+        return sharedPrefs.getStringSet(key, setOf()) ?: setOf()
+    }
+
 
     override fun clearAllData() {
         sharedPrefs.edit().clear().apply()

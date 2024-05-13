@@ -2,7 +2,6 @@ package com.charmflex.flexiexpensesmanager.features.currency.destinations
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
 import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
@@ -16,7 +15,7 @@ internal class CurrencyDestination : DestinationBuilder {
     }
 
     private fun NavGraphBuilder.currencySetting() {
-        composable(CurrencyRoutes.SETTING) {
+        composable(CurrencyRoutes.SECONDARY_SETTING) {
             val viewModel = getViewModel {
                 appComponent.currencySettingViewModel()
             }

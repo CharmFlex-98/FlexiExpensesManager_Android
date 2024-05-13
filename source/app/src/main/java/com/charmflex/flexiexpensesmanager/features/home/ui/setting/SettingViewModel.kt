@@ -23,8 +23,8 @@ internal class SettingViewModel @Inject constructor(
             SettingAction.ACCOUNT -> {
                 routeNavigator.navigateTo(AccountRoutes.editorDestination())
             }
-            SettingAction.CURRENCY -> {
-                routeNavigator.navigateTo(CurrencyRoutes.SETTING)
+            SettingAction.SECONDARY_CURRENCY -> {
+                routeNavigator.navigateTo(CurrencyRoutes.SECONDARY_SETTING)
             }
         }
 
@@ -46,8 +46,8 @@ internal class SettingViewModel @Inject constructor(
                 action = SettingAction.ACCOUNT
             ),
             SettingActionable(
-                "Set currency",
-                action = SettingAction.CURRENCY
+                "Set secondary currency",
+                action = SettingAction.SECONDARY_CURRENCY
             )
         )
     }
@@ -58,5 +58,5 @@ internal data class SettingActionable(
     val action: SettingAction
 )
 internal enum class SettingAction {
-    EXPENSES_CAT, INCOME_CAT, ACCOUNT, CURRENCY
+    EXPENSES_CAT, INCOME_CAT, ACCOUNT, SECONDARY_CURRENCY
 }

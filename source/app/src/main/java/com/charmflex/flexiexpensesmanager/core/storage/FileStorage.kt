@@ -35,10 +35,11 @@ internal class FileStorageImpl @Inject constructor(
     override suspend fun read(fileName: String): String = withContext(dispatcher) {
         val filesDir = appContext.filesDir
         val file = File(filesDir, fileName)
-        FileInputStream(file).bufferedReader().use {
-            it.readText()
+        if (!file.exists()) ""
+        else {
+            FileInputStream(file).bufferedReader().use {
+                it.readText()
+            }
         }
     }
 }
-
-internal const val FOLDER_NAME = "FE_FOLDER"

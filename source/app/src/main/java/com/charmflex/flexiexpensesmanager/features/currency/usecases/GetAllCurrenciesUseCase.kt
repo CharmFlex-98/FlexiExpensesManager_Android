@@ -10,9 +10,7 @@ internal class GetAllCurrenciesUseCase@Inject constructor(
 
     suspend operator fun invoke(): Result<List<String>> {
         return resultOf {
-            currencyRepository.getAvailableCurrency().rates.map {
-                it.key
-            }
+            currencyRepository.getCacheCurrencyRates()?.rates?.map { it.key } ?: listOf()
         }
     }
 }
