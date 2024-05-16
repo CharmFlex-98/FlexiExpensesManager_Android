@@ -12,7 +12,7 @@ internal interface AccountRepository {
 
     suspend fun deleteAccountGroup(accountGroupId: Int)
 
-    suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Int)
+    suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Long)
 
     suspend fun deleteAccount(accountId: Int)
 

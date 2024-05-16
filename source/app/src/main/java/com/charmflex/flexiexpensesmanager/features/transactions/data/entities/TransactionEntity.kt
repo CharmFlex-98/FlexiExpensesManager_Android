@@ -46,7 +46,7 @@ internal data class TransactionEntity(
     @ColumnInfo("transaction_type_code", index = true)
     val transactionTypeCode: String,
     @ColumnInfo("amount_in_cent")
-    val amountInCent: Int,
+    val amountInCent: Long,
     @ColumnInfo("transaction_date")
     val transactionDate: String,
     @ColumnInfo("category_id", index = true)

@@ -80,7 +80,7 @@ internal class AccountRepositoryImpl @Inject constructor(
         accountDao.deleteAccountGroup(accountGroupId = accountGroupId)
     }
 
-    override suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Int) {
+    override suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Long) {
         val entity = AccountEntity(
             name = accountName,
             accountGroupId = accountGroupId,

@@ -1,11 +1,13 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
@@ -35,7 +37,8 @@ internal class NewTransactionViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val routeNavigator: RouteNavigator,
     private val transactionCategoryRepository: TransactionCategoryRepository,
-    private val submitTransactionUseCase: SubmitTransactionUseCase
+    private val submitTransactionUseCase: SubmitTransactionUseCase,
+    private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(NewTransactionViewState())
     val viewState = _viewState.asStateFlow()
@@ -57,6 +60,10 @@ internal class NewTransactionViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun currencyVisualTransformationBuilder(): CurrencyVisualTransformation.Builder {
+        return currencyVisualTransformationBuilder
     }
 
     fun resetErrorState() {
@@ -138,7 +145,7 @@ internal class NewTransactionViewModel @Inject constructor(
         submitTransactionUseCase.submitExpenses(
             name = name,
             fromAccountId = fromAccount.toInt(),
-            amount = amount.toInt(),
+            amount = amount.toLong(),
             categoryId = categoryId,
             transactionDate = date
         ).fold(
@@ -168,7 +175,7 @@ internal class NewTransactionViewModel @Inject constructor(
         submitTransactionUseCase.submitIncome(
             name = name,
             toAccountId = toAccountId.toInt(),
-            amount = amount.toInt(),
+            amount = amount.toLong(),
             categoryId = categoryId,
             transactionDate = date
         ).fold(
@@ -199,7 +206,7 @@ internal class NewTransactionViewModel @Inject constructor(
             name = name,
             fromAccountId = fromAccountId.toInt(),
             toAccountId = toAccountId.toInt(),
-            amount = amount.toInt(),
+            amount = amount.toLong(),
             transactionDate = date
         ).fold(
             onSuccess = {
@@ -290,7 +297,8 @@ internal data class NewTransactionViewState(
     val success: Boolean = false,
     val transactionCategories: TransactionCategories? = null,
     val accountGroups: List<AccountGroup> = listOf(),
-    val bottomSheetState: BottomSheetState? = null
+    val bottomSheetState: BottomSheetState? = null,
+    val currencyCode: String = "MYR"
 ) {
     val allowProceed: Boolean
         get() = fields.firstOrNull { it.value.value.isEmpty() } == null && errors == null

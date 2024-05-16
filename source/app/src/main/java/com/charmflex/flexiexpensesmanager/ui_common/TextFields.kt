@@ -18,6 +18,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -33,6 +34,7 @@ fun SGTextField(
     enable: Boolean = true,
     singleLine: Boolean = true,
     maxLength: Int? = null,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
     onClicked: (() -> Unit)? = null,
     onValueChange: (String) -> Unit
 ) {
@@ -80,7 +82,8 @@ fun SGTextField(
         enabled = enable,
         isError = errorText != null,
         interactionSource = interactionSource,
-        singleLine = singleLine
+        singleLine = singleLine,
+        visualTransformation = visualTransformation
     )
 }
 

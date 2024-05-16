@@ -10,7 +10,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
     suspend fun submitExpenses(
         name: String,
         fromAccountId: Int,
-        amount: Int,
+        amount: Long,
         categoryId: Int,
         transactionDate: String,
     ): Result<Unit> {
@@ -28,7 +28,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
     suspend fun submitIncome(
         name: String,
         toAccountId: Int,
-        amount: Int,
+        amount: Long,
         categoryId: Int,
         transactionDate: String,
     ): Result<Unit> {
@@ -47,7 +47,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
         name: String,
         fromAccountId: Int,
         toAccountId: Int,
-        amount: Int,
+        amount: Long,
         transactionDate: String,
     ): Result<Unit> {
         return resultOf {

@@ -198,7 +198,7 @@ internal class AccountEditorViewModel @Inject constructor(
 
         viewModelScope.launch {
             resultOf {
-                accountRepository.addAccount(accountEditorState.accountName, selectedAccountGroupId, accountEditorState.initialValue.toInt())
+                accountRepository.addAccount(accountEditorState.accountName, selectedAccountGroupId, accountEditorState.initialValue.toLong())
             }.fold(
                 onSuccess = {
                     _snackBarState.emit(SnackBarState.Success("Add success!"))
