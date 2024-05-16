@@ -1,12 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.currency.usecases
 
-import com.charmflex.flexiexpensesmanager.core.storage.FileStorage
-import com.charmflex.flexiexpensesmanager.core.utils.resultOf
-import com.charmflex.flexiexpensesmanager.features.currency.data.local.CurrencyKeyStorage
-import com.charmflex.flexiexpensesmanager.features.currency.domain.models.CurrencyRate
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.CurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 // Use case to get currency rate

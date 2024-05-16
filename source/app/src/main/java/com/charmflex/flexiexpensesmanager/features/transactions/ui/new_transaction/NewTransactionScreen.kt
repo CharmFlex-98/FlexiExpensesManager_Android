@@ -46,6 +46,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDateTime
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
+import com.charmflex.flexiexpensesmanager.features.currency.domain.models.CurrencyRate
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
@@ -263,6 +264,13 @@ internal fun NewExpensesScreen(
                         viewModel.toggleBottomSheet(null)
                     }
                 }
+                
+                is NewTransactionViewState.CurrencySelectionBottomSheetState -> {
+                    CurrencySelectionBottomSheet(currencyList = viewState.currencyList) {
+                        viewModel.onCurrencySelected(it)
+                        viewModel.toggleBottomSheet(null)
+                    }
+                }
 
                 else -> {}
             }
@@ -397,6 +405,38 @@ private fun AccountSelectionBottomSheet(
                     ) {
                         FEBody2(text = it.accountGroupName)
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CurrencySelectionBottomSheet(
+    currencyList: List<String>,
+    onSelectCurrency: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        FEHeading2(text = "Select Currency")
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(state = rememberScrollState())
+        ) {
+            currencyList.forEach { 
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onSelectCurrency(it)
+                        }
+                        .padding(grid_x2), 
+                    contentAlignment = Alignment.Center
+                ) {
+                    FEBody2(text = it)
                 }
             }
         }

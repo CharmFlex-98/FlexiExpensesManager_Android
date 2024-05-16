@@ -11,6 +11,7 @@ internal const val TRANSACTION_DATE = "TRANSACTION_DATE"
 internal const val TRANSACTION_FROM_ACCOUNT = "TRANSACTION_FROM_ACC"
 internal const val TRANSACTION_TO_ACCOUNT = "TRANSACTION_TO_ACC"
 internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
+internal const val TRANSACTION_CURRENCY = "TRANSACTION_CURRENCY"
 
 
 
@@ -28,6 +29,12 @@ internal class NewTransactionContentProvider @Inject constructor() {
                     labelId = R.string.new_expenses_name,
                     hintId = R.string.new_expenses_name_hint,
                     type = FEField.FieldType.Text
+                ),
+                FEField(
+                    id = TRANSACTION_CURRENCY,
+                    labelId = R.string.new_transaction_currency_label,
+                    hintId = R.string.new_transaction_currency_hint,
+                    type = FEField.FieldType.Callback
                 ),
                 FEField(
                     id = TRANSACTION_AMOUNT,
@@ -97,19 +104,3 @@ internal class NewTransactionContentProvider @Inject constructor() {
         )
     }
 }
-
-internal data class CategorySelectionItem(
-    override val id: String,
-    override val title: String,
-    override val subtitle: String? = null,
-    override val icon: Int? = null
-
-) : FEField.FieldType.SingleItemSelection.Option
-
-internal data class AccountSelectionItem(
-    override val id: String = "",
-    override val title: String,
-    override val subtitle: String? = "",
-    override val icon: Int? = null
-
-) : FEField.FieldType.SingleItemSelection.Option

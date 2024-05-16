@@ -10,12 +10,15 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
+import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.CurrencyRepository
+import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.NewTransactionContentProvider
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_AMOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_CATEGORY
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_CURRENCY
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_DATE
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_FROM_ACCOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_NAME
@@ -38,7 +41,9 @@ internal class NewTransactionViewModel @Inject constructor(
     private val routeNavigator: RouteNavigator,
     private val transactionCategoryRepository: TransactionCategoryRepository,
     private val submitTransactionUseCase: SubmitTransactionUseCase,
-    private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder
+    private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
+    private val userCurrencyRepository: UserCurrencyRepository,
+    private val currencyRepository: CurrencyRepository
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(NewTransactionViewState())
     val viewState = _viewState.asStateFlow()
@@ -79,7 +84,8 @@ internal class NewTransactionViewModel @Inject constructor(
                 _viewState.update {
                     it.copy(
                         fields = fields,
-                        transactionCategories = cats
+                        transactionCategories = cats,
+                        currencyList = currencyRepository.getCacheCurrencyRates()?.rates?.map { it.key } ?: listOf()
                     )
                 }
             }
@@ -254,6 +260,7 @@ internal class NewTransactionViewModel @Inject constructor(
 
     fun onCallbackFieldTap(field: FEField) {
         when (field.id) {
+            TRANSACTION_CURRENCY -> toggleBottomSheet(NewTransactionViewState.CurrencySelectionBottomSheetState(field))
             TRANSACTION_DATE -> onToggleCalendar(field)
             TRANSACTION_CATEGORY -> toggleBottomSheet(NewTransactionViewState.CategorySelectionBottomSheetState(field))
             TRANSACTION_FROM_ACCOUNT, TRANSACTION_TO_ACCOUNT -> toggleBottomSheet(NewTransactionViewState.AccountSelectionBottomSheetState(field))
@@ -287,6 +294,15 @@ internal class NewTransactionViewModel @Inject constructor(
     fun onSelectAccount(account: AccountGroup.Account) {
         onFieldValueChanged(_viewState.value.bottomSheetState?.feField, account.accountName, account.accountId.toString())
     }
+
+    fun onCurrencySelected(currencyCode: String) {
+        onFieldValueChanged(_viewState.value.bottomSheetState?.feField, currencyCode)
+        _viewState.update {
+            it.copy(
+                currencyCode = currencyCode
+            )
+        }
+    }
 }
 
 internal data class NewTransactionViewState(
@@ -298,7 +314,8 @@ internal data class NewTransactionViewState(
     val transactionCategories: TransactionCategories? = null,
     val accountGroups: List<AccountGroup> = listOf(),
     val bottomSheetState: BottomSheetState? = null,
-    val currencyCode: String = "MYR"
+    val currencyCode: String = "MYR",
+    val currencyList: List<String> = listOf()
 ) {
     val allowProceed: Boolean
         get() = fields.firstOrNull { it.value.value.isEmpty() } == null && errors == null
@@ -323,6 +340,10 @@ internal data class NewTransactionViewState(
     ) : BottomSheetState
 
     data class AccountSelectionBottomSheetState(
+        override val feField: FEField
+    ) : BottomSheetState
+
+    data class CurrencySelectionBottomSheetState(
         override val feField: FEField
     ) : BottomSheetState
 }
