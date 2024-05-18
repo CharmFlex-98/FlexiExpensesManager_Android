@@ -9,6 +9,7 @@ import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.popWithHomeRefresh
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
@@ -24,7 +25,8 @@ internal class TransactionDetailViewModel(
     private val transactionId: Long,
     private val routeNavigator: RouteNavigator,
     private val transactionRepository: TransactionRepository,
-    private val resourcesProvider: ResourcesProvider
+    private val resourcesProvider: ResourcesProvider,
+    private val currencyFormatter: CurrencyFormatter
 ) : ViewModel() {
 
     var snackBarState: MutableState<SnackBarState> = mutableStateOf(SnackBarState.None)
@@ -39,14 +41,16 @@ internal class TransactionDetailViewModel(
     class Factory @Inject constructor(
         private val routeNavigator: RouteNavigator,
         private val transactionRepository: TransactionRepository,
-        private val resourcesProvider: ResourcesProvider
+        private val resourcesProvider: ResourcesProvider,
+        private val currencyFormatter: CurrencyFormatter
     ) {
         fun create(transactionId: Long): TransactionDetailViewModel {
             return TransactionDetailViewModel(
                 transactionId = transactionId,
                 routeNavigator = routeNavigator,
                 transactionRepository = transactionRepository,
-                resourcesProvider = resourcesProvider
+                resourcesProvider = resourcesProvider,
+                currencyFormatter = currencyFormatter
             )
         }
     }
@@ -60,7 +64,16 @@ internal class TransactionDetailViewModel(
                 onSuccess = { transaction ->
                     _viewState.update {
                         it.copy(
-                            detail = transaction
+                            detail = TransactionDetailViewState.Detail(
+                                transactionId = transaction.transactionId,
+                                transactionName = transaction.transactionName,
+                                transactionAccountFrom = transaction.transactionAccountFrom,
+                                transactionAccountTo = transaction.transactionAccountTo,
+                                transactionTypeCode = transaction.transactionTypeCode,
+                                formattedAmount = currencyFormatter.format(transaction.amountInCent, transaction.currency),
+                                transactionDate = transaction.transactionDate,
+                                transactionCategory = transaction.transactionCategory
+                            )
                         )
                     }
                     toggleLoader(false)
@@ -127,10 +140,21 @@ internal class TransactionDetailViewModel(
 }
 
 internal data class TransactionDetailViewState(
-    val detail: Transaction? = null,
+    val detail: Detail? = null,
     val isLoading: Boolean = false,
     val dialogState: DialogState? = null
 ) {
+    data class Detail(
+        val transactionId: Long,
+        val transactionName: String,
+        val transactionAccountFrom: Transaction.TransactionAccount?,
+        val transactionAccountTo: Transaction.TransactionAccount?,
+        val transactionTypeCode: String,
+        val formattedAmount: String,
+        val transactionDate: String,
+        val transactionCategory: Transaction.TransactionCategory?,
+    )
+
     sealed interface DialogState
     object DeleteDialogState : DialogState
     data class SuccessDialog(

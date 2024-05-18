@@ -12,11 +12,11 @@ internal class GetCategoryPercentageUseCase @Inject constructor(
     private val categoryRepository: TransactionCategoryRepository,
     private val transactionRepository: TransactionRepository
 ) {
-    suspend operator fun invoke(): Map<String, Int>? {
+    suspend operator fun invoke(): Map<String, Long>? {
         return transactionRepository.getTransactions().map { list ->
             categoryRepository.getAllCategoriesIncludeDeleted(TransactionType.EXPENSES.name)
                 .firstOrNull()?.let {
-                    val resMap = mutableMapOf<String, Int>()
+                    val resMap = mutableMapOf<String, Long>()
                     val rootCategories = it.items
                     val categoryIdsMap = mutableMapOf<String, List<Int>>()
                     rootCategories.forEach { root ->

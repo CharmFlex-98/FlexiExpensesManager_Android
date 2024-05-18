@@ -28,7 +28,9 @@ internal interface TransactionDao {
             "t.amount_in_cent," +
             "t.transaction_date," +
             "t.category_id," +
-            "tc.name as category_name FROM TransactionEntity t" +
+            "tc.name as category_name, " +
+            "t.currency, " +
+            "t.rate FROM TransactionEntity t" +
             " LEFT JOIN TransactionCategoryEntity tc ON t.category_id = tc.id" +
             " LEFT JOIN AccountEntity afrom ON t.account_from_id = afrom.id" +
             " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id" +
@@ -54,31 +56,15 @@ internal interface TransactionDao {
                 "t.amount_in_cent," +
                 "t.transaction_date," +
                 "t.category_id," +
-                "tc.name as category_name FROM TransactionEntity t" +
+                "tc.name as category_name, " +
+                "t.currency," +
+                "t.rate FROM TransactionEntity t" +
                 " LEFT JOIN TransactionCategoryEntity tc ON t.category_id = tc.id" +
                 " LEFT JOIN AccountEntity afrom ON t.account_from_id = afrom.id" +
                 " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id" +
                 " WHERE t.id = :id"
     )
     suspend fun getTransactionById(id: Long): TransactionResponse
-
-    @Query(
-        "SELECT t.id as transaction_id," +
-                "t.transaction_name," +
-                "t.account_from_id as account_from_id," +
-                "afrom.name as account_from_name," +
-                "t.account_to_id as account_to_id," +
-                "ato.name as account_to_name," +
-                "t.transaction_type_code," +
-                "t.amount_in_cent," +
-                "t.transaction_date," +
-                "t.category_id," +
-                "tc.name as category_name FROM TransactionEntity t" +
-                " LEFT JOIN TransactionCategoryEntity tc ON t.category_id = tc.id" +
-                " LEFT JOIN AccountEntity afrom ON t.account_from_id = afrom.id" +
-                " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id"
-    )
-    suspend fun getTransactionByI(): TransactionResponse
 
     @Query("DELETE FROM TransactionEntity WHERE id = :transactionId")
     suspend fun deleteTransactionById(transactionId: Long)

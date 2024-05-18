@@ -47,7 +47,7 @@ internal fun TransactionDetailScreen(
         if (detail != null) {
             FeColumnContainer {
                 TransactionDetailItem(title = "Name", text = detail.transactionName)
-                TransactionDetailItem(title = "Amount", text = detail.amountInCent.toString())
+                TransactionDetailItem(title = "Amount", text = detail.formattedAmount)
                 TransactionDetailItem(title = "Type", text = detail.transactionTypeCode)
             }
         }

@@ -25,18 +25,25 @@ internal interface AccountDao {
     fun getAllAccounts(): Flow<List<AccountResponse>>
 
     @Query(
-        "SELECT ag.id AS account_group_id," +
+        "SELECT " +
+                "account_group_id, " +
+                "account_id, " +
+                "account_group_name, " +
+                "account_name, " +
+                "out_amount, " +
+                "COALESCE(SUM(t2.amount_in_cent), 0) AS in_amount, " +
+                "account_initial_amount FROM " +
+                "(SELECT ag.id AS account_group_id," +
                 " a.id AS account_id," +
                 " ag.name as account_group_name," +
                 " a.name as account_name," +
                 " COALESCE(SUM(t.amount_in_cent), 0) AS out_amount," +
-                " COALESCE(SUM(t2.amount_in_cent), 0) AS in_amount," +
                 " a.initial_amount as account_initial_amount" +
                 " FROM AccountGroupEntity ag" +
                 " LEFT JOIN AccountEntity a ON ag.id = a.account_group_id" +
                 " LEFT JOIN TransactionEntity t ON t.account_from_id = a.id" +
-                " LEFT JOIN TransactionEntity t2 ON t2.account_to_id = a.id" +
-                " GROUP BY a.id"
+                " GROUP BY a.id) LEFT JOIN TransactionEntity t2 ON t2.account_to_id = account_id " +
+                "GROUP BY account_id"
     )
     fun getAccountsSummary(): Flow<List<AccountSummaryResponse>>
 

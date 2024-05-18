@@ -13,6 +13,8 @@ internal class TransactionMapper @Inject constructor() : Mapper<TransactionRespo
             transactionDate = from.transactionDate,
             transactionTypeCode = from.transactionTypeCode,
             amountInCent = from.amountInCent,
+            currency = from.currency,
+            rate = from.rate,
             transactionCategory = getCategory(from.categoryId, from.categoryName),
             transactionAccountFrom = getTransactionAccount(from.accountFromId, from.accountFromName),
             transactionAccountTo = getTransactionAccount(from.accountToId, from.accountToName),
