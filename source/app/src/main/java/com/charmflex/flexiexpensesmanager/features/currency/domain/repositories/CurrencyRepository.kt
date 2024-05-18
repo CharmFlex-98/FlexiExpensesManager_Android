@@ -1,14 +1,14 @@
 package com.charmflex.flexiexpensesmanager.features.currency.domain.repositories
 
-import com.charmflex.flexiexpensesmanager.features.currency.domain.models.CurrencyRate
+import com.charmflex.flexiexpensesmanager.features.currency.domain.models.CurrencyData
 import java.time.LocalDateTime
 
 internal interface CurrencyRepository {
 
-    suspend fun fetchLatestCurrencyRates(): CurrencyRate
+    suspend fun fetchLatestCurrencyRates(): CurrencyData
 
-    suspend fun getCacheCurrencyRates(): CurrencyRate?
+    suspend fun getCacheCurrencyRates(): CurrencyData?
 
-    fun setLastCurrencyRateUpdateTimestamp(localDateTime: LocalDateTime)
-    fun getLastCurrencyRateUpdateTimestamp(): LocalDateTime?
+    suspend fun setLastCurrencyRateUpdateTimestamp(localDateTime: LocalDateTime)
+    suspend fun getLastCurrencyRateUpdateTimestamp(): LocalDateTime?
 }

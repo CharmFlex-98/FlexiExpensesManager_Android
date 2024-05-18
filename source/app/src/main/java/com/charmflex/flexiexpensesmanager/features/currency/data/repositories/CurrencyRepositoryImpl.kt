@@ -3,7 +3,7 @@ package com.charmflex.flexiexpensesmanager.features.currency.data.repositories
 import com.charmflex.flexiexpensesmanager.core.storage.FileStorage
 import com.charmflex.flexiexpensesmanager.features.currency.data.local.CurrencyKeyStorage
 import com.charmflex.flexiexpensesmanager.features.currency.data.remote.CurrencyApi
-import com.charmflex.flexiexpensesmanager.features.currency.domain.models.CurrencyRate
+import com.charmflex.flexiexpensesmanager.features.currency.domain.models.CurrencyData
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.CurrencyRepository
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -16,13 +16,13 @@ internal class CurrencyRepositoryImpl @Inject constructor(
     private val currencyKeyStorage: CurrencyKeyStorage
 ) : CurrencyRepository {
 
-    override suspend fun fetchLatestCurrencyRates(): CurrencyRate {
+    override suspend fun fetchLatestCurrencyRates(): CurrencyData {
         val res = currencyApi.getCurrencyRate()
-        val item = CurrencyRate(
+        val item = CurrencyData(
             timestamp = res.timestamp,
             date = res.date,
             base = res.base,
-            rates = res.rates.mapValues {
+            currencyRates = res.rates.mapValues {
                 it.value.toFloat()
             }
         )
@@ -30,26 +30,26 @@ internal class CurrencyRepositoryImpl @Inject constructor(
         return item
     }
 
-    private suspend fun setLatestCurrencyRates(currencyRate: CurrencyRate) {
-        val json = Json.encodeToString(currencyRate)
+    private suspend fun setLatestCurrencyRates(currencyData: CurrencyData) {
+        val json = Json.encodeToString(currencyData)
         fileStorage.write(CURRENCY_FILE_NAME, json.toByteArray())
         currencyKeyStorage.setLastCurrencyRateUpdateTimestamp(LocalDateTime.now())
     }
 
-    override suspend fun getCacheCurrencyRates(): CurrencyRate? {
+    override suspend fun getCacheCurrencyRates(): CurrencyData? {
         return try {
             val res = fileStorage.read(CURRENCY_FILE_NAME)
-            Json.decodeFromString<CurrencyRate>(res)
+            Json.decodeFromString<CurrencyData>(res)
         } catch (e: Exception) {
             null
         }
     }
 
-    override fun setLastCurrencyRateUpdateTimestamp(localDateTime: LocalDateTime) {
+    override suspend fun setLastCurrencyRateUpdateTimestamp(localDateTime: LocalDateTime) {
         currencyKeyStorage.setLastCurrencyRateUpdateTimestamp(localDateTime)
     }
 
-    override fun getLastCurrencyRateUpdateTimestamp(): LocalDateTime? {
+    override suspend fun getLastCurrencyRateUpdateTimestamp(): LocalDateTime? {
         return currencyKeyStorage.getLastCurrencyRateUpdateTimestamp()
     }
 }

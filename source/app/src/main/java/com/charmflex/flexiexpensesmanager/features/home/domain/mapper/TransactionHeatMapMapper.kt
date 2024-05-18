@@ -27,6 +27,9 @@ internal class TransactionHeatMapMapper(
         val res = mutableMapOf<LocalDate, Color>()
         val dailyTransactions = from.sortedBy { it.amountInCent }
         val size = from.size
+
+        if (size == 0) return mapOf()
+
         val median = if (size % 2 == 0) {
             val left = dailyTransactions[size/2 - 1]
             val right = dailyTransactions[size/2]

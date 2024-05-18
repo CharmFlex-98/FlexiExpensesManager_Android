@@ -24,7 +24,7 @@ internal class SettingViewModel @Inject constructor(
                 routeNavigator.navigateTo(AccountRoutes.editorDestination())
             }
             SettingAction.SECONDARY_CURRENCY -> {
-                routeNavigator.navigateTo(CurrencyRoutes.SECONDARY_SETTING)
+                routeNavigator.navigateTo(CurrencyRoutes.USER_CURRENCY)
             }
         }
 

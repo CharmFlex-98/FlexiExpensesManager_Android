@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading2
 import com.charmflex.flexiexpensesmanager.ui_common.FeColumnContainer
 import com.charmflex.flexiexpensesmanager.ui_common.SGAutoCompleteTextField
+import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGModalBottomSheet
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
@@ -61,6 +62,14 @@ internal fun CurrencySettingScreen(
                 value = viewState.currencyRate
             ) {
 
+            }
+        }
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            SGLargePrimaryButton(text = "Add") {
+                viewModel.addSecondaryCurrency()
             }
         }
     }

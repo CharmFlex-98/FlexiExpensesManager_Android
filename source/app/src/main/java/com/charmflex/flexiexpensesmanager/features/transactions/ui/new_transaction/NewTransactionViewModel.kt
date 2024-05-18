@@ -85,7 +85,7 @@ internal class NewTransactionViewModel @Inject constructor(
                     it.copy(
                         fields = fields,
                         transactionCategories = cats,
-                        currencyList = currencyRepository.getCacheCurrencyRates()?.rates?.map { it.key } ?: listOf()
+                        currencyList = userCurrencyRepository.getSecondaryCurrency().toList()
                     )
                 }
             }

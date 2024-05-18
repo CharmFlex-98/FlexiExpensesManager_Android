@@ -16,7 +16,7 @@ internal class GetCurrencyRateUseCase @Inject constructor(
         val userSet = userCurrencyRepository.getUserSetCurrencyRate(currency = currency)
         return if (userSet.isValid()) userSet
         else {
-            currencyRepository.getCacheCurrencyRates()?.rates?.get(currency)
+            currencyRepository.getCacheCurrencyRates()?.currencyRates?.get(currency)
         }
     }
 }

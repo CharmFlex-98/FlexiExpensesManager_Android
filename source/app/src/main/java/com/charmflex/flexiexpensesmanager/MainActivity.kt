@@ -3,8 +3,6 @@ package com.charmflex.flexiexpensesmanager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Surface
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
@@ -14,8 +12,7 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.AuthRoutes
 import com.charmflex.flexiexpensesmanager.features.account.destinations.AccountDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.auth.destination.AuthDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.category.category.destinations.CategoryDestinationBuilder
-import com.charmflex.flexiexpensesmanager.features.currency.destinations.CurrencyDestination
-import com.charmflex.flexiexpensesmanager.features.currency.ui.CurrencySettingViewState
+import com.charmflex.flexiexpensesmanager.features.currency.destinations.CurrencyDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.transactions.destination.TransactionDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.home.destination.HomeDestinationBuilder
 import com.example.compose.FlexiExpensesManagerTheme
@@ -51,6 +48,6 @@ private fun createDestinations(): List<DestinationBuilder> {
         TransactionDestinationBuilder(),
         CategoryDestinationBuilder(),
         AccountDestinationBuilder(),
-        CurrencyDestination()
+        CurrencyDestinationBuilder()
     )
 }

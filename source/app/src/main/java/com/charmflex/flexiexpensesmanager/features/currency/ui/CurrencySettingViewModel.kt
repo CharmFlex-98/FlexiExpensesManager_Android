@@ -2,7 +2,10 @@ package com.charmflex.flexiexpensesmanager.features.currency.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetAllCurrenciesUseCase
+import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.CurrencyRepository
+import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetAllCurrencyNamesUseCase
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +15,10 @@ import javax.inject.Inject
 
 internal class CurrencySettingViewModel @Inject constructor(
     private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
-    private val getAllCurrenciesUseCase: GetAllCurrenciesUseCase
+    private val getAllCurrencyNamesUseCase: GetAllCurrencyNamesUseCase,
+    private val userCurrencyRepository: UserCurrencyRepository,
+    private val currencyRepository: CurrencyRepository,
+    private val routeNavigator: RouteNavigator
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(CurrencySettingViewState())
     val viewState = _viewState.asStateFlow()
@@ -23,7 +29,7 @@ internal class CurrencySettingViewModel @Inject constructor(
 
     private fun fetchCurrencyOptions() {
         viewModelScope.launch {
-            getAllCurrenciesUseCase().fold(
+            getAllCurrencyNamesUseCase().fold(
                 onSuccess = { res ->
                     _viewState.update {
                         it.copy(
@@ -78,9 +84,34 @@ internal class CurrencySettingViewModel @Inject constructor(
             }
         }
     }
+
+    fun addSecondaryCurrency() {
+        val currency = _viewState.value.secondaryCurrency
+        val rate = _viewState.value.currencyRate.toFloatOrNull()
+        if (currency.isEmpty() || rate == null) return
+
+        viewModelScope.launch {
+            toggleLoader(true)
+            userCurrencyRepository.setUserSetCurrencyRate(
+                currency = currency,
+                rate = rate
+            )
+            userCurrencyRepository.addSecondaryCurrency(currency)
+            routeNavigator.pop()
+        }
+    }
+
+    private fun toggleLoader(isLoading: Boolean) {
+        _viewState.update {
+            it.copy(
+                isLoading = isLoading
+            )
+        }
+    }
 }
 
 internal data class CurrencySettingViewState(
+    val isLoading: Boolean = false,
     val mainCurrency: String = "",
     val secondaryCurrency: String = "",
     val currencyOptions: List<String> = listOf(),
