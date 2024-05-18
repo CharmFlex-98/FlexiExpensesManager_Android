@@ -50,9 +50,9 @@ internal data class TransactionEntity(
     @ColumnInfo("transaction_date")
     val transactionDate: String,
     @ColumnInfo("category_id", index = true)
-    val categoryId: Int?
+    val categoryId: Int?,
+    @ColumnInfo("currency")
+    val currency: String,
+    @ColumnInfo("rate")
+    val rate: Float
 )
-
-fun main() {
-
-}

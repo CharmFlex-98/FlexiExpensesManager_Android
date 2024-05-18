@@ -9,18 +9,4 @@ internal data class CurrencyData(
     val date: String,
     val base: String,
     val currencyRates: Map<String, Float>
-) {
-    data class CurrencyRate(
-        val name: String,
-        val value: Float
-    )
-
-    fun toList(): List<CurrencyRate> {
-        return currencyRates.toList().map {
-            CurrencyRate(
-                it.first,
-                it.second
-            )
-        }
-    }
-}
+)

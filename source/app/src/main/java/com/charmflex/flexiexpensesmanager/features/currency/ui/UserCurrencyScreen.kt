@@ -57,7 +57,7 @@ internal fun UserCurrencyScreen(
                         .padding(grid_x1)
                 ) {
                     Text(modifier = Modifier.weight(1f), text = it.name, textAlign = TextAlign.Start)
-                    Text(text = it.value.toString(), textAlign = TextAlign.End)
+                    Text(text = it.rate.toString(), textAlign = TextAlign.End)
                 }
             }
 

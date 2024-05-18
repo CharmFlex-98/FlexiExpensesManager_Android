@@ -12,15 +12,49 @@ internal class GetCurrencyRateUseCase @Inject constructor(
     private val currencyRepository: CurrencyRepository,
 ) {
 
-    suspend operator fun invoke(currency: String): Float? {
-        val userSet = userCurrencyRepository.getUserSetCurrencyRate(currency = currency)
-        return if (userSet.isValid()) userSet
-        else {
-            currencyRepository.getCacheCurrencyRates()?.currencyRates?.get(currency)
+    suspend operator fun invoke(currency: String, customFirst: Boolean = true): CurrencyRate? {
+        val fromCurrency = userCurrencyRepository.getPrimaryCurrency()
+        return if (customFirst) {
+            userCurrencyRepository.getUserSetCurrencyRate(currency = currency)?.let {
+                CurrencyRate(
+                    name = currency,
+                    from = fromCurrency,
+                    rate = it,
+                    isCustom = true
+                )
+            } ?: getLatestCurrencyRate(currency, fromCurrency)
+        } else {
+            getLatestCurrencyRate(currency, fromCurrency)
         }
+    }
+
+    private suspend fun getLatestCurrencyRate(currency: String, fromCurrency: String): CurrencyRate? {
+        val toCurrencyRate =
+            currencyRepository.getCacheCurrencyRates()?.currencyRates?.get(currency)
+        val fromCurrencyRate =
+            currencyRepository.getCacheCurrencyRates()?.currencyRates?.get(fromCurrency)
+
+        if (toCurrencyRate == null || fromCurrencyRate == null) {
+            return CurrencyRate(
+                name = currency,
+                from = fromCurrency,
+                rate = 1f,
+                isCustom = true
+            )
+        }
+
+        return CurrencyRate(
+            name = currency,
+            from = fromCurrency,
+            rate = toCurrencyRate / fromCurrencyRate,
+            isCustom = false
+        )
     }
 }
 
-private fun Float.isValid(): Boolean {
-    return this >= 0
-}
+internal data class CurrencyRate(
+    val name: String,
+    val from: String,
+    val rate: Float,
+    val isCustom: Boolean
+)

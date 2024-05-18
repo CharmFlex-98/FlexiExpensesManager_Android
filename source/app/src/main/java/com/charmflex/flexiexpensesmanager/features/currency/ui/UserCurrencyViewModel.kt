@@ -4,9 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
-import com.charmflex.flexiexpensesmanager.features.currency.domain.models.CurrencyData
-import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
-import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,11 +47,11 @@ internal class UserCurrencyViewModel @Inject constructor(
     }
 
     fun onAddButtonTap() {
-        routeNavigator.navigateTo(CurrencyRoutes.SECONDARY_SETTING)
+        routeNavigator.navigateTo(CurrencyRoutes.currencySettingDestination(CurrencyRoutes.Args.CURRENCY_TYPE_SECONDARY))
     }
 }
 
 internal data class UserCurrencyViewState(
-    val currencyList: List<CurrencyData.CurrencyRate> = listOf(),
+    val currencyList: List<CurrencyRate> = listOf(),
     val isLoading: Boolean = false
 )

@@ -8,9 +8,13 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_1_2
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_2_3
+import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_3_4
+import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_4_5
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountGroupEntity
+import com.charmflex.flexiexpensesmanager.features.currency.data.daos.CurrencyDao
+import com.charmflex.flexiexpensesmanager.features.currency.data.models.UserCurrencyRateEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionCategoryDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TagEntity
@@ -27,15 +31,16 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.Tr
         TransactionCategoryEntity::class,
         TransactionEntity::class,
         TransactionTagEntity::class,
-        TransactionTypeEntity::class
+        TransactionTypeEntity::class,
+        UserCurrencyRateEntity::class
     ],
-    version = 3,
+    version = 5,
 )
 internal abstract class AppDatabase : RoomDatabase() {
     abstract fun getAccountDao(): AccountDao
     abstract fun getTransactionDao(): TransactionDao
-
     abstract fun getTransactionCategoryDao(): TransactionCategoryDao
+    abstract fun getCurrencyDao(): CurrencyDao
 
     class Builder(
         private val appContext: Context
@@ -64,7 +69,9 @@ internal abstract class AppDatabase : RoomDatabase() {
 private fun migrationList(): List<Migration> {
     return listOf(
         MIGRATION_1_2,
-        MIGRATION_2_3
+        MIGRATION_2_3,
+        MIGRATION_3_4,
+        MIGRATION_4_5
     )
 }
 

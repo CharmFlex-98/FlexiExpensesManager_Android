@@ -35,6 +35,7 @@ fun SGTextField(
     singleLine: Boolean = true,
     maxLength: Int? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
+    trailingIcon: @Composable (() -> Unit)? = null,
     onClicked: (() -> Unit)? = null,
     onValueChange: (String) -> Unit
 ) {
@@ -83,6 +84,7 @@ fun SGTextField(
         isError = errorText != null,
         interactionSource = interactionSource,
         singleLine = singleLine,
+        trailingIcon = trailingIcon,
         visualTransformation = visualTransformation
     )
 }

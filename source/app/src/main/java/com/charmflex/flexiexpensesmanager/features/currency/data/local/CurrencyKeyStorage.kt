@@ -5,18 +5,20 @@ import com.charmflex.flexiexpensesmanager.core.utils.DEFAULT_DATE_TIME_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDateTime
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import java.time.LocalDateTime
-import java.util.Currency
 import javax.inject.Inject
 
 private const val USER_SET_CURRENCY_RATE_KEY = "user_set_currency_rate"
 private const val LAST_CURRENCY_UPDATE_TIMESTAMP_KEY = "last_currency_update_timestamp"
-
+private const val PRIMARY_CURRENCY_KEY = "primary_currency_key"
+internal const val SECONDARY_CURRENCY_KEY = "secondary_currency_key"
 internal interface CurrencyKeyStorage {
 
     suspend fun setUserSetCurrencyRate(currency: String, rate: Float)
     suspend fun getUserSetCurrencyRate(currency: String): Float
     suspend fun setLastCurrencyRateUpdateTimestamp(localDateTime: LocalDateTime)
     suspend fun getLastCurrencyRateUpdateTimestamp(): LocalDateTime?
+    suspend fun setPrimaryCurrency(currency: String)
+    suspend fun getPrimaryCurrency(): String
     suspend fun addSecondaryCurrency(currency: String)
     suspend fun removeSecondaryCurrency(currency: String)
     suspend fun getSecondaryCurrency(): Set<String>
@@ -46,6 +48,14 @@ internal class CurrencyKeyStorageImpl @Inject constructor(
         else res.toLocalDateTime(DEFAULT_DATE_TIME_PATTERN)
     }
 
+    override suspend fun setPrimaryCurrency(currency: String) {
+        sharedPrefs.setString(PRIMARY_CURRENCY_KEY, currency)
+    }
+
+    override suspend fun getPrimaryCurrency(): String {
+        return sharedPrefs.getString(PRIMARY_CURRENCY_KEY, "")
+    }
+
     override suspend fun addSecondaryCurrency(currency: String) {
         val res = getSecondaryCurrency().toMutableSet().apply { add(currency) }
         sharedPrefs.setStringSet(SECONDARY_CURRENCY_KEY, res)
@@ -61,5 +71,3 @@ internal class CurrencyKeyStorageImpl @Inject constructor(
         return sharedPrefs.getStringSet(SECONDARY_CURRENCY_KEY)
     }
 }
-
-internal const val SECONDARY_CURRENCY_KEY = "secondary_currency_key"

@@ -13,6 +13,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
         amount: Long,
         categoryId: Int,
         transactionDate: String,
+        currency: String,
+        rate: Float
     ): Result<Unit> {
         return resultOf {
             transactionRepository.addNewExpenses(
@@ -20,7 +22,9 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 fromAccountId,
                 amount,
                 categoryId,
-                transactionDate
+                transactionDate,
+                currency,
+                rate
             )
         }
     }
@@ -31,6 +35,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
         amount: Long,
         categoryId: Int,
         transactionDate: String,
+        currency: String,
+        rate: Float
     ): Result<Unit> {
         return resultOf {
             transactionRepository.addNewIncome(
@@ -39,6 +45,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 amount,
                 categoryId,
                 transactionDate,
+                currency,
+                rate
             )
         }
     }
@@ -49,6 +57,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
         toAccountId: Int,
         amount: Long,
         transactionDate: String,
+        currency: String,
+        rate: Float
     ): Result<Unit> {
         return resultOf {
             transactionRepository.addNewTransfer(
@@ -57,6 +67,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 toAccountId,
                 amount,
                 transactionDate,
+                currency,
+                rate
             )
         }
     }

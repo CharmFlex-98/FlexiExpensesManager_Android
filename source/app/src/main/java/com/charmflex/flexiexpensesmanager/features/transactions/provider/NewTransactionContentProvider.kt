@@ -7,12 +7,12 @@ import javax.inject.Inject
 
 internal const val TRANSACTION_NAME = "TRANSACTION_NAME"
 internal const val TRANSACTION_AMOUNT = "TRANSACTION_AMOUNT"
+internal const val TRANSACTION_RATE = "TRANSACTION_RATE"
 internal const val TRANSACTION_DATE = "TRANSACTION_DATE"
 internal const val TRANSACTION_FROM_ACCOUNT = "TRANSACTION_FROM_ACC"
 internal const val TRANSACTION_TO_ACCOUNT = "TRANSACTION_TO_ACC"
 internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
 internal const val TRANSACTION_CURRENCY = "TRANSACTION_CURRENCY"
-
 
 
 internal class NewTransactionContentProvider @Inject constructor() {
@@ -37,10 +37,16 @@ internal class NewTransactionContentProvider @Inject constructor() {
                     type = FEField.FieldType.Callback
                 ),
                 FEField(
+                    id = TRANSACTION_RATE,
+                    labelId = R.string.new_transaction_currency_rate_label,
+                    hintId = R.string.new_transaction_currency_rate_hint,
+                    type = FEField.FieldType.Number
+                ),
+                FEField(
                     id = TRANSACTION_AMOUNT,
                     labelId = R.string.new_expenses_amount,
                     hintId = R.string.new_expenses_name_amount_hint,
-                    type = FEField.FieldType.Number
+                    type = FEField.FieldType.Currency
                 ),
                 FEField(
                     id = TRANSACTION_DATE,

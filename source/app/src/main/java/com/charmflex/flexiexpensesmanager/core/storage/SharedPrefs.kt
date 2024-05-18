@@ -113,5 +113,4 @@ internal class SharedPrefsImpl @Inject constructor(
             sharedPrefs.edit().clear().apply()
         }
     }
-
 }

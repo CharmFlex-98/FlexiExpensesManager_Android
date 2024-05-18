@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.data.repositories
 
+import androidx.compose.runtime.currentRecomposeScope
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.expenses.provider.FakeExpensesDataProvider
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
@@ -24,6 +25,8 @@ internal class TransactionRepositoryImpl @Inject constructor(
         amount: Long,
         categoryId: Int,
         transactionDate: String,
+        currency: String,
+        rate: Float
     ) {
         val transaction = TransactionEntity(
             transactionName = name,
@@ -32,7 +35,9 @@ internal class TransactionRepositoryImpl @Inject constructor(
             categoryId = categoryId,
             transactionDate = transactionDate,
             transactionTypeCode = "EXPENSES",
-            accountToId = null
+            accountToId = null,
+            currency = currency,
+            rate = rate
         )
         transactionDao.insertTransaction(transaction = transaction)
     }
@@ -42,7 +47,9 @@ internal class TransactionRepositoryImpl @Inject constructor(
         toAccountId: Int,
         amount: Long,
         categoryId: Int,
-        transactionDate: String
+        transactionDate: String,
+        currency: String,
+        rate: Float
     ) {
         val transaction = TransactionEntity(
             transactionName = name,
@@ -51,7 +58,9 @@ internal class TransactionRepositoryImpl @Inject constructor(
             transactionDate = transactionDate,
             transactionTypeCode = "INCOME",
             accountToId = toAccountId,
-            accountFromId = null
+            accountFromId = null,
+            currency = currency,
+            rate = rate
         )
         transactionDao.insertTransaction(transaction = transaction)
     }
@@ -61,7 +70,9 @@ internal class TransactionRepositoryImpl @Inject constructor(
         fromAccountId: Int,
         toAccountId: Int,
         amount: Long,
-        transactionDate: String
+        transactionDate: String,
+        currency: String,
+        rate: Float
     ) {
         val transaction = TransactionEntity(
             transactionName = name,
@@ -70,7 +81,9 @@ internal class TransactionRepositoryImpl @Inject constructor(
             transactionTypeCode = "TRANSFER",
             accountToId = toAccountId,
             accountFromId = fromAccountId,
-            categoryId = null
+            categoryId = null,
+            currency = currency,
+            rate = rate
         )
         transactionDao.insertTransaction(transaction)
     }

@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.currency.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,20 +8,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material.IconButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading2
+import com.charmflex.flexiexpensesmanager.ui_common.FEMetaData1
 import com.charmflex.flexiexpensesmanager.ui_common.FeColumnContainer
-import com.charmflex.flexiexpensesmanager.ui_common.SGAutoCompleteTextField
+import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
-import com.charmflex.flexiexpensesmanager.ui_common.SGModalBottomSheet
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
 import com.charmflex.flexiexpensesmanager.ui_common.SearchBottomSheet
@@ -35,6 +38,7 @@ internal fun CurrencySettingScreen(
     val viewState by viewModel.viewState.collectAsState()
     val bs = viewState.bottomSheetState
     val sheetState = rememberModalBottomSheetState()
+
 
     SGScaffold(
         modifier = Modifier
@@ -52,24 +56,33 @@ internal fun CurrencySettingScreen(
                 modifier = Modifier.fillMaxWidth(),
                 label = "Set secondary currency",
                 readOnly = true,
-                value = viewState.secondaryCurrency,
+                value = viewState.currencyName,
                 onClicked = viewModel::onLaunchCurrencySelectionBottomSheet,
                 onValueChange = {}
             )
-            SGTextField(
-                modifier = Modifier.fillMaxWidth(),
-                label = "Currency rate",
-                value = viewState.currencyRate
-            ) {
-
+            if (viewModel.isMainCurrencyType().not()) {
+                SGTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    label = "Currency rate",
+                    value = viewState.currencyRate,
+                    trailingIcon = {
+                        if (viewState.currencyRate.isEmpty().not()) {
+                            CurrencyTrailingIcon(isCustom = viewState.isCustom) {
+                                viewModel.toggleCustomCurrency()
+                            }
+                        }
+                    }
+                ) {
+                    viewModel.onCurrencyRateChanged(it)
+                }
             }
         }
         Box(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.BottomCenter
         ) {
-            SGLargePrimaryButton(text = "Add") {
-                viewModel.addSecondaryCurrency()
+            SGLargePrimaryButton(modifier = Modifier.fillMaxWidth(), text = "Add") {
+                viewModel.addCurrency()
             }
         }
     }
@@ -84,8 +97,23 @@ internal fun CurrencySettingScreen(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { viewModel.onSecondaryCurrencySelected(item) }) {
+                .clickable { viewModel.onCurrencySelected(item) }) {
             Text(text = item)
+        }
+    }
+}
+
+@Composable
+private fun CurrencyTrailingIcon(
+    isCustom: Boolean,
+    onToggle: () -> Unit
+) {
+    IconButton(modifier = Modifier.padding(grid_x1), onClick = onToggle) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            FEMetaData1(text = if (isCustom) "Custom" else "Latest")
+            if (!isCustom) SGIcons.Tick(modifier = Modifier.background(color = Color.Green))
         }
     }
 }

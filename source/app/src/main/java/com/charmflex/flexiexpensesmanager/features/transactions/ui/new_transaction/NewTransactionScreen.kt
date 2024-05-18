@@ -45,6 +45,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDateTime
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
@@ -120,7 +121,9 @@ internal fun NewExpensesScreen(
                 .padding(grid_x2)
         ) {
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -182,7 +185,7 @@ internal fun NewExpensesScreen(
                                 value = feField.value.value,
                                 hint = stringResource(feField.hintId),
                                 enable = feField.isEnable,
-                                visualTransformation = if (feField.type is FEField.FieldType.Number) {
+                                visualTransformation = if (feField.type is FEField.FieldType.Currency) {
                                     currencyVisualTransformation
                                 } else VisualTransformation.None,
                                 keyboardType = if (type is FEField.FieldType.Number) KeyboardType.Number else KeyboardType.Text
@@ -411,8 +414,8 @@ private fun AccountSelectionBottomSheet(
 
 @Composable
 private fun CurrencySelectionBottomSheet(
-    currencyList: List<String>,
-    onSelectCurrency: (String) -> Unit
+    currencyList: List<CurrencyRate>,
+    onSelectCurrency: (CurrencyRate) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -434,7 +437,7 @@ private fun CurrencySelectionBottomSheet(
                         .padding(grid_x2), 
                     contentAlignment = Alignment.Center
                 ) {
-                    FEBody2(text = it)
+                    FEBody2(text = it.name)
                 }
             }
         }
