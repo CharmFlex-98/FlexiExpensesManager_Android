@@ -139,7 +139,7 @@ internal fun NewExpensesScreen(
                                 RadioButton(
                                     selected = currentTransactionType == it,
                                     onClick = {
-                                        viewModel.initContent(it)
+                                        viewModel.onTransactionTypeChanged(it)
                                     }
                                 )
                             }

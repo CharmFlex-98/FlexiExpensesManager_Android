@@ -31,13 +31,13 @@ internal interface AccountDao {
                 "account_group_name, " +
                 "account_name, " +
                 "out_amount, " +
-                "COALESCE(SUM(t2.amount_in_cent), 0) AS in_amount, " +
+                "COALESCE(SUM(t2.amount_in_cent * t2.rate), 0) AS in_amount, " +
                 "account_initial_amount FROM " +
                 "(SELECT ag.id AS account_group_id," +
                 " a.id AS account_id," +
                 " ag.name as account_group_name," +
                 " a.name as account_name," +
-                " COALESCE(SUM(t.amount_in_cent), 0) AS out_amount," +
+                " COALESCE(SUM(t.amount_in_cent * t.rate), 0) AS out_amount," +
                 " a.initial_amount as account_initial_amount" +
                 " FROM AccountGroupEntity ag" +
                 " LEFT JOIN AccountEntity a ON ag.id = a.account_group_id" +

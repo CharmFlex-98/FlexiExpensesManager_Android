@@ -1,4 +1,4 @@
-package com.charmflex.flexiexpensesmanager.features.home.domain.mapper
+package com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
@@ -23,7 +23,7 @@ internal class TransactionHeatMapMapper(
             return TransactionHeatMapMapper(lowerBoundThreshold, higherBoundThreshold)
         }
     }
-    override fun map(from: List<DailyTransaction>): Map<LocalDate, Color> {
+    override suspend fun map(from: List<DailyTransaction>): Map<LocalDate, Color> {
         val res = mutableMapOf<LocalDate, Color>()
         val dailyTransactions = from.sortedBy { it.amountInCent }
         val size = from.size

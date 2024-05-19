@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.features.transactions.provider
 
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
+import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import javax.inject.Inject
 
@@ -28,6 +29,7 @@ internal class NewTransactionContentProvider @Inject constructor() {
                     id = TRANSACTION_NAME,
                     labelId = R.string.new_expenses_name,
                     hintId = R.string.new_expenses_name_hint,
+                    value = FEField.Value(),
                     type = FEField.FieldType.Text
                 ),
                 FEField(

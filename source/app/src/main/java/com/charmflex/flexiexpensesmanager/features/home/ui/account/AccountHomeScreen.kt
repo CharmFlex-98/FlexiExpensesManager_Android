@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.core.graphics.toColor
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroupSummary
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
@@ -45,7 +46,7 @@ internal fun AccountHomeScreen(viewModel: AccountHomeViewModel) {
 
 @Composable
 private fun AccountGroupSection(
-    accountGroupSummary: AccountGroupSummary
+    accountGroupSummary: AccountHomeViewState.AccountGroupSummaryUI,
 ) {
     Column(
         modifier = Modifier
@@ -59,7 +60,7 @@ private fun AccountGroupSection(
                 modifier = Modifier.weight(1f),
                 text = accountGroupSummary.accountGroupName
             )
-            FEHeading5(text = accountGroupSummary.balance.absoluteValue.toString(), color = accountGroupSummary.balanceTextColor)
+            FEHeading5(text = accountGroupSummary.balance, color = accountGroupSummary.textColor)
 
         }
         accountGroupSummary.accountsSummary.map {
@@ -68,7 +69,7 @@ private fun AccountGroupSection(
                     modifier = Modifier.weight(1f),
                     text = it.accountName
                 )
-                FEBody3(text = it.balance.absoluteValue.toString(), color = it.balanceTextColor)
+                FEBody3(text = it.balance, color = it.textColor)
             }
         }
     }

@@ -31,6 +31,7 @@ internal class CurrencySettingViewModel @Inject constructor(
     fun initialise(
         flowType: String
     ) {
+        toggleLoader(true)
         viewModelScope.launch {
             _flowType = when (flowType) {
                 CurrencyRoutes.Args.CURRENCY_TYPE_MAIN -> CurrencySettingViewState.FlowType.PrimaryCurrencySetting(
@@ -47,6 +48,7 @@ internal class CurrencySettingViewModel @Inject constructor(
                     )
                 }
             }
+            toggleLoader(false)
         }
     }
 

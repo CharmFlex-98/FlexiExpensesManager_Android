@@ -43,7 +43,8 @@ internal fun CurrencySettingScreen(
     SGScaffold(
         modifier = Modifier
             .fillMaxSize()
-            .padding(grid_x2)
+            .padding(grid_x2),
+        isLoading = viewState.isLoading
     ) {
         FeColumnContainer(
             modifier = Modifier
@@ -60,7 +61,7 @@ internal fun CurrencySettingScreen(
                 onClicked = viewModel::onLaunchCurrencySelectionBottomSheet,
                 onValueChange = {}
             )
-            if (viewModel.isMainCurrencyType().not()) {
+            if (viewState.isLoading.not() && viewModel.isMainCurrencyType().not()) {
                 SGTextField(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Currency rate",

@@ -1,7 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
@@ -11,8 +10,6 @@ import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformatio
 import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
-import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.CurrencyRepository
-import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
@@ -57,17 +54,9 @@ internal class NewTransactionViewModel @Inject constructor(
     val snackBarState = mutableStateOf<SnackBarState>(SnackBarState.None)
 
     init {
-        initContent(_currentTransactionType.value)
-
-        viewModelScope.launch {
-            accountRepository.getAllAccounts().collectLatest { accGroup ->
-                _viewState.update {
-                    it.copy(
-                        accountGroups = accGroup
-                    )
-                }
-            }
-        }
+        onTransactionTypeChanged(_currentTransactionType.value)
+        onUpdateUserCurrency()
+        observeAccountsUpdate()
     }
 
     fun currencyVisualTransformationBuilder(): CurrencyVisualTransformation.Builder {
@@ -78,18 +67,46 @@ internal class NewTransactionViewModel @Inject constructor(
         snackBarState.value = SnackBarState.None
     }
 
-    fun initContent(transactionType: TransactionType = TransactionType.EXPENSES) {
+    fun onTransactionTypeChanged(transactionType: TransactionType = TransactionType.EXPENSES) {
         _currentTransactionType.update { transactionType }
         viewModelScope.launch {
             val fields = contentProvider.getContent(transactionType)
-            val categories =
-                transactionCategoryRepository.getAllCategories(transactionType.name).firstOrNull()
-            categories?.let { cats ->
+            _viewState.update {
+                it.copy(
+                    fields = fields,
+                )
+            }
+        }
+        updateCategories(transactionType)
+    }
+
+    fun updateCategories(transactionType: TransactionType) {
+        viewModelScope.launch {
+            val categories = transactionCategoryRepository.getAllCategories(transactionType.name).firstOrNull()
+            _viewState.update {
+                it.copy(
+                    transactionCategories = categories
+                )
+            }
+        }
+    }
+
+    fun onUpdateUserCurrency() {
+        viewModelScope.launch {
+            _viewState.update {
+                it.copy(
+                    currencyList = unwrapResult(getUserCurrencyUseCase())
+                )
+            }
+        }
+    }
+
+    private fun observeAccountsUpdate() {
+        viewModelScope.launch {
+            accountRepository.getAllAccounts().collectLatest { accGroup ->
                 _viewState.update {
                     it.copy(
-                        fields = fields,
-                        transactionCategories = cats,
-                        currencyList = unwrapResult(getUserCurrencyUseCase())
+                        accountGroups = accGroup
                     )
                 }
             }

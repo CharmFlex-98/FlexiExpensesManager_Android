@@ -46,7 +46,7 @@ internal class GetCurrencyRateUseCase @Inject constructor(
         return CurrencyRate(
             name = currency,
             from = fromCurrency,
-            rate = toCurrencyRate / fromCurrencyRate,
+            rate = fromCurrencyRate / toCurrencyRate,
             isCustom = false
         )
     }

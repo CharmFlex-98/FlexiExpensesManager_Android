@@ -46,6 +46,6 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
 val MIGRATION_4_5 = object  : Migration(4, 5) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE TransactionEntity ADD currency TEXT NOT NULL DEFAULT 'MYR'")
-        db.execSQL("ALTER TABLE TransactionEntity ADD rate REAL NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE TransactionEntity ADD rate REAL NOT NULL DEFAULT 1")
     }
 }

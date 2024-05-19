@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class AccountRepositoryImpl @Inject constructor(
-    private val accountDao: AccountDao
+    private val accountDao: AccountDao,
 ) : AccountRepository {
     override fun getAllAccounts(): Flow<List<AccountGroup>> {
         return accountDao.getAllAccounts()
