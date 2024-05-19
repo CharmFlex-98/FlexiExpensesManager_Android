@@ -42,7 +42,8 @@ internal interface AccountDao {
                 " FROM AccountGroupEntity ag" +
                 " LEFT JOIN AccountEntity a ON ag.id = a.account_group_id" +
                 " LEFT JOIN TransactionEntity t ON t.account_from_id = a.id" +
-                " GROUP BY a.id) LEFT JOIN TransactionEntity t2 ON t2.account_to_id = account_id " +
+                " GROUP BY a.id) " +
+                "LEFT JOIN TransactionEntity t2 ON t2.account_to_id = account_id " +
                 "GROUP BY account_id"
     )
     fun getAccountsSummary(): Flow<List<AccountSummaryResponse>>

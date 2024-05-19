@@ -22,7 +22,7 @@ internal class CurrencySettingViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(CurrencySettingViewState())
     val viewState = _viewState.asStateFlow()
 
-    private lateinit var _flowType: CurrencySettingViewState.FlowType
+    private var _flowType: CurrencySettingViewState.FlowType? = null
 
     init {
         fetchCurrencyOptions()
@@ -31,7 +31,6 @@ internal class CurrencySettingViewModel @Inject constructor(
     fun initialise(
         flowType: String
     ) {
-        toggleLoader(true)
         viewModelScope.launch {
             _flowType = when (flowType) {
                 CurrencyRoutes.Args.CURRENCY_TYPE_MAIN -> CurrencySettingViewState.FlowType.PrimaryCurrencySetting(
@@ -48,7 +47,6 @@ internal class CurrencySettingViewModel @Inject constructor(
                     )
                 }
             }
-            toggleLoader(false)
         }
     }
 
@@ -104,13 +102,13 @@ internal class CurrencySettingViewModel @Inject constructor(
 
     fun onCurrencySelected(newValue: String) {
         when (_flowType) {
+            null -> {}
+
             is CurrencySettingViewState.FlowType.PrimaryCurrencySetting -> {
                 onPrimaryCurrencySelected(newValue)
             }
 
-            else -> {
-                onSecondaryCurrencySelected(newValue)
-            }
+            else -> onSecondaryCurrencySelected(newValue)
         }
     }
 
@@ -139,6 +137,8 @@ internal class CurrencySettingViewModel @Inject constructor(
 
     fun addCurrency() {
         when (val type = _flowType) {
+            null -> {}
+
             is CurrencySettingViewState.FlowType.PrimaryCurrencySetting -> {
                 setPrimaryCurrency(type)
             }

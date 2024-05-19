@@ -49,18 +49,20 @@ internal fun UserCurrencyScreen(
             )
         }
     ) {
-        FeColumnContainer {
-            viewState.currencyList.forEach {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(grid_x1)
-                ) {
-                    Text(modifier = Modifier.weight(1f), text = it.name, textAlign = TextAlign.Start)
-                    Text(text = it.rate.toString(), textAlign = TextAlign.End)
+        if (viewState.currencyList.isNotEmpty()) {
+            FeColumnContainer {
+                viewState.currencyList.forEach {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(grid_x1)
+                    ) {
+                        Text(modifier = Modifier.weight(1f), text = it.name, textAlign = TextAlign.Start)
+                        Text(text = it.rate.toString(), textAlign = TextAlign.End)
+                    }
                 }
-            }
 
+            }
         }
     }
 }
