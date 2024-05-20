@@ -55,7 +55,7 @@ internal class NewTransactionViewModel @Inject constructor(
 
     init {
         onTransactionTypeChanged(_currentTransactionType.value)
-        onUpdateUserCurrency()
+        onUpdateUserCurrencyOptions()
         observeAccountsUpdate()
     }
 
@@ -71,9 +71,24 @@ internal class NewTransactionViewModel @Inject constructor(
         _currentTransactionType.update { transactionType }
         viewModelScope.launch {
             val fields = contentProvider.getContent(transactionType)
+            val currency = unwrapResult(getUserCurrencyUseCase.primary())
+            val updatedFields = fields.map {
+                if (it.id == TRANSACTION_CURRENCY) {
+                    return@map it.copy(
+                        value = FEField.Value(it.value.id, currency?.name ?: "")
+                    )
+                }
+                if (it.id == TRANSACTION_RATE) {
+                    return@map it.copy(
+                        value = FEField.Value(it.value.id, currency?.rate?.toString() ?: "1")
+                    )
+                }
+                else it
+            }
+
             _viewState.update {
                 it.copy(
-                    fields = fields,
+                    fields = updatedFields,
                 )
             }
         }
@@ -91,11 +106,16 @@ internal class NewTransactionViewModel @Inject constructor(
         }
     }
 
-    fun onUpdateUserCurrency() {
+    fun onUpdateUserCurrencyOptions() {
         viewModelScope.launch {
+            val primary = unwrapResult(getUserCurrencyUseCase.primary())
+            val secondaryList = unwrapResult(getUserCurrencyUseCase.secondary())
             _viewState.update {
                 it.copy(
-                    currencyList = unwrapResult(getUserCurrencyUseCase())
+                    currencyList = mutableListOf<CurrencyRate>().apply {
+                        primary?.let { add(it) }
+                        addAll(secondaryList)
+                    }
                 )
             }
         }

@@ -9,10 +9,17 @@ internal class GetUserCurrencyUseCase @Inject constructor(
     private val getCurrencyUseCase: GetCurrencyRateUseCase
 ) {
 
-    suspend operator fun invoke(): Result<List<CurrencyRate>> {
+    suspend fun secondary(): Result<List<CurrencyRate>> {
         return resultOf {
             val rates = userCurrencyRepository.getSecondaryCurrency()
             rates.mapNotNull { getCurrencyUseCase(it) }
+        }
+    }
+
+    suspend fun primary(): Result<CurrencyRate?> {
+        return resultOf {
+            val rate = userCurrencyRepository.getPrimaryCurrency()
+            getCurrencyUseCase(rate)
         }
     }
 }

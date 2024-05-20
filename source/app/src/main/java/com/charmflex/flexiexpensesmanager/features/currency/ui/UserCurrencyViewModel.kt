@@ -22,7 +22,7 @@ internal class UserCurrencyViewModel @Inject constructor(
     fun initialise() {
         toggleLoader(true)
         viewModelScope.launch {
-            getUserCurrencyUseCase().fold(
+            getUserCurrencyUseCase.secondary().fold(
                 onSuccess = { res ->
                     _viewState.update {
                         it.copy(
