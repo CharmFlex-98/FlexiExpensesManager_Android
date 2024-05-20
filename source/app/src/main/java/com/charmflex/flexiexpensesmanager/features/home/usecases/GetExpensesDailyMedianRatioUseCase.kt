@@ -34,5 +34,5 @@ internal class GetExpensesDailyMedianRatioUseCase @Inject constructor(
 
 internal data class DailyTransaction(
     val date: LocalDate,
-    val amountInCent: Int
+    val amountInCent: Long
 )

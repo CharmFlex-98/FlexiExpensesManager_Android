@@ -23,6 +23,7 @@ internal data class FEField(
         object Text : FieldType
 
         object Number : FieldType
+        object Currency : FieldType
 
         sealed interface Selection : FieldType
         object Callback : Selection

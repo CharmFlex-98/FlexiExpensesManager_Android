@@ -4,13 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.YEAR_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
-import com.charmflex.flexiexpensesmanager.features.home.domain.mapper.TransactionHistoryMapper
+import com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper.TransactionHistoryMapper
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,7 @@ import javax.inject.Inject
 internal class TransactionHistoryViewModel @Inject constructor(
     private val mapper: TransactionHistoryMapper,
     private val transactionRepository: TransactionRepository,
-    private val routeNavigator: RouteNavigator
+    private val routeNavigator: RouteNavigator,
 ) : ViewModel() {
 
     private val _tabState = MutableStateFlow(TabState())
@@ -63,14 +64,16 @@ internal class TransactionHistoryViewModel @Inject constructor(
     }
 
     private fun updateList(list: List<Transaction>) {
-        val updatedList = mapper.map(list)
-        _viewState.update {
-            it.copy(
-                items = updatedList,
-                isLoading = false
-            )
+        viewModelScope.launch {
+            val updatedList = mapper.map(list)
+            _viewState.update {
+                it.copy(
+                    items = updatedList,
+                    isLoading = false
+                )
+            }
+            updateTabList(updatedList)
         }
-        updateTabList(updatedList)
     }
 
     private fun updateTabList(items: List<TransactionHistoryItem>) {

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class AccountRepositoryImpl @Inject constructor(
-    private val accountDao: AccountDao
+    private val accountDao: AccountDao,
 ) : AccountRepository {
     override fun getAllAccounts(): Flow<List<AccountGroup>> {
         return accountDao.getAllAccounts()
@@ -80,7 +80,7 @@ internal class AccountRepositoryImpl @Inject constructor(
         accountDao.deleteAccountGroup(accountGroupId = accountGroupId)
     }
 
-    override suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Int) {
+    override suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Long) {
         val entity = AccountEntity(
             name = accountName,
             accountGroupId = accountGroupId,

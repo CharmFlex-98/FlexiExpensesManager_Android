@@ -9,25 +9,31 @@ internal interface TransactionRepository {
     suspend fun addNewExpenses(
         name: String,
         fromAccountId: Int,
-        amount: Int,
+        amount: Long,
         categoryId: Int,
         transactionDate: String,
+        currency: String,
+        rate: Float
     )
 
     suspend fun addNewIncome(
         name: String,
         toAccountId: Int,
-        amount: Int,
+        amount: Long,
         categoryId: Int,
         transactionDate: String,
+        currency: String,
+        rate: Float
     )
 
     suspend fun addNewTransfer(
         name: String,
         fromAccountId: Int,
         toAccountId: Int,
-        amount: Int,
+        amount: Long,
         transactionDate: String,
+        currency: String,
+        rate: Float
     )
     suspend fun getHistory(): List<ExpensesData>
 

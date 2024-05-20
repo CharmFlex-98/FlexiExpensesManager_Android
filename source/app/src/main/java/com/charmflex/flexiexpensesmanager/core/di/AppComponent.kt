@@ -1,6 +1,5 @@
 package com.charmflex.flexiexpensesmanager.core.di
 
-import android.accounts.Account
 import android.content.Context
 import com.charmflex.flexiexpensesmanager.db.di.modules.DBModule
 import com.charmflex.flexiexpensesmanager.dependency_injection.modules.navigation.NavigationModule
@@ -8,6 +7,8 @@ import com.charmflex.flexiexpensesmanager.features.account.di.AccountInjector
 import com.charmflex.flexiexpensesmanager.features.account.di.modules.AccountModule
 import com.charmflex.flexiexpensesmanager.features.auth.di.AuthInjector
 import com.charmflex.flexiexpensesmanager.features.category.category.di.CategoryInjector
+import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyInjector
+import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyModule
 import com.charmflex.flexiexpensesmanager.features.transactions.di.TransactionInjector
 import com.charmflex.flexiexpensesmanager.features.transactions.di.modules.TransactionModule
 import com.charmflex.flexiexpensesmanager.features.home.di.HomeInjector
@@ -22,11 +23,13 @@ import javax.inject.Singleton
         TransactionModule::class,
         AccountModule::class,
         DBModule::class,
-        MainModule::class
+        MainModule::class,
+        CurrencyModule::class,
     ]
 )
 @Singleton
-internal interface AppComponent : MainInjector, AuthInjector, TransactionInjector, HomeInjector, CategoryInjector, AccountInjector {
+internal interface AppComponent : MainInjector, AuthInjector, TransactionInjector, HomeInjector,
+    CategoryInjector, AccountInjector, CurrencyInjector {
 
     @Component.Factory
     interface Factory {

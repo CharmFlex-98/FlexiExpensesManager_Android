@@ -1,7 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.usecases
 
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
-import com.charmflex.flexiexpensesmanager.features.transactions.provider.AccountSelectionItem
 import javax.inject.Inject
 
 internal class GetAccountOptionsUseCase @Inject constructor(

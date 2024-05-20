@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.charmflex.flexiexpensesmanager.R
@@ -44,6 +45,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDateTime
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
@@ -81,6 +83,9 @@ internal fun NewExpensesScreen(
     val snackBarState by viewModel.snackBarState
     val genericErrorMessage = stringResource(id = R.string.generic_error)
     val bottomSheetState = rememberModalBottomSheetState()
+    val currencyVisualTransformation = remember(viewState.currencyCode) {
+        viewModel.currencyVisualTransformationBuilder().create(viewState.currencyCode)
+    }
 
     LaunchedEffect(snackBarState) {
         when (val state = snackBarState) {
@@ -116,7 +121,9 @@ internal fun NewExpensesScreen(
                 .padding(grid_x2)
         ) {
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -132,7 +139,7 @@ internal fun NewExpensesScreen(
                                 RadioButton(
                                     selected = currentTransactionType == it,
                                     onClick = {
-                                        viewModel.initContent(it)
+                                        viewModel.onTransactionTypeChanged(it)
                                     }
                                 )
                             }
@@ -178,6 +185,9 @@ internal fun NewExpensesScreen(
                                 value = feField.value.value,
                                 hint = stringResource(feField.hintId),
                                 enable = feField.isEnable,
+                                visualTransformation = if (feField.type is FEField.FieldType.Currency) {
+                                    currencyVisualTransformation
+                                } else VisualTransformation.None,
                                 keyboardType = if (type is FEField.FieldType.Number) KeyboardType.Number else KeyboardType.Text
                             ) { newValue ->
                                 viewModel.onFieldValueChanged(feField, newValue)
@@ -252,6 +262,13 @@ internal fun NewExpensesScreen(
                 is NewTransactionViewState.AccountSelectionBottomSheetState -> {
                     AccountSelectionBottomSheet(accountGroups = viewState.accountGroups) {
                         viewModel.onSelectAccount(it)
+                        viewModel.toggleBottomSheet(null)
+                    }
+                }
+                
+                is NewTransactionViewState.CurrencySelectionBottomSheetState -> {
+                    CurrencySelectionBottomSheet(currencyList = viewState.currencyList) {
+                        viewModel.onCurrencySelected(it)
                         viewModel.toggleBottomSheet(null)
                     }
                 }
@@ -389,6 +406,38 @@ private fun AccountSelectionBottomSheet(
                     ) {
                         FEBody2(text = it.accountGroupName)
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CurrencySelectionBottomSheet(
+    currencyList: List<CurrencyRate>,
+    onSelectCurrency: (CurrencyRate) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        FEHeading2(text = "Select Currency")
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(state = rememberScrollState())
+        ) {
+            currencyList.forEach { 
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onSelectCurrency(it)
+                        }
+                        .padding(grid_x2), 
+                    contentAlignment = Alignment.Center
+                ) {
+                    FEBody2(text = it.name)
                 }
             }
         }

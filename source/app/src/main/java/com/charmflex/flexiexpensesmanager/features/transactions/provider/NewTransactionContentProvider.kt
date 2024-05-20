@@ -2,16 +2,18 @@ package com.charmflex.flexiexpensesmanager.features.transactions.provider
 
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
+import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import javax.inject.Inject
 
 internal const val TRANSACTION_NAME = "TRANSACTION_NAME"
 internal const val TRANSACTION_AMOUNT = "TRANSACTION_AMOUNT"
+internal const val TRANSACTION_RATE = "TRANSACTION_RATE"
 internal const val TRANSACTION_DATE = "TRANSACTION_DATE"
 internal const val TRANSACTION_FROM_ACCOUNT = "TRANSACTION_FROM_ACC"
 internal const val TRANSACTION_TO_ACCOUNT = "TRANSACTION_TO_ACC"
 internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
-
+internal const val TRANSACTION_CURRENCY = "TRANSACTION_CURRENCY"
 
 
 internal class NewTransactionContentProvider @Inject constructor() {
@@ -27,13 +29,26 @@ internal class NewTransactionContentProvider @Inject constructor() {
                     id = TRANSACTION_NAME,
                     labelId = R.string.new_expenses_name,
                     hintId = R.string.new_expenses_name_hint,
+                    value = FEField.Value(),
                     type = FEField.FieldType.Text
+                ),
+                FEField(
+                    id = TRANSACTION_CURRENCY,
+                    labelId = R.string.new_transaction_currency_label,
+                    hintId = R.string.new_transaction_currency_hint,
+                    type = FEField.FieldType.Callback
+                ),
+                FEField(
+                    id = TRANSACTION_RATE,
+                    labelId = R.string.new_transaction_currency_rate_label,
+                    hintId = R.string.new_transaction_currency_rate_hint,
+                    type = FEField.FieldType.Number
                 ),
                 FEField(
                     id = TRANSACTION_AMOUNT,
                     labelId = R.string.new_expenses_amount,
                     hintId = R.string.new_expenses_name_amount_hint,
-                    type = FEField.FieldType.Number
+                    type = FEField.FieldType.Currency
                 ),
                 FEField(
                     id = TRANSACTION_DATE,
@@ -97,19 +112,3 @@ internal class NewTransactionContentProvider @Inject constructor() {
         )
     }
 }
-
-internal data class CategorySelectionItem(
-    override val id: String,
-    override val title: String,
-    override val subtitle: String? = null,
-    override val icon: Int? = null
-
-) : FEField.FieldType.SingleItemSelection.Option
-
-internal data class AccountSelectionItem(
-    override val id: String = "",
-    override val title: String,
-    override val subtitle: String? = "",
-    override val icon: Int? = null
-
-) : FEField.FieldType.SingleItemSelection.Option

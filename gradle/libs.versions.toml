@@ -5,6 +5,9 @@ kotlin_kapt_version = '1.8.10'
 # accompanist
 accompanist_version = "0.34.0"
 
+# moshi
+moshi_version = "1.15.1"
+
 # Room
 room_version = '2.6.1'
 # Google
@@ -76,6 +79,10 @@ compose_dialog_version = "1.2.0"
 # Coil
 coil_version = "2.5.0"
 
+# kotlin-serialization version
+kotlin_serialization_version = "1.6.3"
+kotlin_seriallization_plugin_version = "1.8.10"
+
 [libraries]
 # maxkeppper compose dialog
 compose-dialog-core = { module = 'com.maxkeppeler.sheets-compose-dialogs:core', version.ref = 'compose_dialog_version'}
@@ -83,6 +90,8 @@ compose-dialog-calendar = { module = 'com.maxkeppeler.sheets-compose-dialogs:cal
 compose-dialog-clock = { module = 'com.maxkeppeler.sheets-compose-dialogs:clock', version.ref = 'compose_dialog_version'}
 compose-dialog-state = { module = 'com.maxkeppeler.sheets-compose-dialogs:state', version.ref = 'compose_dialog_version'}
 
+# kotlin-serialization
+kotlin-serialization = { module = 'org.jetbrains.kotlinx:kotlinx-serialization-json', version.ref = 'kotlin_serialization_version'}
 # airbnb
 airbnb-lottie-compose = { module = 'com.airbnb.android:lottie-compose', version.ref = 'lottie_compose_version'}
 
@@ -135,9 +144,13 @@ fragment-ktx = { module = 'androidx.fragment:fragment-ktx', version.ref = 'fragm
 # compose
 compose-navigation = { module = 'androidx.navigation:navigation-compose', version.ref = 'compose_navigation_version'}
 
+# moshi
+squareup-moshi = { module = 'com.squareup.moshi:moshi', version.ref = 'moshi_version' }
+moshi-kotlin-codegen = { module = 'com.squareup.moshi:moshi-kotlin-codegen', version.ref = 'moshi_version'}
 # square
 square-retrofit = { module = 'com.squareup.retrofit2:retrofit', version.ref = 'retrofit_version'}
 square-retrofit-gsonConverter = { module = 'com.squareup.retrofit2:converter-gson', version.ref = 'retrofit_version'}
+square-retrofit-moshiConverter = { module = 'com.squareup.retrofit2:converter-moshi', version.ref = 'retrofit_version'}
 square-mockWebServer = { module = 'com.squareup.okhttp3:mockwebserver', version.ref = 'mock_web_server_version'}
 square-okhttp3-bom = { module = 'com.squareup.okhttp3:okhttp-bom', version.ref = 'okhttp_bom_version'}
 square-okhttp3 = { module = 'com.squareup.okhttp3:okhttp' }
@@ -164,3 +177,4 @@ com-android-library = { id = "com.android.library", version.ref = "agp" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google_services_version" }
 google-firebase-crashlytics-plugin = { id = "com.google.firebase.crashlytics", version.ref = "firebase_crashlytics_plugin_version"}
+kotlin-serialization-plugin = { id = 'org.jetbrains.kotlin.plugin.serialization', version.ref = 'kotlin_seriallization_plugin_version' }

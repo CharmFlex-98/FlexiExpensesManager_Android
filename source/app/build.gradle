@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.google.services)
     alias(libs.plugins.google.firebase.crashlytics.plugin)
+    alias(libs.plugins.kotlin.serialization.plugin)
 }
 
 android {
@@ -103,6 +104,10 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
+    implementation(libs.kotlin.serialization)
+    implementation(libs.squareup.moshi)
+    kapt(libs.moshi.kotlin.codegen)
+
     // Compose Navigation
     implementation(libs.compose.navigation)
 
@@ -136,7 +141,7 @@ dependencies {
     implementation(libs.square.okhttp.tls)
     implementation(libs.square.okhttp3)
     implementation(libs.square.retrofit)
-    implementation(libs.square.retrofit.gsonConverter)
+    implementation(libs.square.retrofit.moshiConverter)
 
     // Dagger
     implementation(libs.google.dagger)
@@ -157,4 +162,7 @@ dependencies {
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.crashlytics)
     implementation(libs.google.firebase.analytics)
+
+    // security
+    implementation(libs.androidx.security.crypto)
 }

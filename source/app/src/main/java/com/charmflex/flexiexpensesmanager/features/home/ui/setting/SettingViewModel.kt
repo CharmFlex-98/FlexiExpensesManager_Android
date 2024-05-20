@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import javax.inject.Inject
 
@@ -12,7 +13,7 @@ internal class SettingViewModel @Inject constructor(
 ) : ViewModel() {
 
     fun onTap(settingAction: SettingAction) {
-        val type = when (settingAction) {
+        when (settingAction) {
             SettingAction.EXPENSES_CAT -> {
                 routeNavigator.navigateTo(CategoryRoutes.editorDestination(TransactionType.EXPENSES))
             }
@@ -22,9 +23,13 @@ internal class SettingViewModel @Inject constructor(
             SettingAction.ACCOUNT -> {
                 routeNavigator.navigateTo(AccountRoutes.editorDestination())
             }
+            SettingAction.PRIMARY_CURRENCY -> {
+                routeNavigator.navigateTo(CurrencyRoutes.currencySettingDestination(CurrencyRoutes.Args.CURRENCY_TYPE_MAIN))
+            }
+            SettingAction.SECONDARY_CURRENCY -> {
+                routeNavigator.navigateTo(CurrencyRoutes.USER_SECONDARY_CURRENCY)
+            }
         }
-
-
     }
 
     fun getSettingActionable(): List<SettingActionable> {
@@ -40,6 +45,14 @@ internal class SettingViewModel @Inject constructor(
             SettingActionable(
                 title = "Set account",
                 action = SettingAction.ACCOUNT
+            ),
+            SettingActionable(
+                title = "Set primary currency",
+                action = SettingAction.PRIMARY_CURRENCY
+            ),
+            SettingActionable(
+                "Set secondary currency",
+                action = SettingAction.SECONDARY_CURRENCY
             )
         )
     }
@@ -50,5 +63,5 @@ internal data class SettingActionable(
     val action: SettingAction
 )
 internal enum class SettingAction {
-    EXPENSES_CAT, INCOME_CAT, ACCOUNT
+    EXPENSES_CAT, INCOME_CAT, ACCOUNT, PRIMARY_CURRENCY, SECONDARY_CURRENCY
 }

@@ -18,11 +18,15 @@ internal data class TransactionResponse(
     @ColumnInfo("transaction_type_code")
     val transactionTypeCode: String,
     @ColumnInfo("amount_in_cent")
-    val amountInCent: Int,
+    val amountInCent: Long,
     @ColumnInfo("transaction_date")
     val transactionDate: String,
     @ColumnInfo("category_id")
     val categoryId: Int?,
     @ColumnInfo("category_name")
-    val categoryName: String?
+    val categoryName: String?,
+    @ColumnInfo("currency")
+    val currency: String,
+    @ColumnInfo("rate")
+    val rate: Float
 )

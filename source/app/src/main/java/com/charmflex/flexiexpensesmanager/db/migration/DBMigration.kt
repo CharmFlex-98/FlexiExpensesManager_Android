@@ -36,3 +36,16 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         db.execSQL("ALTER TABLE AccountEntity ADD initial_amount INTEGER NOT NULL DEFAULT 0")
     }
 }
+
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("CREATE TABLE IF NOT EXISTS `UserCurrencyRateEntity` (`name` TEXT PRIMARY KEY NOT NULL, `rate` REAL NOT NULL)")
+    }
+}
+
+val MIGRATION_4_5 = object  : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE TransactionEntity ADD currency TEXT NOT NULL DEFAULT 'MYR'")
+        db.execSQL("ALTER TABLE TransactionEntity ADD rate REAL NOT NULL DEFAULT 1")
+    }
+}

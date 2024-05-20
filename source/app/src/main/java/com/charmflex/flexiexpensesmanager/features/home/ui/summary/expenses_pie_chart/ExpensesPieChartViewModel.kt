@@ -29,7 +29,7 @@ internal class ExpensesPieChartViewModel @Inject constructor(
         }
     }
 
-    private fun generatePieChartData(data: Map<String, Int>): List<PieChartData> {
+    private fun generatePieChartData(data: Map<String, Long>): List<PieChartData> {
         val res = mutableListOf<PieChartData>()
         for ((rootCategory, amount) in data.entries) {
             res.add(

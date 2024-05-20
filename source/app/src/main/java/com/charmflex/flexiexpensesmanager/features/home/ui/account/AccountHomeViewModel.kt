@@ -1,9 +1,12 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.account
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroupSummary
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
+import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
+import com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper.AccountHomeUIMapper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -13,6 +16,7 @@ import javax.inject.Inject
 
 internal class AccountHomeViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
+    private val accountHomeUIMapper: AccountHomeUIMapper
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(AccountHomeViewState())
@@ -28,7 +32,7 @@ internal class AccountHomeViewModel @Inject constructor(
                 toggleLoading(true)
                 _viewState.update {
                     it.copy(
-                        accountsSummary = summary
+                        accountsSummary = accountHomeUIMapper.map(summary)
                     )
                 }
                 toggleLoading(false)
@@ -46,8 +50,20 @@ internal class AccountHomeViewModel @Inject constructor(
 }
 
 internal data class AccountHomeViewState(
-    val accountsSummary: List<AccountGroupSummary> = listOf(),
+    val accountsSummary: List<AccountGroupSummaryUI> = listOf(),
     val isLoading: Boolean = false
 ) {
-    val balance get() = accountsSummary.map { it.balance }.reduce { acc, i -> acc + i }
+    internal data class AccountGroupSummaryUI(
+        val accountGroupName: String,
+        val accountsSummary: List<AccountSummaryUI>,
+        val balance: String,
+        val textColor: Color
+    ) {
+        data class AccountSummaryUI(
+            val accountId: Int,
+            val accountName: String,
+            val balance: String,
+            val textColor: Color
+        )
+    }
 }

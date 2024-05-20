@@ -18,6 +18,10 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -133,19 +137,22 @@ fun <T> SearchBottomSheet(
     sheetState: SheetState,
     onDismiss: () -> Unit,
     searchFieldLabel: String,
-    value: String,
     items: List<T>,
-    errorText: String?,
+    errorText: String? = null,
     onChanged: (String) -> Unit,
     itemLayout: @Composable (index: Int, item: T) -> Unit,
-    ) {
-    SGModalBottomSheet(onDismiss = onDismiss, sheetState = sheetState) {
+) {
+    var searchKey by remember { mutableStateOf("") }
+    SGModalBottomSheet(modifier = modifier, onDismiss = onDismiss, sheetState = sheetState) {
         Column(
             modifier = Modifier.fillMaxHeight(0.5f)
         ) {
             SGTextField(
                 modifier = Modifier.fillMaxWidth(), label = searchFieldLabel, hint = "search",
-                 value = value, errorText = errorText, onValueChange = onChanged
+                value = searchKey, errorText = errorText, onValueChange = {
+                    searchKey = it
+                    onChanged(it)
+                }
             )
             Spacer(modifier = Modifier.height(grid_x1))
             Box(modifier = Modifier.wrapContentSize()) {

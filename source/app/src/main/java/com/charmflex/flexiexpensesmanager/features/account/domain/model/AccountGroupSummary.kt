@@ -10,15 +10,8 @@ internal data class AccountGroupSummary(
     data class AccountSummary(
         val accountId: Int,
         val accountName: String,
-        val balance: Int
-    ) {
-        val balanceTextColor = balance.toBalanceColor()
-    }
+        val balance: Long
+    )
 
     val balance get() = accountsSummary.map { it.balance }.reduceOrNull { acc, i -> acc + i } ?: 0
-    val balanceTextColor get() = balance.toBalanceColor()
-}
-
-private fun Int.toBalanceColor(): Color {
-    return if (this < 0) Color.Red else Color.Green
 }

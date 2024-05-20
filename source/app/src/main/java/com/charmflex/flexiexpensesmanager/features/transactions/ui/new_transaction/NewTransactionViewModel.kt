@@ -6,17 +6,23 @@ import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
+import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.NewTransactionContentProvider
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_AMOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_CATEGORY
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_CURRENCY
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_DATE
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_FROM_ACCOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_NAME
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_RATE
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_TO_ACCOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.usecases.SubmitTransactionUseCase
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
@@ -35,7 +41,9 @@ internal class NewTransactionViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val routeNavigator: RouteNavigator,
     private val transactionCategoryRepository: TransactionCategoryRepository,
-    private val submitTransactionUseCase: SubmitTransactionUseCase
+    private val submitTransactionUseCase: SubmitTransactionUseCase,
+    private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
+    private val getUserCurrencyUseCase: GetUserCurrencyUseCase,
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(NewTransactionViewState())
     val viewState = _viewState.asStateFlow()
@@ -46,33 +54,79 @@ internal class NewTransactionViewModel @Inject constructor(
     val snackBarState = mutableStateOf<SnackBarState>(SnackBarState.None)
 
     init {
-        initContent(_currentTransactionType.value)
+        onTransactionTypeChanged(_currentTransactionType.value)
+        onUpdateUserCurrencyOptions()
+        observeAccountsUpdate()
+    }
 
-        viewModelScope.launch {
-            accountRepository.getAllAccounts().collectLatest { accGroup ->
-                _viewState.update {
-                    it.copy(
-                        accountGroups = accGroup
-                    )
-                }
-            }
-        }
+    fun currencyVisualTransformationBuilder(): CurrencyVisualTransformation.Builder {
+        return currencyVisualTransformationBuilder
     }
 
     fun resetErrorState() {
         snackBarState.value = SnackBarState.None
     }
 
-    fun initContent(transactionType: TransactionType = TransactionType.EXPENSES) {
+    fun onTransactionTypeChanged(transactionType: TransactionType = TransactionType.EXPENSES) {
         _currentTransactionType.update { transactionType }
         viewModelScope.launch {
             val fields = contentProvider.getContent(transactionType)
+            val currency = unwrapResult(getUserCurrencyUseCase.primary())
+            val updatedFields = fields.map {
+                if (it.id == TRANSACTION_CURRENCY) {
+                    return@map it.copy(
+                        value = FEField.Value(it.value.id, currency?.name ?: "")
+                    )
+                }
+                if (it.id == TRANSACTION_RATE) {
+                    return@map it.copy(
+                        value = FEField.Value(it.value.id, currency?.rate?.toString() ?: "1")
+                    )
+                }
+                else it
+            }
+
+            _viewState.update {
+                it.copy(
+                    fields = updatedFields,
+                )
+            }
+        }
+        updateCategories(transactionType)
+    }
+
+    fun updateCategories(transactionType: TransactionType) {
+        viewModelScope.launch {
             val categories = transactionCategoryRepository.getAllCategories(transactionType.name).firstOrNull()
-            categories?.let { cats ->
+            _viewState.update {
+                it.copy(
+                    transactionCategories = categories
+                )
+            }
+        }
+    }
+
+    fun onUpdateUserCurrencyOptions() {
+        viewModelScope.launch {
+            val primary = unwrapResult(getUserCurrencyUseCase.primary())
+            val secondaryList = unwrapResult(getUserCurrencyUseCase.secondary())
+            _viewState.update {
+                it.copy(
+                    currencyList = mutableListOf<CurrencyRate>().apply {
+                        primary?.let { add(it) }
+                        addAll(secondaryList)
+                    }
+                )
+            }
+        }
+    }
+
+    private fun observeAccountsUpdate() {
+        viewModelScope.launch {
+            accountRepository.getAllAccounts().collectLatest { accGroup ->
                 _viewState.update {
                     it.copy(
-                        fields = fields,
-                        transactionCategories = cats
+                        accountGroups = accGroup
                     )
                 }
             }
@@ -124,12 +178,15 @@ internal class NewTransactionViewModel @Inject constructor(
     private suspend fun submitExpenses() {
         val fields = _viewState.value.fields
         val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.value?.value
-        val fromAccount = fields.firstOrNull { it.id == TRANSACTION_FROM_ACCOUNT }?.value?.id?.toIntOrNull()
+        val fromAccount =
+            fields.firstOrNull { it.id == TRANSACTION_FROM_ACCOUNT }?.value?.id?.toIntOrNull()
         val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.value?.value
-        val categoryId = fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.value?.id?.toIntOrNull()
+        val categoryId =
+            fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.value?.id?.toIntOrNull()
         val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value?.value
-
-        if (name == null || amount == null || categoryId == null || date == null || fromAccount == null) {
+        val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.value?.value
+        val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.value?.value?.toFloatOrNull()
+        if (name == null || amount == null || categoryId == null || date == null || fromAccount == null || currency == null || rate == null) {
             handleFailure(Exception("Something wrong"))
             toggleLoader(false)
             return
@@ -138,10 +195,12 @@ internal class NewTransactionViewModel @Inject constructor(
         submitTransactionUseCase.submitExpenses(
             name = name,
             fromAccountId = fromAccount.toInt(),
-            amount = amount.toInt(),
+            amount = amount.toLong(),
             categoryId = categoryId,
-            transactionDate = date
-        ).fold(
+            transactionDate = date,
+            currency = currency,
+            rate = rate
+            ).fold(
             onSuccess = {
                 handleSuccess()
             },
@@ -154,12 +213,16 @@ internal class NewTransactionViewModel @Inject constructor(
     private suspend fun submitIncome() {
         val fields = _viewState.value.fields
         val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.value?.value
-        val toAccountId = fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.value?.id?.toIntOrNull()
+        val toAccountId =
+            fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.value?.id?.toIntOrNull()
         val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.value?.value
-        val categoryId = fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.value?.id?.toIntOrNull()
+        val categoryId =
+            fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.value?.id?.toIntOrNull()
         val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value?.value
+        val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.value?.value
+        val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.value?.value?.toFloatOrNull()
 
-        if (name == null || amount == null || categoryId == null || date == null || toAccountId == null) {
+        if (name == null || amount == null || categoryId == null || date == null || toAccountId == null || currency == null || rate == null) {
             handleFailure(Exception("Something wrong"))
             toggleLoader(false)
             return
@@ -168,9 +231,11 @@ internal class NewTransactionViewModel @Inject constructor(
         submitTransactionUseCase.submitIncome(
             name = name,
             toAccountId = toAccountId.toInt(),
-            amount = amount.toInt(),
+            amount = amount.toLong(),
             categoryId = categoryId,
-            transactionDate = date
+            transactionDate = date,
+            currency = currency,
+            rate = rate
         ).fold(
             onSuccess = {
                 handleSuccess()
@@ -184,12 +249,16 @@ internal class NewTransactionViewModel @Inject constructor(
     private suspend fun submitTransfer() {
         val fields = _viewState.value.fields
         val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.value?.value
-        val fromAccountId = fields.firstOrNull { it.id == TRANSACTION_FROM_ACCOUNT }?.value?.id?.toIntOrNull()
-        val toAccountId = fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.value?.id?.toIntOrNull()
+        val fromAccountId =
+            fields.firstOrNull { it.id == TRANSACTION_FROM_ACCOUNT }?.value?.id?.toIntOrNull()
+        val toAccountId =
+            fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.value?.id?.toIntOrNull()
         val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.value?.value
         val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value?.value
+        val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.value?.value
+        val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.value?.value?.toFloatOrNull()
 
-        if (name == null || amount == null || fromAccountId == null || date == null || toAccountId == null) {
+        if (name == null || amount == null || fromAccountId == null || date == null || toAccountId == null || currency == null || rate == null) {
             handleFailure(Exception("Something wrong"))
             toggleLoader(false)
             return
@@ -199,8 +268,10 @@ internal class NewTransactionViewModel @Inject constructor(
             name = name,
             fromAccountId = fromAccountId.toInt(),
             toAccountId = toAccountId.toInt(),
-            amount = amount.toInt(),
-            transactionDate = date
+            amount = amount.toLong(),
+            transactionDate = date,
+            currency = currency,
+            rate = rate
         ).fold(
             onSuccess = {
                 handleSuccess()
@@ -247,9 +318,22 @@ internal class NewTransactionViewModel @Inject constructor(
 
     fun onCallbackFieldTap(field: FEField) {
         when (field.id) {
+            TRANSACTION_CURRENCY -> toggleBottomSheet(
+                NewTransactionViewState.CurrencySelectionBottomSheetState(
+                    field
+                )
+            )
+
             TRANSACTION_DATE -> onToggleCalendar(field)
-            TRANSACTION_CATEGORY -> toggleBottomSheet(NewTransactionViewState.CategorySelectionBottomSheetState(field))
-            TRANSACTION_FROM_ACCOUNT, TRANSACTION_TO_ACCOUNT -> toggleBottomSheet(NewTransactionViewState.AccountSelectionBottomSheetState(field))
+            TRANSACTION_CATEGORY -> toggleBottomSheet(
+                NewTransactionViewState.CategorySelectionBottomSheetState(
+                    field
+                )
+            )
+
+            TRANSACTION_FROM_ACCOUNT, TRANSACTION_TO_ACCOUNT -> toggleBottomSheet(
+                NewTransactionViewState.AccountSelectionBottomSheetState(field)
+            )
         }
     }
 
@@ -278,7 +362,21 @@ internal class NewTransactionViewModel @Inject constructor(
     }
 
     fun onSelectAccount(account: AccountGroup.Account) {
-        onFieldValueChanged(_viewState.value.bottomSheetState?.feField, account.accountName, account.accountId.toString())
+        onFieldValueChanged(
+            _viewState.value.bottomSheetState?.feField,
+            account.accountName,
+            account.accountId.toString()
+        )
+    }
+
+    fun onCurrencySelected(currencyRate: CurrencyRate) {
+        onFieldValueChanged(_viewState.value.bottomSheetState?.feField, currencyRate.name)
+        onFieldValueChanged(_viewState.value.fields.firstOrNull { it.id == TRANSACTION_RATE }, currencyRate.rate.toString())
+        _viewState.update {
+            it.copy(
+                currencyCode = currencyRate.name
+            )
+        }
     }
 }
 
@@ -290,13 +388,16 @@ internal data class NewTransactionViewState(
     val success: Boolean = false,
     val transactionCategories: TransactionCategories? = null,
     val accountGroups: List<AccountGroup> = listOf(),
-    val bottomSheetState: BottomSheetState? = null
+    val bottomSheetState: BottomSheetState? = null,
+    val currencyCode: String = "MYR",
+    val currencyList: List<CurrencyRate> = listOf()
 ) {
     val allowProceed: Boolean
         get() = fields.firstOrNull { it.value.value.isEmpty() } == null && errors == null
 
     fun getAccountsByGroupId(accountGroupId: Int): List<AccountGroup.Account> {
-        return accountGroups.firstOrNull { it.accountGroupId == accountGroupId }?.accounts ?: listOf()
+        return accountGroups.firstOrNull { it.accountGroupId == accountGroupId }?.accounts
+            ?: listOf()
     }
 
     val showBottomSheet get() = bottomSheetState != null
@@ -315,6 +416,10 @@ internal data class NewTransactionViewState(
     ) : BottomSheetState
 
     data class AccountSelectionBottomSheetState(
+        override val feField: FEField
+    ) : BottomSheetState
+
+    data class CurrencySelectionBottomSheetState(
         override val feField: FEField
     ) : BottomSheetState
 }

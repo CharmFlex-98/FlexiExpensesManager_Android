@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.charmflex.flexiexpensesmanager.features.home.domain.mapper.TransactionHeatMapMapper
+import com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper.TransactionHeatMapMapper
 import com.charmflex.flexiexpensesmanager.features.home.usecases.GetExpensesDailyMedianRatioUseCase
 import kotlinx.coroutines.launch
 import java.time.LocalDate

@@ -51,6 +51,13 @@ object SGIcons {
     }
 
     @Composable
+    fun Tick(
+        modifier: Modifier = Modifier
+    ) {
+        Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_correct), contentDescription = "")
+    }
+
+    @Composable
     fun Destination(
         modifier: Modifier = Modifier
     ) {

@@ -8,6 +8,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
+import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideDown
+import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideUp
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.category.category.ui.CategoryEditorScreen
@@ -19,18 +21,8 @@ internal class CategoryDestinationBuilder : DestinationBuilder {
     override fun NavGraphBuilder.buildGraph() {
         composable(
             CategoryRoutes.EDITOR,
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Up,
-                    animationSpec = tween(300)
-                )
-            },
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Companion.Down,
-                    animationSpec = tween(300)
-                )
-            }
+            enterTransition = FEVerticalSlideUp,
+            exitTransition = FEVerticalSlideDown
         ) {
             val type = it.arguments?.getString(CategoryRoutes.Args.TRANSACTION_TYPE).orEmpty()
             val viewModel = getViewModel { appComponent.categoryEditorViewModel().apply { setType(type = type) } }
