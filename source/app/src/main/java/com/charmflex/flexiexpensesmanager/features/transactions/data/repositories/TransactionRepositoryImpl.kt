@@ -1,7 +1,10 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.data.repositories
 
+import com.charmflex.flexiexpensesmanager.features.tag.data.entities.TagEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
+import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionTagDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
+import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTagEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.mapper.TransactionMapper
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
@@ -11,7 +14,8 @@ import javax.inject.Inject
 
 internal class TransactionRepositoryImpl @Inject constructor(
     private val transactionMapper: TransactionMapper,
-    private val transactionDao: TransactionDao
+    private val transactionDao: TransactionDao,
+    private val transactionTagDao: TransactionTagDao
 ) : TransactionRepository {
     override suspend fun addNewExpenses(
         name: String,
@@ -20,7 +24,8 @@ internal class TransactionRepositoryImpl @Inject constructor(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        rate: Float
+        rate: Float,
+        tagIds: List<Int>
     ) {
         val transaction = TransactionEntity(
             transactionName = name,
@@ -31,9 +36,9 @@ internal class TransactionRepositoryImpl @Inject constructor(
             transactionTypeCode = "EXPENSES",
             accountToId = null,
             currency = currency,
-            rate = rate
+            rate = rate,
         )
-        transactionDao.insertTransaction(transaction = transaction)
+        transactionTagDao.insertTransactionAndTransactionTag(transaction, tagIds)
     }
 
     override suspend fun addNewIncome(

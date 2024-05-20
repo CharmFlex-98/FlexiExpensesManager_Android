@@ -1,5 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.domain.model
 
+import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
+
 internal data class Transaction(
     val transactionId: Long,
     val transactionName: String,

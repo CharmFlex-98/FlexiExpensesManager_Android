@@ -15,7 +15,7 @@ internal interface TransactionDao {
     suspend fun getAllTransactionTypes(): List<TransactionTypeEntity>
 
     @Insert
-    suspend fun insertTransaction(transaction: TransactionEntity)
+    suspend fun insertTransaction(transaction: TransactionEntity): Long
 
     @Query(
         "SELECT t.id as transaction_id," +

@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.charmflex.flexiexpensesmanager.features.tag.data.entities.TagEntity
 
 @Entity(
    foreignKeys = [
@@ -23,7 +24,7 @@ import androidx.room.PrimaryKey
 )
 internal data class TransactionTagEntity(
     @PrimaryKey(true)
-    val id: Int,
+    val id: Int = 0,
     @ColumnInfo("tagId", index = true)
     val tagId: Int,
     @ColumnInfo("transaction_id", index = true)

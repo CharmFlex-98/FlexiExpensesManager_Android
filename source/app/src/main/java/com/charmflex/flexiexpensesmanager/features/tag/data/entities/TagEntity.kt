@@ -1,4 +1,4 @@
-package com.charmflex.flexiexpensesmanager.features.transactions.data.entities
+package com.charmflex.flexiexpensesmanager.features.tag.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

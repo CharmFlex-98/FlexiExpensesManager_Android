@@ -13,7 +13,8 @@ internal interface TransactionRepository {
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        rate: Float
+        rate: Float,
+        tagIds: List<Int>
     )
 
     suspend fun addNewIncome(

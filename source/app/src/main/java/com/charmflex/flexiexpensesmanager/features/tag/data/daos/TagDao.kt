@@ -1,10 +1,9 @@
-package com.charmflex.flexiexpensesmanager.features.transactions.data.daos
+package com.charmflex.flexiexpensesmanager.features.tag.data.daos
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TagEntity
-import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTagEntity
+import com.charmflex.flexiexpensesmanager.features.tag.data.entities.TagEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

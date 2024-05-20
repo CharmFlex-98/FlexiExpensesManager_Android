@@ -14,7 +14,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        rate: Float
+        rate: Float,
+        tagIds: List<Int>
     ): Result<Unit> {
         return resultOf {
             transactionRepository.addNewExpenses(
@@ -24,7 +25,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 categoryId,
                 transactionDate,
                 currency,
-                rate
+                rate,
+                tagIds
             )
         }
     }

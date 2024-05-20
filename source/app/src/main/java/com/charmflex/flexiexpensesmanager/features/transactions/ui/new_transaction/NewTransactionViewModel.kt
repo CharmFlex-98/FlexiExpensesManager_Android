@@ -12,11 +12,11 @@ import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountG
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Tag
+import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionTagRepository
+import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.NewTransactionContentProvider
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_AMOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_CATEGORY
@@ -45,7 +45,7 @@ internal class NewTransactionViewModel @Inject constructor(
     private val submitTransactionUseCase: SubmitTransactionUseCase,
     private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
     private val getUserCurrencyUseCase: GetUserCurrencyUseCase,
-    private val transactionTagRepository: TransactionTagRepository
+    private val tagRepository: TagRepository
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(NewTransactionViewState())
     val viewState = _viewState.asStateFlow()
@@ -126,7 +126,7 @@ internal class NewTransactionViewModel @Inject constructor(
 
     private fun observeTransactionTagOptions() {
         viewModelScope.launch {
-            transactionTagRepository.getAllTags().collectLatest { tagList ->
+            tagRepository.getAllTags().collectLatest { tagList ->
                 _viewState.update {
                     it.copy(
                         tagList = tagList
@@ -201,6 +201,7 @@ internal class NewTransactionViewModel @Inject constructor(
         val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value?.value
         val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.value?.value
         val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.value?.value?.toFloatOrNull()
+        val tagIds = fields.firstOrNull { it.id == TRANSACTION_TAG }?.value?.id
         if (name == null || amount == null || categoryId == null || date == null || fromAccount == null || currency == null || rate == null) {
             handleFailure(Exception("Something wrong"))
             toggleLoader(false)
@@ -214,7 +215,8 @@ internal class NewTransactionViewModel @Inject constructor(
             categoryId = categoryId,
             transactionDate = date,
             currency = currency,
-            rate = rate
+            rate = rate,
+            tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ").map { it.toInt() }
             ).fold(
             onSuccess = {
                 handleSuccess()
