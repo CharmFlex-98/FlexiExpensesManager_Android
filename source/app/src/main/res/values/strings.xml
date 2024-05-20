@@ -50,4 +50,6 @@
     <string name="new_transaction_currency_hint">Select currency</string>
     <string name="new_transaction_currency_rate_label">Rate</string>
     <string name="new_transaction_currency_rate_hint">Conversion Rate</string>
+    <string name="new_transaction_tag_label">Tag</string>
+    <string name="new_transaction_tag_hint">Select a tag (Optional)</string>
 </resources>

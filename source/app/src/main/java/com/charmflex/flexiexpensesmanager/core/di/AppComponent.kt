@@ -12,6 +12,7 @@ import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyModule
 import com.charmflex.flexiexpensesmanager.features.transactions.di.TransactionInjector
 import com.charmflex.flexiexpensesmanager.features.transactions.di.modules.TransactionModule
 import com.charmflex.flexiexpensesmanager.features.home.di.HomeInjector
+import com.charmflex.flexiexpensesmanager.features.tag.di.TagInjector
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -29,7 +30,7 @@ import javax.inject.Singleton
 )
 @Singleton
 internal interface AppComponent : MainInjector, AuthInjector, TransactionInjector, HomeInjector,
-    CategoryInjector, AccountInjector, CurrencyInjector {
+    CategoryInjector, AccountInjector, CurrencyInjector, TagInjector {
 
     @Component.Factory
     interface Factory {

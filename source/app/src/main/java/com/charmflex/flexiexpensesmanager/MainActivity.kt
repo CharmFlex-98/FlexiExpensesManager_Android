@@ -15,6 +15,7 @@ import com.charmflex.flexiexpensesmanager.features.category.category.destination
 import com.charmflex.flexiexpensesmanager.features.currency.destinations.CurrencyDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.transactions.destination.TransactionDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.home.destination.HomeDestinationBuilder
+import com.charmflex.flexiexpensesmanager.features.tag.destination.TagDestinationBuilder
 import com.example.compose.FlexiExpensesManagerTheme
 
 class MainActivity : ComponentActivity() {
@@ -48,6 +49,7 @@ private fun createDestinations(): List<DestinationBuilder> {
         TransactionDestinationBuilder(),
         CategoryDestinationBuilder(),
         AccountDestinationBuilder(),
-        CurrencyDestinationBuilder()
+        CurrencyDestinationBuilder(),
+        TagDestinationBuilder()
     )
 }

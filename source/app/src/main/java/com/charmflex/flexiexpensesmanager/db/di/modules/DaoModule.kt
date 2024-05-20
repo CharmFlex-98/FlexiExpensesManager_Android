@@ -3,6 +3,7 @@ package com.charmflex.flexiexpensesmanager.db.di.modules
 import com.charmflex.flexiexpensesmanager.db.AppDatabase
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.currency.data.daos.CurrencyDao
+import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TagDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionCategoryDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
 import dagger.Module
@@ -30,6 +31,11 @@ internal interface DaoModule {
         @Provides
         fun currencyDao(db: AppDatabase): CurrencyDao {
             return db.getCurrencyDao()
+        }
+
+        @Provides
+        fun tagDao(db: AppDatabase): TagDao {
+            return db.getTagDao()
         }
     }
 }

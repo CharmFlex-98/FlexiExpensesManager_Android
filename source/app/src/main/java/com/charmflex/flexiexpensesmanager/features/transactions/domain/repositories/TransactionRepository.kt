@@ -35,7 +35,6 @@ internal interface TransactionRepository {
         currency: String,
         rate: Float
     )
-    suspend fun getHistory(): List<ExpensesData>
 
     fun getTransactions(
         startDate: String? = null,
