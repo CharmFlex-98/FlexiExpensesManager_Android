@@ -58,7 +58,6 @@ internal fun ColumnScope.ExpensesPieChartScreen(
                 .clickable {
                     viewModel.onToggleTagDialog(true)
                 }
-                .padding(grid_x2)
         ) {
             Text(text = "Select tag")
         }
