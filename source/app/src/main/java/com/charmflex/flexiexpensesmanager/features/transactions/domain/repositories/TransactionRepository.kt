@@ -13,7 +13,8 @@ internal interface TransactionRepository {
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        rate: Float
+        rate: Float,
+        tagIds: List<Int>
     )
 
     suspend fun addNewIncome(
@@ -35,12 +36,12 @@ internal interface TransactionRepository {
         currency: String,
         rate: Float
     )
-    suspend fun getHistory(): List<ExpensesData>
 
     fun getTransactions(
         startDate: String? = null,
         endDate: String? = null,
-        offset: Int = 0
+        offset: Int = 0,
+        tagFilter: List<Int> = listOf()
     ): Flow<List<Transaction>>
 
     suspend fun getTransactionById(transactionId: Long): Transaction

@@ -14,6 +14,7 @@ internal const val TRANSACTION_FROM_ACCOUNT = "TRANSACTION_FROM_ACC"
 internal const val TRANSACTION_TO_ACCOUNT = "TRANSACTION_TO_ACC"
 internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
 internal const val TRANSACTION_CURRENCY = "TRANSACTION_CURRENCY"
+internal const val TRANSACTION_TAG = "TRANSACTION_TAG"
 
 
 internal class NewTransactionContentProvider @Inject constructor() {
@@ -73,6 +74,12 @@ internal class NewTransactionContentProvider @Inject constructor() {
                 id = TRANSACTION_CATEGORY,
                 labelId = R.string.generic_category,
                 hintId = R.string.generic_category_hint,
+                type = FEField.FieldType.Callback
+            ),
+            FEField(
+                id = TRANSACTION_TAG,
+                labelId = R.string.new_transaction_tag_label,
+                hintId = R.string.new_transaction_tag_hint,
                 type = FEField.FieldType.Callback
             )
         )

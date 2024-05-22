@@ -28,5 +28,9 @@ internal data class TransactionResponse(
     @ColumnInfo("currency")
     val currency: String,
     @ColumnInfo("rate")
-    val rate: Float
+    val rate: Float,
+    @ColumnInfo("tag_ids")
+    val tagIds: String?,
+    @ColumnInfo("tag_names")
+    val tagNames: String?
 )

@@ -5,6 +5,7 @@ import dagger.Module
 @Module(
     includes = [
         TransactionRepositoryModule::class,
+        TransactionTagModule::class
     ]
 )
 internal interface TransactionModule {

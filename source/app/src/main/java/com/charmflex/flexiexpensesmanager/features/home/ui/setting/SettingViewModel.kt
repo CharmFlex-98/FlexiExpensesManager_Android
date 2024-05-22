@@ -5,6 +5,7 @@ import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.TagRoutes
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import javax.inject.Inject
 
@@ -28,6 +29,9 @@ internal class SettingViewModel @Inject constructor(
             }
             SettingAction.SECONDARY_CURRENCY -> {
                 routeNavigator.navigateTo(CurrencyRoutes.USER_SECONDARY_CURRENCY)
+            }
+            SettingAction.Tag -> {
+                routeNavigator.navigateTo(TagRoutes.SETTING)
             }
         }
     }
@@ -53,6 +57,10 @@ internal class SettingViewModel @Inject constructor(
             SettingActionable(
                 "Set secondary currency",
                 action = SettingAction.SECONDARY_CURRENCY
+            ),
+            SettingActionable(
+                title = "Set tag",
+                action = SettingAction.Tag
             )
         )
     }
@@ -63,5 +71,5 @@ internal data class SettingActionable(
     val action: SettingAction
 )
 internal enum class SettingAction {
-    EXPENSES_CAT, INCOME_CAT, ACCOUNT, PRIMARY_CURRENCY, SECONDARY_CURRENCY
+    EXPENSES_CAT, INCOME_CAT, ACCOUNT, PRIMARY_CURRENCY, SECONDARY_CURRENCY, Tag
 }

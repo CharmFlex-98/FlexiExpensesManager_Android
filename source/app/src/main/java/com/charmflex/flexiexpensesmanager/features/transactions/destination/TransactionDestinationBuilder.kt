@@ -32,7 +32,7 @@ internal class TransactionDestinationBuilder : DestinationBuilder{
                     animationSpec = tween(300)
                 )
             },
-            exitTransition = {
+            popExitTransition = {
                 slideOutOfContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Companion.Down,
                     animationSpec = tween(300)

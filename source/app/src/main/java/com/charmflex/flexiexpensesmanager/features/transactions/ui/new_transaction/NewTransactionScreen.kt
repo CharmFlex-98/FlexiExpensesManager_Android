@@ -46,6 +46,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.toLocalDateTime
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
+import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
@@ -68,6 +69,7 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x20
 import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,6 +87,12 @@ internal fun NewExpensesScreen(
     val bottomSheetState = rememberModalBottomSheetState()
     val currencyVisualTransformation = remember(viewState.currencyCode) {
         viewModel.currencyVisualTransformationBuilder().create(viewState.currencyCode)
+    }
+    var initLoader by remember { mutableStateOf(true) }
+
+    LaunchedEffect(key1 = Unit) {
+        delay(500)
+        initLoader = false
     }
 
     LaunchedEffect(snackBarState) {
@@ -113,9 +121,9 @@ internal fun NewExpensesScreen(
             }
             )
         },
-        isLoading = viewState.isLoading
+        isLoading = viewState.isLoading || initLoader
     ) {
-        Column(
+        if (initLoader.not()) Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(grid_x2)
@@ -269,6 +277,13 @@ internal fun NewExpensesScreen(
                 is NewTransactionViewState.CurrencySelectionBottomSheetState -> {
                     CurrencySelectionBottomSheet(currencyList = viewState.currencyList) {
                         viewModel.onCurrencySelected(it)
+                        viewModel.toggleBottomSheet(null)
+                    }
+                }
+
+                is NewTransactionViewState.TagSelectionBottomSheetState -> {
+                    TagSelectionBottomSheet(tagList = viewState.tagList) {
+                        viewModel.onTagSelected(it)
                         viewModel.toggleBottomSheet(null)
                     }
                 }
@@ -435,6 +450,38 @@ private fun CurrencySelectionBottomSheet(
                             onSelectCurrency(it)
                         }
                         .padding(grid_x2), 
+                    contentAlignment = Alignment.Center
+                ) {
+                    FEBody2(text = it.name)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TagSelectionBottomSheet(
+    tagList: List<Tag>,
+    onSelectTag: (Tag) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        FEHeading2(text = "Select Tag")
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(state = rememberScrollState())
+        ) {
+            tagList.forEach {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onSelectTag(it)
+                        }
+                        .padding(grid_x2),
                     contentAlignment = Alignment.Center
                 ) {
                     FEBody2(text = it.name)

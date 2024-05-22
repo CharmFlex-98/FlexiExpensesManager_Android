@@ -49,3 +49,24 @@ val MIGRATION_4_5 = object  : Migration(4, 5) {
         db.execSQL("ALTER TABLE TransactionEntity ADD rate REAL NOT NULL DEFAULT 1")
     }
 }
+
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("BEGIN TRANSACTION;")
+
+        // Create New Transaction Table
+        db.execSQL("CREATE TABLE IF NOT EXISTS `TagEntityNew` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tag_name` TEXT NOT NULL)")
+
+        // Copy from old to new
+        db.execSQL("INSERT INTO TagEntityNew(id, tag_name) SELECT * FROM TagEntity")
+
+        // Drop old table
+        db.execSQL("DROP TABLE TagEntity")
+
+        // Rename new table
+        db.execSQL("ALTER TABLE TagEntityNew RENAME TO TagEntity")
+
+        // End
+        db.execSQL("COMMIT;");
+    }
+}

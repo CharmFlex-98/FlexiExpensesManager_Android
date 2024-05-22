@@ -10,14 +10,17 @@ import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_1_2
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_2_3
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_3_4
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_4_5
+import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_5_6
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountGroupEntity
 import com.charmflex.flexiexpensesmanager.features.currency.data.daos.CurrencyDao
 import com.charmflex.flexiexpensesmanager.features.currency.data.models.UserCurrencyRateEntity
+import com.charmflex.flexiexpensesmanager.features.tag.data.daos.TagDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionCategoryDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
-import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TagEntity
+import com.charmflex.flexiexpensesmanager.features.tag.data.entities.TagEntity
+import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionTagDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionCategoryEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTagEntity
@@ -32,15 +35,17 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.Tr
         TransactionEntity::class,
         TransactionTagEntity::class,
         TransactionTypeEntity::class,
-        UserCurrencyRateEntity::class
+        UserCurrencyRateEntity::class,
     ],
-    version = 5,
+    version = 6,
 )
 internal abstract class AppDatabase : RoomDatabase() {
     abstract fun getAccountDao(): AccountDao
     abstract fun getTransactionDao(): TransactionDao
     abstract fun getTransactionCategoryDao(): TransactionCategoryDao
     abstract fun getCurrencyDao(): CurrencyDao
+    abstract fun getTagDao(): TagDao
+    abstract fun getTransactionTagDao(): TransactionTagDao
 
     class Builder(
         private val appContext: Context
@@ -71,7 +76,8 @@ private fun migrationList(): List<Migration> {
         MIGRATION_1_2,
         MIGRATION_2_3,
         MIGRATION_3_4,
-        MIGRATION_4_5
+        MIGRATION_4_5,
+        MIGRATION_5_6
     )
 }
 

@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.data.mapper
 
 import com.charmflex.flexiexpensesmanager.core.utils.Mapper
+import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.transactions.data.responses.TransactionResponse
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import javax.inject.Inject
@@ -19,7 +20,14 @@ internal class TransactionMapper @Inject constructor() : Mapper<TransactionRespo
             transactionAccountFrom = getTransactionAccount(from.accountFromId, from.accountFromName),
             transactionAccountTo = getTransactionAccount(from.accountToId, from.accountToName),
             // TODO: Not supported yet
-            tags = listOf()
+            tags = from.tagIds?.let {
+                it.split(", ").mapIndexed { index, it ->
+                    Tag(
+                        id = it.toInt(),
+                        name = from.tagNames?.split(", ")?.get(index) ?: ""
+                    )
+                }
+            } ?: listOf()
         )
     }
 
