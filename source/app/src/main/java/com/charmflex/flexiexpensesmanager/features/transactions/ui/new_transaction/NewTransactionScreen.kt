@@ -69,6 +69,7 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x20
 import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,6 +87,12 @@ internal fun NewExpensesScreen(
     val bottomSheetState = rememberModalBottomSheetState()
     val currencyVisualTransformation = remember(viewState.currencyCode) {
         viewModel.currencyVisualTransformationBuilder().create(viewState.currencyCode)
+    }
+    var initLoader by remember { mutableStateOf(true) }
+
+    LaunchedEffect(key1 = Unit) {
+        delay(500)
+        initLoader = false
     }
 
     LaunchedEffect(snackBarState) {
@@ -114,9 +121,9 @@ internal fun NewExpensesScreen(
             }
             )
         },
-        isLoading = viewState.isLoading
+        isLoading = viewState.isLoading || initLoader
     ) {
-        Column(
+        if (initLoader.not()) Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(grid_x2)
