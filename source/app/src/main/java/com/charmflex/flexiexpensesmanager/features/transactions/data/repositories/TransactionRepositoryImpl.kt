@@ -38,7 +38,8 @@ internal class TransactionRepositoryImpl @Inject constructor(
             currency = currency,
             rate = rate,
         )
-        transactionTagDao.insertTransactionAndTransactionTag(transaction, tagIds)
+        if (tagIds.isEmpty()) transactionDao.insertTransaction(transaction)
+        else transactionTagDao.insertTransactionAndTransactionTag(transaction, tagIds)
     }
 
     override suspend fun addNewIncome(
@@ -90,10 +91,11 @@ internal class TransactionRepositoryImpl @Inject constructor(
     override fun getTransactions(
         startDate: String?,
         endDate: String?,
-        offset: Int
+        offset: Int,
+        tagFilter: List<Int>
     ): Flow<List<Transaction>> {
         return transactionDao.getTransactions(
-            startDate, endDate, offset
+            startDate, endDate, offset, tagFilter = tagFilter
         ).map {
             it.map {
                 transactionMapper.map(it)

@@ -40,7 +40,8 @@ internal interface TransactionRepository {
     fun getTransactions(
         startDate: String? = null,
         endDate: String? = null,
-        offset: Int = 0
+        offset: Int = 0,
+        tagFilter: List<Int> = listOf()
     ): Flow<List<Transaction>>
 
     suspend fun getTransactionById(transactionId: Long): Transaction

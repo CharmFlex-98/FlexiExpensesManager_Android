@@ -85,8 +85,7 @@ internal class NewTransactionViewModel @Inject constructor(
                     return@map it.copy(
                         value = FEField.Value(it.value.id, currency?.rate?.toString() ?: "1")
                     )
-                }
-                else it
+                } else it
             }
 
             _viewState.update {
@@ -100,7 +99,8 @@ internal class NewTransactionViewModel @Inject constructor(
 
     fun updateCategories(transactionType: TransactionType) {
         viewModelScope.launch {
-            val categories = transactionCategoryRepository.getAllCategories(transactionType.name).firstOrNull()
+            val categories =
+                transactionCategoryRepository.getAllCategories(transactionType.name).firstOrNull()
             _viewState.update {
                 it.copy(
                     transactionCategories = categories
@@ -217,7 +217,7 @@ internal class NewTransactionViewModel @Inject constructor(
             currency = currency,
             rate = rate,
             tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ").map { it.toInt() }
-            ).fold(
+        ).fold(
             onSuccess = {
                 handleSuccess()
             },
@@ -340,6 +340,7 @@ internal class NewTransactionViewModel @Inject constructor(
                     field
                 )
             )
+
             TRANSACTION_CURRENCY -> toggleBottomSheet(
                 NewTransactionViewState.CurrencySelectionBottomSheetState(
                     field
@@ -394,7 +395,10 @@ internal class NewTransactionViewModel @Inject constructor(
 
     fun onCurrencySelected(currencyRate: CurrencyRate) {
         onFieldValueChanged(_viewState.value.bottomSheetState?.feField, currencyRate.name)
-        onFieldValueChanged(_viewState.value.fields.firstOrNull { it.id == TRANSACTION_RATE }, currencyRate.rate.toString())
+        onFieldValueChanged(
+            _viewState.value.fields.firstOrNull { it.id == TRANSACTION_RATE },
+            currencyRate.rate.toString()
+        )
         _viewState.update {
             it.copy(
                 currencyCode = currencyRate.name
@@ -404,7 +408,8 @@ internal class NewTransactionViewModel @Inject constructor(
 
     fun onTagSelected(tag: Tag) {
         val initialIds = _viewState.value.bottomSheetState?.feField?.value?.id
-        val updatedIds = if (initialIds.isNullOrBlank()) tag.id.toString() else initialIds + ", ${tag.id}"
+        val updatedIds =
+            if (initialIds.isNullOrBlank()) tag.id.toString() else initialIds + ", ${tag.id}"
 
         val tagNames = _viewState.value.bottomSheetState?.feField?.value?.value
         val updatedNames = if (tagNames.isNullOrBlank()) tag.name else tagNames + ", ${tag.name}"
@@ -431,7 +436,8 @@ internal data class NewTransactionViewState(
     val tagList: List<Tag> = listOf()
 ) {
     val allowProceed: Boolean
-        get() = fields.firstOrNull { it.value.value.isEmpty() } == null && errors == null
+        get() = fields.filter { it.id != TRANSACTION_TAG }
+            .firstOrNull { it.value.value.isEmpty() } == null && errors == null
 
     fun getAccountsByGroupId(accountGroupId: Int): List<AccountGroup.Account> {
         return accountGroups.firstOrNull { it.accountGroupId == accountGroupId }?.accounts

@@ -28,21 +28,30 @@ internal interface TransactionDao {
             "t.amount_in_cent," +
             "t.transaction_date," +
             "t.category_id," +
-            "tc.name as category_name, " +
-            "t.currency, " +
-            "t.rate FROM TransactionEntity t" +
+            "tc.name as category_name," +
+            "t.currency," +
+            "t.rate, " +
+            "GROUP_CONCAT(tt.tagId, ', ') as tag_ids, " +
+            "GROUP_CONCAT(tg.tag_name, ', ') as tag_names " +
+            "FROM TransactionEntity t" +
             " LEFT JOIN TransactionCategoryEntity tc ON t.category_id = tc.id" +
             " LEFT JOIN AccountEntity afrom ON t.account_from_id = afrom.id" +
             " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id" +
-            " WHERE (:startDate IS NULL OR transaction_date >= :startDate)" +
-            " AND (:endDate IS NULL OR transaction_date <= :endDate)" +
-            " ORDER BY transaction_date DESC" +
+            " LEFT JOIN TransactionTagEntity tt ON t.id = tt.id" +
+            " LEFT JOIN TagEntity tg ON tg.id = tt.tagId" +
+            " WHERE (:startDate IS NULL OR transaction_date >= :startDate) " +
+                "AND (:noTagSelected OR tt.tagId IN (:tagFilter)) " +
+                "AND (:endDate IS NULL OR transaction_date <= :endDate)" +
+                " GROUP BY t.id" +
+                " ORDER BY transaction_date DESC" +
             " LIMIT :limit OFFSET :offset")
     fun getTransactions(
         startDate: String?,
         endDate: String?,
         offset: Int,
-        limit: Int = 100
+        limit: Int = 100,
+        tagFilter: List<Int>,
+        noTagSelected: Boolean = tagFilter.isEmpty()
     ) : Flow<List<TransactionResponse>>
 
     @Query(
@@ -58,10 +67,15 @@ internal interface TransactionDao {
                 "t.category_id," +
                 "tc.name as category_name, " +
                 "t.currency," +
-                "t.rate FROM TransactionEntity t" +
+                "t.rate, " +
+                "GROUP_CONCAT(tt.tagId, ', ') as tag_ids, " +
+                "GROUP_CONCAT(tg.tag_name, ', ') as tag_names " +
+                "FROM TransactionEntity t" +
                 " LEFT JOIN TransactionCategoryEntity tc ON t.category_id = tc.id" +
                 " LEFT JOIN AccountEntity afrom ON t.account_from_id = afrom.id" +
                 " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id" +
+                " LEFT JOIN TransactionTagEntity tt ON t.id = tt.id" +
+                " LEFT JOIN TagEntity tg ON tg.id = tt.tagId" +
                 " WHERE t.id = :id"
     )
     suspend fun getTransactionById(id: Long): TransactionResponse
