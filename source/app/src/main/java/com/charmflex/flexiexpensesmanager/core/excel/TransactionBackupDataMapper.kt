@@ -30,18 +30,18 @@ internal class TransactionBackupDataMapper @Inject constructor(
                 currencyRate = it.rate.toDouble(),
                 amount = it.amountInCent / 100.toDouble(),
                 date = it.transactionDate,
-                categoryColumns = generateCategoryColumns(currentCategory?.let { res -> mutableListOf(res) } ?: mutableListOf(),  transactionCategoryMap, currentCategory).reversed(),
+                categoryColumns = generateCategoryColumns(currentCategory?.let { res -> mutableListOf(res.name) } ?: mutableListOf(),  transactionCategoryMap, currentCategory).reversed(),
                 tags = it.tags.map { it.name }
             )
         }
     }
 
-    private fun generateCategoryColumns(columns: MutableList<TransactionCategory>, transactionCategoryMap: Map<Int, TransactionCategory>, currentCategory: TransactionCategory?): List<TransactionCategory> {
+    private fun generateCategoryColumns(columns: MutableList<String>, transactionCategoryMap: Map<Int, TransactionCategory>, currentCategory: TransactionCategory?): List<String> {
         return if (currentCategory == null) return emptyList()
-        else if (currentCategory.parentId == 0) return columns
+        else if (currentCategory.parentId == 0) return columns.toList()
         else {
             val parentCategory = transactionCategoryMap[currentCategory.parentId] ?: return columns
-            generateCategoryColumns(columns.apply { add(parentCategory) }, transactionCategoryMap, parentCategory)
+            generateCategoryColumns(columns.apply { add(parentCategory.name) }, transactionCategoryMap, parentCategory)
         }
     }
 

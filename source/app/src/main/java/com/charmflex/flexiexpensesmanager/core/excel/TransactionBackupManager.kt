@@ -114,7 +114,7 @@ internal class TransactionBackupManagerImpl @Inject constructor(
         currencyRate: Double,
         amount: Double,
         date: String,
-        categoryColumns: List<TransactionCategory>,
+        categoryColumns: List<String>,
         tags: List<String>
     ) {
         row {
@@ -127,28 +127,10 @@ internal class TransactionBackupManagerImpl @Inject constructor(
             doubleCell(amount)
             stringCell(date)
             for (c in 0..2) {
-                if (c <= categoryColumns.size - 1) stringCell(categoryColumns[c].name)
+                if (c <= categoryColumns.size - 1) stringCell(categoryColumns[c])
                 else emptyCell()
             }
             tags.joinToString().let { if (it.isEmpty().not()) stringCell(it) else emptyCell() }
-        }
-    }
-
-    private fun generateCategoryColumns(
-        columns: MutableList<TransactionCategory>,
-        transactionCategoryMap: Map<Int, TransactionCategory>,
-        currentCategory: TransactionCategory?
-    ): List<TransactionCategory> {
-        Log.d("game", columns.toList().toString())
-        return if (currentCategory == null) return emptyList()
-        else if (currentCategory.parentId == 0) return columns
-        else {
-            val parentCategory = transactionCategoryMap[currentCategory.parentId] ?: return columns
-            generateCategoryColumns(
-                columns.apply { add(parentCategory) },
-                transactionCategoryMap,
-                parentCategory
-            )
         }
     }
 }
@@ -162,7 +144,7 @@ internal data class TransactionBackupData(
     val currencyRate: Double,
     val amount: Double,
     val date: String,
-    val categoryColumns: List<TransactionCategory>,
+    val categoryColumns: List<String>,
     val tags: List<String>
 )
 
