@@ -11,6 +11,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Tra
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
@@ -28,13 +29,14 @@ internal interface TransactionBackupManager {
 
 internal class TransactionBackupManagerImpl @Inject constructor(
     private val transactionRepository: TransactionRepository,
-    private val transactionCategoryRepository: TransactionCategoryRepository,
+    private val transactionBackupDataMapper: TransactionBackupDataMapper,
     private val appContext: Context,
     @Dispatcher(Dispatcher.Type.IO)
     private val dispatcher: CoroutineDispatcher,
 ) : TransactionBackupManager {
     private val xssfWorkbook
         get() = XSSFWorkbook()
+
     override suspend fun read() {
         TODO("Not yet implemented")
     }
@@ -43,13 +45,8 @@ internal class TransactionBackupManagerImpl @Inject constructor(
         val path = appContext.cacheDir
         withContext(dispatcher) {
             val file = File(path, fileName).apply { createNewFile() }
-            val transactionCategoryMap = transactionCategoryRepository.getAllCategoriesIncludedDeleted().groupBy {
-                it.id
-            }.mapValues {
-                it.value[0]
-            }
-
             transactionRepository.getTransactions().firstOrNull()?.let { transactions ->
+                val excelData = transactionBackupDataMapper.map(transactions)
                 workbook(xssfWorkbook) {
                     sheet("guide") {}
                     sheet("record") {
@@ -68,21 +65,18 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                             stringCell("Tags")
                         }
                         Log.d("transactions", transactions.toString())
-                        transactions.forEach {
-                            val currentCategory = it.transactionCategory?.id?.let {
-                                transactionCategoryMap.getOrElse(it) { null }
-                            }
+                        excelData.forEach {
                             buildRow(
                                 transactionName = it.transactionName,
-                                accountFrom = it.transactionAccountFrom?.name,
-                                accountTo = it.transactionAccountTo?.name,
-                                transactionType = it.transactionTypeCode,
-                                currencyType = it.currency,
-                                currencyRate = it.rate.toDouble(),
-                                amount = it.amountInCent / 100.toDouble(),
-                                date = it.transactionDate,
-                                categoryColumns = generateCategoryColumns(currentCategory?.let { res -> mutableListOf(res) } ?: mutableListOf(),  transactionCategoryMap, currentCategory).reversed(),
-                                tags = it.tags.map { it.name }
+                                accountFrom = it.accountFrom,
+                                accountTo = it.accountTo,
+                                transactionType = it.transactionType,
+                                currencyType = it.currencyType,
+                                currencyRate = it.currencyRate,
+                                amount = it.amount,
+                                date = it.date,
+                                categoryColumns = it.categoryColumns,
+                                tags = it.tags
                             )
                         }
                     }
@@ -123,7 +117,6 @@ internal class TransactionBackupManagerImpl @Inject constructor(
         categoryColumns: List<TransactionCategory>,
         tags: List<String>
     ) {
-        Log.d("excel", categoryColumns.toString())
         row {
             stringCell(transactionName)
             if (accountFrom != null) stringCell(accountFrom) else emptyCell()
@@ -141,14 +134,35 @@ internal class TransactionBackupManagerImpl @Inject constructor(
         }
     }
 
-    private fun generateCategoryColumns(columns: MutableList<TransactionCategory>, transactionCategoryMap: Map<Int, TransactionCategory>, currentCategory: TransactionCategory?): List<TransactionCategory> {
+    private fun generateCategoryColumns(
+        columns: MutableList<TransactionCategory>,
+        transactionCategoryMap: Map<Int, TransactionCategory>,
+        currentCategory: TransactionCategory?
+    ): List<TransactionCategory> {
         Log.d("game", columns.toList().toString())
         return if (currentCategory == null) return emptyList()
         else if (currentCategory.parentId == 0) return columns
         else {
             val parentCategory = transactionCategoryMap[currentCategory.parentId] ?: return columns
-            generateCategoryColumns(columns.apply { add(parentCategory) }, transactionCategoryMap, parentCategory)
+            generateCategoryColumns(
+                columns.apply { add(parentCategory) },
+                transactionCategoryMap,
+                parentCategory
+            )
         }
     }
 }
+
+internal data class TransactionBackupData(
+    val transactionName: String,
+    val accountFrom: String?,
+    val accountTo: String?,
+    val transactionType: String,
+    val currencyType: String,
+    val currencyRate: Double,
+    val amount: Double,
+    val date: String,
+    val categoryColumns: List<TransactionCategory>,
+    val tags: List<String>
+)
 
