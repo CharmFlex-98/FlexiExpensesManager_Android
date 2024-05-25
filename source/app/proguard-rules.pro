@@ -25,6 +25,11 @@
 -dontwarn com.google.auto.service.AutoService
 -dontwarn javax.lang.model.**
 -dontwarn javax.tools.Diagnostic*
+-dontwarn org.osgi.framework.**
+-dontwarn org.apache.batik.**
+-dontwarn net.sf.saxon.**
+-dontwarn javax.xml.stream.**
+-dontwarn java.awt.**
 -keepclassmembers,allowobfuscation class * {
  @com.google.gson.annotations.SerializedName <fields>;
 }

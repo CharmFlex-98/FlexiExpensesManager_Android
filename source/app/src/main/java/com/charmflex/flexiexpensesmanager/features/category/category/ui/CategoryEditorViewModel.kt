@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
-import com.charmflex.flexiexpensesmanager.features.account.ui.AccountEditorViewState
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
@@ -40,7 +39,7 @@ internal class CategoryEditorViewModel @Inject constructor(
 
     private fun listenCategoryList() {
         viewModelScope.launch {
-            categoryRepository.getAllCategories(editorTypeCode.name).collectLatest {
+            categoryRepository.getCategories(editorTypeCode.name).collectLatest {
                 toggleLoading(true)
                 _viewState.update { state ->
                     state.copy(

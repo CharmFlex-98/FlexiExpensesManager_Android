@@ -4,10 +4,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionCategoryEntity
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 internal interface TransactionCategoryDao {
+
+    @Query(
+        "SELECT * FROM TransactionCategoryEntity"
+    )
+    fun getAllCategoriesIncludedDeleted(): Flow<List<TransactionCategoryEntity>>
 
     @Query(
         "SELECT * FROM TransactionCategoryEntity" +

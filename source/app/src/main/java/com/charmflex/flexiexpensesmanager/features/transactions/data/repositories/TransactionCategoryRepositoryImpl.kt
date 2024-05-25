@@ -2,11 +2,13 @@ package com.charmflex.flexiexpensesmanager.features.transactions.data.repositori
 
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionCategoryDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionCategoryEntity
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategory
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import javax.inject.Inject
@@ -14,8 +16,20 @@ import javax.inject.Inject
 internal class TransactionCategoryRepositoryImpl @Inject constructor(
     private val transactionCategoryDao: TransactionCategoryDao
 ) : TransactionCategoryRepository {
+    override suspend fun getAllCategoriesIncludedDeleted(): List<TransactionCategory> {
+        return transactionCategoryDao.getAllCategoriesIncludedDeleted().firstOrNull()?.map {
+            TransactionCategory(
+                it.id,
+                it.transactionTypeCode,
+                it.name,
+                it.parentId,
+                it.isDeleted
+            )
+        } ?: listOf()
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getAllCategories(transactionTypeCode: String): Flow<TransactionCategories> {
+    override fun getCategories(transactionTypeCode: String): Flow<TransactionCategories> {
         val res = transactionCategoryDao.getCategories(transactionTypeCode)
         return res.transformLatest {
             emit(it to it.filter { entity -> entity.parentId == 0 })
@@ -27,7 +41,7 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getAllCategoriesIncludeDeleted(transactionTypeCode: String): Flow<TransactionCategories> {
+    override fun getCategoriesIncludeDeleted(transactionTypeCode: String): Flow<TransactionCategories> {
         val res = transactionCategoryDao.getCategoriesIncludeDeleted(transactionTypeCode)
         return res.transformLatest {
             emit(it to it.filter { entity -> entity.parentId == 0 })
