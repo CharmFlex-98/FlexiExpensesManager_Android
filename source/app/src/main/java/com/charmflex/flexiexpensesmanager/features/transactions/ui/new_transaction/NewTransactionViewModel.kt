@@ -100,7 +100,7 @@ internal class NewTransactionViewModel @Inject constructor(
     fun updateCategories(transactionType: TransactionType) {
         viewModelScope.launch {
             val categories =
-                transactionCategoryRepository.getAllCategories(transactionType.name).firstOrNull()
+                transactionCategoryRepository.getCategories(transactionType.name).firstOrNull()
             _viewState.update {
                 it.copy(
                     transactionCategories = categories

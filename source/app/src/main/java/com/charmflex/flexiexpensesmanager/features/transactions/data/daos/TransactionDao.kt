@@ -37,7 +37,7 @@ internal interface TransactionDao {
             " LEFT JOIN TransactionCategoryEntity tc ON t.category_id = tc.id" +
             " LEFT JOIN AccountEntity afrom ON t.account_from_id = afrom.id" +
             " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id" +
-            " LEFT JOIN TransactionTagEntity tt ON t.id = tt.id" +
+            " LEFT JOIN TransactionTagEntity tt ON t.id = tt.transaction_id" +
             " LEFT JOIN TagEntity tg ON tg.id = tt.tagId" +
             " WHERE (:startDate IS NULL OR transaction_date >= :startDate) " +
                 "AND (:noTagSelected OR tt.tagId IN (:tagFilter)) " +
@@ -74,7 +74,7 @@ internal interface TransactionDao {
                 " LEFT JOIN TransactionCategoryEntity tc ON t.category_id = tc.id" +
                 " LEFT JOIN AccountEntity afrom ON t.account_from_id = afrom.id" +
                 " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id" +
-                " LEFT JOIN TransactionTagEntity tt ON t.id = tt.id" +
+                " LEFT JOIN TransactionTagEntity tt ON t.id = tt.transaction_id" +
                 " LEFT JOIN TagEntity tg ON tg.id = tt.tagId" +
                 " WHERE t.id = :id"
     )

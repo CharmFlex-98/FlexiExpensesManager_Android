@@ -1,5 +1,7 @@
 package com.charmflex.flexiexpensesmanager.core.di
 
+import com.charmflex.flexiexpensesmanager.core.excel.TransactionBackupManager
+import com.charmflex.flexiexpensesmanager.core.excel.TransactionBackupManagerImpl
 import com.charmflex.flexiexpensesmanager.core.storage.FileStorage
 import com.charmflex.flexiexpensesmanager.core.storage.FileStorageImpl
 import com.charmflex.flexiexpensesmanager.core.storage.SharedPrefs
@@ -26,6 +28,10 @@ internal interface MainModule {
     @Binds
     @Singleton
     fun providesFileStorage(fileStorageImpl: FileStorageImpl): FileStorage
+
+    @Binds
+    @Singleton
+    fun providesBackupManager(transactionBackupManagerImpl: TransactionBackupManagerImpl): TransactionBackupManager
 
     companion object {
         @Provides

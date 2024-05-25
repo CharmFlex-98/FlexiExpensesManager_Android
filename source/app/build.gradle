@@ -143,6 +143,10 @@ dependencies {
     implementation(libs.square.retrofit)
     implementation(libs.square.retrofit.moshiConverter)
 
+    // Excel
+    implementation(libs.apache.poi)
+    implementation(libs.apache.poi.ooxml)
+
     // Dagger
     implementation(libs.google.dagger)
     kapt(libs.google.daggerAP)

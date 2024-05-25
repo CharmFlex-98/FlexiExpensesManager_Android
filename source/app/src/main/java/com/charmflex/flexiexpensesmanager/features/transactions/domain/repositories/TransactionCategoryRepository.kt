@@ -1,12 +1,16 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories
 
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategory
 import kotlinx.coroutines.flow.Flow
 
 internal interface TransactionCategoryRepository {
-    fun getAllCategories(transactionTypeCode: String): Flow<TransactionCategories>
 
-    fun getAllCategoriesIncludeDeleted(transactionTypeCode: String): Flow<TransactionCategories>
+    suspend fun getAllCategoriesIncludedDeleted(): List<TransactionCategory>
+
+    fun getCategories(transactionTypeCode: String): Flow<TransactionCategories>
+
+    fun getCategoriesIncludeDeleted(transactionTypeCode: String): Flow<TransactionCategories>
 
     suspend fun addCategory(category: String, parentId: Int, transactionTypeCode: String)
 
