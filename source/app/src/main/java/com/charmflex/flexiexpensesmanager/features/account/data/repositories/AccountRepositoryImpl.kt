@@ -14,6 +14,14 @@ import javax.inject.Inject
 internal class AccountRepositoryImpl @Inject constructor(
     private val accountDao: AccountDao,
 ) : AccountRepository {
+    override suspend fun getAccountById(id: Int): AccountGroup.Account {
+        val res = accountDao.getAccountById(id)
+        return AccountGroup.Account(
+            accountId = res.id,
+            accountName = res.name
+        )
+    }
+
     override fun getAllAccounts(): Flow<List<AccountGroup>> {
         return accountDao.getAllAccounts()
             .map {
@@ -80,7 +88,7 @@ internal class AccountRepositoryImpl @Inject constructor(
         accountDao.deleteAccountGroup(accountGroupId = accountGroupId)
     }
 
-    override suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Long) {
+    override suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Long): Long {
         val entity = AccountEntity(
             name = accountName,
             accountGroupId = accountGroupId,
@@ -88,7 +96,7 @@ internal class AccountRepositoryImpl @Inject constructor(
             initialAmount = initialAmount
         )
 
-        accountDao.insertAccount(entity)
+        return accountDao.insertAccount(entity)
     }
 
     override suspend fun deleteAccount(accountId: Int) {

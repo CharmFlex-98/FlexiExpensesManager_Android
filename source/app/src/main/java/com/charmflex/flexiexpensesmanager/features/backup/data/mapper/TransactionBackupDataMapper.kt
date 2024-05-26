@@ -1,7 +1,7 @@
-package com.charmflex.flexiexpensesmanager.core.excel
+package com.charmflex.flexiexpensesmanager.features.backup.data.mapper
 
-import android.util.Log
 import com.charmflex.flexiexpensesmanager.core.utils.Mapper
+import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupData
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategory
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 internal class TransactionBackupDataMapper @Inject constructor(
     private val transactionCategoryRepository: TransactionCategoryRepository,
-) : Mapper<List<Transaction>, List<TransactionBackupData>{
+) : Mapper<List<Transaction>, List<TransactionBackupData>> {
     override suspend fun map(from: List<Transaction>): List<TransactionBackupData> {
         val transactionCategoryMap = transactionCategoryRepository.getAllCategoriesIncludedDeleted().groupBy {
             it.id
@@ -26,7 +26,7 @@ internal class TransactionBackupDataMapper @Inject constructor(
                 accountFrom = it.transactionAccountFrom?.name,
                 accountTo = it.transactionAccountTo?.name,
                 transactionType = it.transactionTypeCode,
-                currencyType = it.currency,
+                currency = it.currency,
                 currencyRate = it.rate.toDouble(),
                 amount = it.amountInCent / 100.toDouble(),
                 date = it.transactionDate,

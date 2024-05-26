@@ -1,20 +1,17 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.setting
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.provider.DocumentsContract
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.util.getColumnIndex
-import com.charmflex.flexiexpensesmanager.core.excel.TransactionBackupManager
+import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupManager
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.BackupRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TagRoutes
+import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
@@ -25,9 +22,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 internal class SettingViewModel @Inject constructor(
-    val routeNavigator: RouteNavigator,
-    val transactionBackupManager: TransactionBackupManager,
-    private val context: Context
+    private val routeNavigator: RouteNavigator,
+    private val transactionBackupManager: TransactionBackupManager,
+    private val FEFileProvider: FEFileProvider,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(SettingViewState())
@@ -69,7 +66,7 @@ internal class SettingViewModel @Inject constructor(
                 routeNavigator.navigateTo(CurrencyRoutes.USER_SECONDARY_CURRENCY)
             }
             SettingAction.Tag -> {
-                routeNavigator.navigateTo(TagRoutes.SETTING)
+                routeNavigator.navigateTo(TagRoutes.addNewTagDestination())
             }
             SettingAction.Export -> {
                 viewModelScope.launch {
@@ -90,6 +87,9 @@ internal class SettingViewModel @Inject constructor(
                         }
                     )
                 }
+            }
+            SettingAction.Import -> {
+                routeNavigator.navigateTo(BackupRoutes.IMPORT_SETTING)
             }
         }
     }
@@ -131,6 +131,10 @@ internal class SettingViewModel @Inject constructor(
             SettingActionable(
                 title = "Export",
                 action = SettingAction.Export
+            ),
+            SettingActionable(
+                title = "Import",
+                action = SettingAction.Import
             )
         )
     }
@@ -146,5 +150,5 @@ internal data class SettingActionable(
     val action: SettingAction
 )
 internal enum class SettingAction {
-    EXPENSES_CAT, INCOME_CAT, ACCOUNT, PRIMARY_CURRENCY, SECONDARY_CURRENCY, Tag, Export
+    EXPENSES_CAT, INCOME_CAT, ACCOUNT, PRIMARY_CURRENCY, SECONDARY_CURRENCY, Tag, Export, Import
 }

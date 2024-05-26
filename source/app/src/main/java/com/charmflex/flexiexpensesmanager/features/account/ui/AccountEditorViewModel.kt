@@ -3,6 +3,8 @@ package com.charmflex.flexiexpensesmanager.features.account.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.BackupRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
@@ -18,6 +20,7 @@ internal class AccountEditorViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val routeNavigator: RouteNavigator
 ) : ViewModel() {
+    private lateinit var _flowType: AccountEditorFlow
 
     private val _snackBarState = MutableStateFlow<SnackBarState>(SnackBarState.None)
     val snackBarState = _snackBarState.asStateFlow()
@@ -38,6 +41,11 @@ internal class AccountEditorViewModel @Inject constructor(
                 toggleLoader(false)
             }
         }
+    }
+
+    fun initFlow(importFixAccountName: String?) {
+        _flowType =
+            if (importFixAccountName != null) AccountEditorFlow.ImportFix(importFixAccountName) else AccountEditorFlow.Default
     }
 
     private fun deleteAccountGroup(id: Int) {
@@ -135,10 +143,15 @@ internal class AccountEditorViewModel @Inject constructor(
         val shouldToggleAccountEditor = _viewState.value.selectedAccountGroup != null
         _viewState.update {
             it.copy(
-               editorState = if (open) {
-                   if (shouldToggleAccountEditor) AccountEditorViewState.AccountEditorState()
-                   else AccountEditorViewState.AccountGroupEditorState()
-               } else null
+                editorState = if (open) {
+                    if (shouldToggleAccountEditor) AccountEditorViewState.AccountEditorState(
+                        accountName = when (val flow = _flowType) {
+                            is AccountEditorFlow.ImportFix -> flow.name
+                            else -> ""
+                        }
+                    )
+                    else AccountEditorViewState.AccountGroupEditorState()
+                } else null
             )
         }
     }
@@ -158,7 +171,7 @@ internal class AccountEditorViewModel @Inject constructor(
     fun updateInitialAmount(newValue: String) {
         _viewState.update {
             it.copy(
-                editorState =  when (val vs = it.editorState) {
+                editorState = when (val vs = it.editorState) {
                     is AccountEditorViewState.AccountEditorState -> vs.copy(initialValue = newValue)
                     else -> vs
                 }
@@ -172,7 +185,9 @@ internal class AccountEditorViewModel @Inject constructor(
     }
 
     private fun addNewSubGroup() {
-        val accountGroupEditor = _viewState.value.editorState as? AccountEditorViewState.AccountGroupEditorState ?: return
+        val accountGroupEditor =
+            _viewState.value.editorState as? AccountEditorViewState.AccountGroupEditorState
+                ?: return
 
         viewModelScope.launch {
             resultOf {
@@ -192,17 +207,27 @@ internal class AccountEditorViewModel @Inject constructor(
     }
 
     private fun addNewAccount() {
-        val accountEditorState = _viewState.value.editorState as? AccountEditorViewState.AccountEditorState
-            ?: return
+        val accountEditorState =
+            _viewState.value.editorState as? AccountEditorViewState.AccountEditorState
+                ?: return
         val selectedAccountGroupId = _viewState.value.selectedAccountGroup?.accountGroupId ?: return
 
         viewModelScope.launch {
             resultOf {
-                accountRepository.addAccount(accountEditorState.accountName, selectedAccountGroupId, accountEditorState.initialValue.toLong())
+                accountRepository.addAccount(
+                    accountEditorState.accountName,
+                    selectedAccountGroupId,
+                    accountEditorState.initialValue.toLong()
+                )
             }.fold(
                 onSuccess = {
                     _snackBarState.emit(SnackBarState.Success("Add success!"))
                     toggleEditor(false)
+                    if (_flowType is AccountEditorFlow.ImportFix) {
+                        routeNavigator.popWithArguments(
+                            mapOf(BackupRoutes.Args.UPDATE_IMPORT_DATA to true)
+                        )
+                    }
                 },
                 onFailure = {
                     _snackBarState.emit(SnackBarState.Success("Add failed!"))
@@ -211,6 +236,13 @@ internal class AccountEditorViewModel @Inject constructor(
             )
         }
     }
+}
+
+internal sealed interface AccountEditorFlow {
+    object Default : AccountEditorFlow
+    data class ImportFix(
+        val name: String
+    ) : AccountEditorFlow
 }
 
 internal data class AccountEditorViewState(
@@ -227,6 +259,7 @@ internal data class AccountEditorViewState(
     data class AccountGroupEditorState(
         val accountGroupName: String = ""
     ) : EditorState
+
     data class AccountEditorState(
         val accountName: String = "",
         val initialValue: String = "0",

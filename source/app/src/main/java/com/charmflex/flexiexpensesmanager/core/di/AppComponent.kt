@@ -6,6 +6,7 @@ import com.charmflex.flexiexpensesmanager.dependency_injection.modules.navigatio
 import com.charmflex.flexiexpensesmanager.features.account.di.AccountInjector
 import com.charmflex.flexiexpensesmanager.features.account.di.modules.AccountModule
 import com.charmflex.flexiexpensesmanager.features.auth.di.AuthInjector
+import com.charmflex.flexiexpensesmanager.features.backup.di.BackupInjector
 import com.charmflex.flexiexpensesmanager.features.category.category.di.CategoryInjector
 import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyInjector
 import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyModule
@@ -30,7 +31,7 @@ import javax.inject.Singleton
 )
 @Singleton
 internal interface AppComponent : MainInjector, AuthInjector, TransactionInjector, HomeInjector,
-    CategoryInjector, AccountInjector, CurrencyInjector, TagInjector {
+    CategoryInjector, AccountInjector, CurrencyInjector, TagInjector, BackupInjector {
 
     @Component.Factory
     interface Factory {

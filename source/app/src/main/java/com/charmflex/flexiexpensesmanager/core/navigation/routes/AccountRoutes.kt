@@ -1,14 +1,19 @@
 package com.charmflex.flexiexpensesmanager.core.navigation.routes
 
-import android.content.SharedPreferences.Editor
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
-
 object AccountRoutes {
 
     private const val ROOT = "account"
 
-    val EDITOR = buildRoute("$ROOT/editor") {}
+    object Args {
+        const val IMPORT_FIX_ACCOUNT_NAME = "import_fix_account_name"
+    }
 
-    fun editorDestination(): String = buildDestination(EDITOR) {}
+    val EDITOR = buildRoute("$ROOT/editor") {
+        addArg(Args.IMPORT_FIX_ACCOUNT_NAME)
+    }
+
+    fun editorDestination(importFixAccountName: String? = null): String = buildDestination(EDITOR) {
+        importFixAccountName?.let { withArg(Args.IMPORT_FIX_ACCOUNT_NAME, it) }
+    }
 
 }

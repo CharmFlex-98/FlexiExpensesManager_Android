@@ -16,7 +16,7 @@ internal class TagDestinationBuilder : DestinationBuilder{
     }
 
     private fun NavGraphBuilder.tagSetting() {
-        composable(TagRoutes.SETTING) {
+        composable(TagRoutes.ADD_NEW_TAG_ROUTE) {
             val viewModel = getViewModel {
                 appComponent.tagSettingViewModel()
             }
