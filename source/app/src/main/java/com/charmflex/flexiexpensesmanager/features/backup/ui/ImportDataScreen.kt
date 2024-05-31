@@ -142,7 +142,7 @@ private fun ColumnScope.LoadedScreen(
     when (tabIndex) {
         0 -> {
             ListTable(items = viewState.importedData) { index, item ->
-                Column(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.tertiaryContainer)
@@ -155,25 +155,41 @@ private fun ColumnScope.LoadedScreen(
                         ) {
                             Text(text = "${index + 1})")
                         }
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(text = item.transactionName)
-                            item.categoryColumns.forEach {
+                        Column {
+                            FEBody3(text = item.transactionName)
+                            when (val it = item.categoryColumns) {
+                                is ImportedData.RequiredDataState.Missing -> {
+                                    MissingItemText(
+                                        entityName = "category",
+                                        entityItemName = it.name
+                                    )
+                                }
+
+                                is ImportedData.RequiredDataState.Acquired -> {
+                                    AcquiredItemText(
+                                        entityName = "category",
+                                        entityItemName = it.name
+                                    )
+                                }
+                            }
+                            item.accountFrom?.let {
                                 when (it) {
                                     is ImportedData.RequiredDataState.Missing -> {
                                         MissingItemText(
-                                            entityName = "category",
+                                            entityName = "account from",
                                             entityItemName = it.name
                                         )
                                     }
 
                                     is ImportedData.RequiredDataState.Acquired -> {
                                         AcquiredItemText(
-                                            entityName = "category",
+                                            entityName = "account from",
                                             entityItemName = it.name
                                         )
                                     }
                                 }
                             }
+
                             item.accountTo?.let {
                                 when (it) {
                                     is ImportedData.RequiredDataState.Missing -> {

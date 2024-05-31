@@ -29,7 +29,7 @@ internal class BackupDestinationBuilder : DestinationBuilder{
                 appComponent.importDataViewModel()
             }
             LaunchedEffect(key1 = updateImportedData) {
-                viewModel.updateImportedData()
+                if (updateImportedData) viewModel.updateImportedData()
             }
             ImportDataScreen(importDataViewModel = viewModel)
         }

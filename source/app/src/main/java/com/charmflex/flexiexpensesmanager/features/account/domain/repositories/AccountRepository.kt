@@ -5,7 +5,7 @@ import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountG
 import kotlinx.coroutines.flow.Flow
 
 internal interface AccountRepository {
-    suspend fun getAccountById(id: Int): AccountEntity
+    suspend fun getAccountById(id: Int): AccountGroup.Account
     fun getAllAccounts(): Flow<List<AccountGroup>>
 
     fun getAccountsSummary(): Flow<List<AccountGroupSummary>>

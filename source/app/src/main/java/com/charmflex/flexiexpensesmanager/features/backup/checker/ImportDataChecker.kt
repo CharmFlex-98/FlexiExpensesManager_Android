@@ -5,10 +5,12 @@ import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.A
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupData
 import com.charmflex.flexiexpensesmanager.features.backup.ui.ImportedData
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -19,46 +21,91 @@ internal class ImportDataChecker @Inject constructor(
     @Dispatcher(Dispatcher.Type.IO)
     private val dispatcher: CoroutineDispatcher
 ) {
-    suspend fun updateRequiredData(missingData: Set<ImportedData.MissingData>, importedData: List<ImportedData>): Pair<List<ImportedData>, Set<ImportedData.MissingData>> {
-        return importedData to missingData
+    suspend fun updateRequiredData(
+        missingData: Set<ImportedData.MissingData>,
+        importedData: List<ImportedData>
+    ): Pair<List<ImportedData>, Set<ImportedData.MissingData>> {
+        val updatedMissingData = missingData.toMutableSet()
+        val updatedImportedData = importedData.toMutableList()
+        val accounts =
+            accountRepository.getAllAccounts().firstOrNull()?.map { it.accounts }?.flatten()
+        val tags = tagRepository.getAllTags().firstOrNull()
+        missingData.forEachIndexed { index, data ->
+            when (data.dataType) {
+                ImportedData.MissingData.DataType.ACCOUNT_FROM, ImportedData.MissingData.DataType.ACCOUNT_TO -> {
+                    val account = accounts?.firstOrNull { it.accountName == data.name }
+                    if (account != null) {
+                        data.transactionIndex.forEach {
+                            updatedImportedData[it] =
+                                if (data.dataType == ImportedData.MissingData.DataType.ACCOUNT_FROM) {
+                                    updatedImportedData[it].copy(
+                                        accountFrom = ImportedData.RequiredDataState.Acquired(
+                                            id = account.accountId,
+                                            name = account.accountName
+                                        )
+                                    )
+                                } else {
+                                    updatedImportedData[it].copy(
+                                        accountTo = ImportedData.RequiredDataState.Acquired(
+                                            id = account.accountId,
+                                            name = account.accountName
+                                        )
+                                    )
+                                }
+                            updatedMissingData.remove(data)
+                        }
+                    }
+                }
+
+                ImportedData.MissingData.DataType.TAG -> {
+                    val tag = tags?.firstOrNull { it.name == data.name }
+                    if (tag != null) {
+                        data.transactionIndex.forEach { transactionIndex ->
+                            val toUpdate = updatedImportedData[transactionIndex]
+                            updatedImportedData[transactionIndex] = toUpdate
+                                .copy(
+                                    tags = toUpdate.tags.toMutableList().apply {
+                                        replaceAll {
+                                            if (it.name == tag.name) {
+                                                ImportedData.RequiredDataState.Acquired(
+                                                    id = tag.id,
+                                                    name = tag.name
+                                                )
+                                            } else {
+                                                it
+                                            }
+                                        }
+                                    }
+                                )
+                            updatedMissingData.remove(data)
+                        }
+                    }
+                }
+
+                else -> {}
+            }
+        }
+        return updatedImportedData to updatedMissingData
     }
 
-//    private suspend fun updateAccountImportedData(missingData: ImportedData.MissingData, id: Long, initialData: List<ImportedData>): List<ImportedData> {
-//        val updatedData = initialData.toMutableList()
-//        val account = accountRepository.getAccountById(id.toInt())
-//        val newState = if (account.name == missingData.name) {
-//            ImportedData.RequiredDataState.Acquired(
-//                id = account.id,
-//                name = account.name
-//            )
-//        } else {
-//            missingData
-//        }
-//        for (index in missingData.transactionIndex) {
-//            val item = initialData[index]
-//            val newItem = if (missingData.dataType == ImportedData.MissingData.DataType.ACCOUNT_FROM) {
-//                item.copy(
-//                    accountFrom = acquiredData
-//                )
-//            } else {
-//                item.copy(
-//                    accountTo = acquiredData
-//                )
-//            }
-//            updatedData[index] = newItem
-//        }
-//        return updatedData
-//    }
     suspend fun checkRequiredData(backupData: List<TransactionBackupData>): Pair<List<ImportedData>, Set<ImportedData.MissingData>> {
         return withContext(dispatcher) {
             val accounts = accountRepository.getAllAccounts().firstOrNull()?.map {
                 it.accounts
-            }?.flatten()
-            val expensesCategories = categoryRepository.getAllCategoriesIncludedDeleted()
-                .filter { it.transactionTypeCode == TransactionType.EXPENSES.name }
-            val incomeCategories = categoryRepository.getAllCategoriesIncludedDeleted()
-                .filter { it.transactionTypeCode == TransactionType.INCOME.name }
-            val tags = tagRepository.getAllTags().firstOrNull()
+            }?.flatten()?.groupBy {
+                it.accountName
+            }
+            val expensesCategories =
+                categoryRepository.getCategoriesIncludeDeleted(TransactionType.EXPENSES.name)
+                    .firstOrNull()?.let {
+                        generateCategoriesMap(it)
+                    }
+            val incomeCategories =
+                categoryRepository.getCategoriesIncludeDeleted(TransactionType.INCOME.name)
+                    .firstOrNull()?.let {
+                        generateCategoriesMap(it)
+                    }
+            val tags = tagRepository.getAllTags().firstOrNull()?.groupBy { it.name }
             val missingData = mutableSetOf<ImportedData.MissingData>()
             val importedData = backupData.mapIndexed { index, row ->
                 var importedData = ImportedData(
@@ -70,13 +117,13 @@ internal class ImportDataChecker @Inject constructor(
                     currencyRate = row.currencyRate,
                     amount = row.amount,
                     date = row.date,
-                    categoryColumns = listOf(),
+                    categoryColumns = generateCategoryRequiredState(row, expensesCategories, incomeCategories, index, missingData),
                     tags = listOf()
                 )
 
                 // Account from
                 row.accountFrom?.let { accountFromName ->
-                    val account = accounts?.firstOrNull { it.accountName == accountFromName }
+                    val account = accounts?.get(accountFromName)
                     if (account == null) {
                         appendMissingEntityData(
                             accountFromName,
@@ -90,7 +137,7 @@ internal class ImportDataChecker @Inject constructor(
                     } else {
                         importedData = importedData.copy(
                             accountFrom = ImportedData.RequiredDataState.Acquired(
-                                account.accountId,
+                                account[0].accountId,
                                 accountFromName
                             )
                         )
@@ -99,7 +146,7 @@ internal class ImportDataChecker @Inject constructor(
 
                 // Account to
                 row.accountTo?.let { accountToName ->
-                    val account = accounts?.firstOrNull { it.accountName == accountToName }
+                    val account = accounts?.get(accountToName)
                     if (account == null) {
                         appendMissingEntityData(
                             accountToName,
@@ -113,47 +160,16 @@ internal class ImportDataChecker @Inject constructor(
                     } else {
                         importedData = importedData.copy(
                             accountTo = ImportedData.RequiredDataState.Acquired(
-                                id = account.accountId,
+                                id = account[0].accountId,
                                 name = accountToName
                             )
                         )
                     }
                 }
 
-                // Category
-                row.categoryColumns.forEachIndexed { ind, categoryName ->
-                    val isExpenses = row.transactionType == TransactionType.EXPENSES.name
-                    val categories = if (isExpenses) expensesCategories else incomeCategories
-                    val cat = categories.firstOrNull { it.name == categoryName }
-
-                    importedData = if (cat == null) {
-                        appendMissingEntityData(
-                            categoryName,
-                            index,
-                            missingData,
-                            if (isExpenses) ImportedData.MissingData.DataType.EXPENSES_CATEGORY else ImportedData.MissingData.DataType.INCOME_CATEGORY
-                        )
-                        importedData.copy(
-                            categoryColumns = importedData.categoryColumns.toMutableList()
-                                .apply { add(ImportedData.RequiredDataState.Missing(categoryName)) }
-                        )
-                    } else {
-                        importedData.copy(
-                            categoryColumns = importedData.categoryColumns.toMutableList().apply {
-                                add(
-                                    ImportedData.RequiredDataState.Acquired(
-                                        cat.id,
-                                        categoryName
-                                    )
-                                )
-                            }
-                        )
-                    }
-                }
-
                 // Tags
                 row.tags.forEach { tagName ->
-                    val targetTag = tags?.firstOrNull { it.name == tagName }
+                    val targetTag = tags?.get(tagName)
                     importedData = if (targetTag == null) {
                         appendMissingEntityData(
                             tagName,
@@ -170,7 +186,7 @@ internal class ImportDataChecker @Inject constructor(
                             tags = importedData.tags.toMutableList().apply {
                                 add(
                                     ImportedData.RequiredDataState.Acquired(
-                                        targetTag.id,
+                                        targetTag[0].id,
                                         tagName
                                     )
                                 )
@@ -183,6 +199,66 @@ internal class ImportDataChecker @Inject constructor(
             }
 
             importedData to missingData
+        }
+    }
+
+    private fun generateCategoryRequiredState(
+        row: TransactionBackupData,
+        expensesCategories: Map<String, Int>?,
+        incomeCategories: Map<String, Int>?,
+        index: Int,
+        missingData: MutableSet<ImportedData.MissingData>
+    ): ImportedData.RequiredDataState {
+        val isExpenses = row.transactionType == TransactionType.EXPENSES.name
+        val categoryColumnsToString = row.categoryColumns.joinToString("-->")
+        val catID = if (isExpenses) {
+            expensesCategories?.get(categoryColumnsToString)
+        } else {
+            incomeCategories?.get(categoryColumnsToString)
+        }
+
+        // If data not exists
+        return if (catID == null) {
+            appendMissingEntityData(
+                categoryColumnsToString,
+                index,
+                missingData,
+                if (isExpenses) ImportedData.MissingData.DataType.EXPENSES_CATEGORY else ImportedData.MissingData.DataType.INCOME_CATEGORY
+            )
+            ImportedData.RequiredDataState.Missing(
+                categoryColumnsToString
+            )
+        } else {
+            ImportedData.RequiredDataState.Acquired(
+                id = catID,
+                name = categoryColumnsToString
+            )
+        }
+
+    }
+
+    private fun generateCategoriesMap(categories: TransactionCategories): Map<String, Int> {
+        val res = mutableMapOf<String, Int>()
+        categories.items.forEach {
+            appendCategoryChain(it, listOf(), res)
+        }
+
+        return res
+    }
+
+    private fun appendCategoryChain(
+        node: TransactionCategories.Node,
+        visitedChain: List<String>,
+        map: MutableMap<String, Int>
+    ) {
+        val updatedChain = visitedChain.toMutableList().apply { add(node.categoryName) }
+        if (node.childNodes.isEmpty()) {
+            map[updatedChain.joinToString("-->")] = node.categoryId
+            return
+        }
+
+        node.childNodes.forEach {
+            appendCategoryChain(it, visitedChain, map)
         }
     }
 

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.apache.poi.ss.formula.functions.Index
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -86,7 +87,6 @@ internal class ImportDataViewModel @Inject constructor(
                 routeNavigator.navigateTo(
                     CategoryRoutes.editorDestination(
                         TransactionType.INCOME,
-                        true,
                         missingData.name
                     )
                 )
@@ -96,7 +96,6 @@ internal class ImportDataViewModel @Inject constructor(
                 routeNavigator.navigateTo(
                     CategoryRoutes.editorDestination(
                         TransactionType.EXPENSES,
-                        true,
                         missingData.name
                     )
                 )
@@ -135,7 +134,7 @@ internal data class ImportedData(
     val currencyRate: Double,
     val amount: Double,
     val date: String,
-    val categoryColumns: List<RequiredDataState>,
+    val categoryColumns: RequiredDataState,
     val tags: List<RequiredDataState>
 ) {
     sealed interface RequiredDataState {
@@ -159,6 +158,5 @@ internal data class ImportedData(
         enum class DataType {
             INCOME_CATEGORY, EXPENSES_CATEGORY, ACCOUNT_FROM, ACCOUNT_TO, TAG
         }
-
     }
 }

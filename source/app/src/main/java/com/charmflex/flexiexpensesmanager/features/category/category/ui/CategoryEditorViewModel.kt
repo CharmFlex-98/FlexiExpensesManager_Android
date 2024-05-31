@@ -11,8 +11,10 @@ import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.apache.poi.ss.formula.functions.Index
 import javax.inject.Inject
 
 internal class CategoryEditorViewModel @Inject constructor(
@@ -28,33 +30,58 @@ internal class CategoryEditorViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(CategoryEditorViewState())
     val viewState = _viewState.asStateFlow()
 
-    fun setType(type: String) {
+    fun setType(type: String, importFixCategoryNames: String?) {
         editorTypeCode = when {
             type == TransactionType.INCOME.name -> TransactionType.INCOME
             type == TransactionType.EXPENSES.name -> TransactionType.EXPENSES
             else -> TransactionType.EXPENSES
         }
-        listenCategoryList()
+
+        if (importFixCategoryNames != null) {
+            autoAddCategoryForImport(importFixCategoryNames.split("-->"))
+        } else {
+            listenCategoryList()
+        }
     }
 
     private fun listenCategoryList() {
         viewModelScope.launch {
             categoryRepository.getCategories(editorTypeCode.name).collectLatest {
                 toggleLoading(true)
-                _viewState.update { state ->
-                    state.copy(
-                        categoryTree = it,
-                        currentNode = state.currentNode?.let { currentNode ->
-                            for (item in it.items) {
-                                val res = getNode(currentNode.categoryId, item)
-                                if (res != null) return@let res
-                            }
-                            return@let null
+                _viewState.value = _viewState.value.copy(
+                    categoryTree = it,
+                    currentNode = _viewState.value.currentNode?.let { currentNode ->
+                        for (item in it.items) {
+                            val res = getNode(currentNode.categoryId, item)
+                            if (res != null) return@let res
                         }
-                    )
-                }
+                        return@let null
+                    }
+                )
+
                 toggleLoading(false)
             }
+        }
+    }
+
+    private fun autoAddCategoryForImport(categoryChain: List<String>) {
+        viewModelScope.launch {
+            toggleLoading(true)
+            categoryRepository.getCategories(editorTypeCode.name).firstOrNull()?.let {
+                val next = it.items.firstOrNull { it.categoryName == categoryChain[0] }
+                val (currentNode, index) = if (next == null) null to 0 else run {
+                    getNodeByName(categoryChain, 0, next)
+                }
+                _viewState.value = _viewState.value.copy(
+                    categoryTree = it,
+                    currentNode = currentNode,
+                    editorState = CategoryEditorViewState.EditorState(
+                        isOpened = true,
+                        value = categoryChain.getOrNull(if (currentNode == null) 0 else index + 1) ?: ""
+                    )
+                )
+            }
+            toggleLoading(false)
         }
     }
 
@@ -67,17 +94,9 @@ internal class CategoryEditorViewModel @Inject constructor(
         val currentNode = _viewState.value.currentNode
         if (currentNode == null) routeNavigator.pop()
         else {
-            val parentNode = currentNode.parentNodeId?.let { parentCategoryId ->
-                for (item in _viewState.value.categoryTree.items) {
-                    val res = getNode(parentCategoryId, item)
-                    if (res != null) return@let res
-                }
-                return@let null
-            }
-
             _viewState.update {
                 it.copy(
-                    currentNode = parentNode
+                    currentNode = currentNode.parentNode
                 )
             }
         }
@@ -95,6 +114,21 @@ internal class CategoryEditorViewModel @Inject constructor(
             }
 
             return null
+        }
+    }
+
+    private fun getNodeByName(
+        chain: List<String>,
+        index: Int,
+        currentNode: TransactionCategories.Node
+    ): Pair<TransactionCategories.Node?, Int> {
+        val children = currentNode.childNodes
+        if (children.isEmpty()) return currentNode to index
+        else {
+            if (index == chain.size - 1) return currentNode to index
+            val next = children.firstOrNull { it.categoryName == chain[index + 1] }
+            return if (next == null) currentNode to index
+            else getNodeByName(chain, index + 1, currentNode)
         }
     }
 

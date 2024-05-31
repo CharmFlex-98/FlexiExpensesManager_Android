@@ -24,8 +24,9 @@ internal class CategoryDestinationBuilder : DestinationBuilder {
             enterTransition = FEVerticalSlideUp,
             exitTransition = FEVerticalSlideDown
         ) {
+            val importFixCatName = it.arguments?.getString(CategoryRoutes.Args.IMPORT_FIX_CATEGORY_NAME)
             val type = it.arguments?.getString(CategoryRoutes.Args.TRANSACTION_TYPE).orEmpty()
-            val viewModel = getViewModel { appComponent.categoryEditorViewModel().apply { setType(type = type) } }
+            val viewModel = getViewModel { appComponent.categoryEditorViewModel().apply { setType(type = type, importFixCatName) } }
 
             CategoryEditorScreen(viewModel = viewModel)
         }
