@@ -8,6 +8,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,7 +23,17 @@ internal class TagSettingViewModel @Inject constructor(
     val viewState = _viewState.asStateFlow()
 
     fun initFlow(fixImportTagName: String?) {
-        if (fixImportTagName != null) flowType = TagSettingFlow.IMPORT_FIX else TagSettingFlow.DEFAULT
+        if (fixImportTagName != null) flowType = TagSettingFlow.ImportFix(fixImportTagName) else TagSettingFlow.Default
+        when (val ft = flowType) {
+            is TagSettingFlow.ImportFix -> {
+                _viewState.update {
+                    it.copy(
+                        tagName = ft.tagName
+                    )
+                }
+            }
+            else -> {}
+        }
     }
 
     fun onUpdateTagValue(tagName: String) {
@@ -38,7 +49,7 @@ internal class TagSettingViewModel @Inject constructor(
                 tagRepository.addTag(_viewState.value.tagName)
             }.fold(
                 onSuccess = {
-                    if (flowType == TagSettingFlow.DEFAULT) routeNavigator.pop()
+                    if (flowType is TagSettingFlow.Default) routeNavigator.pop()
                     else routeNavigator.popWithArguments(
                         mapOf(
                             BackupRoutes.Args.UPDATE_IMPORT_DATA to true
@@ -56,6 +67,9 @@ internal data class TagSettingViewState(
     val tagName: String = ""
 )
 
-internal enum class TagSettingFlow {
-    DEFAULT, IMPORT_FIX
+internal sealed interface TagSettingFlow {
+    object Default : TagSettingFlow
+    data class ImportFix(
+        val tagName: String
+    ) : TagSettingFlow
 }

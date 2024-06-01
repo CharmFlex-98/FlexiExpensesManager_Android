@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RawQuery
+import androidx.room.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTypeEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.responses.TransactionResponse
@@ -13,6 +14,9 @@ import kotlinx.coroutines.flow.Flow
 internal interface TransactionDao {
     @Query("SELECT * FROM TransactionTypeEntity")
     suspend fun getAllTransactionTypes(): List<TransactionTypeEntity>
+
+    @Insert
+    suspend fun insertAllTransactions(transactions: List<TransactionEntity>): List<Long>
 
     @Insert
     suspend fun insertTransaction(transaction: TransactionEntity): Long

@@ -1,7 +1,9 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories
 
+import com.charmflex.flexiexpensesmanager.features.backup.ui.ImportedData
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ExpensesData
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ImportTransaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import kotlinx.coroutines.flow.Flow
 
@@ -36,6 +38,8 @@ internal interface TransactionRepository {
         currency: String,
         rate: Float
     )
+
+    suspend fun addAllImportTransactions(transactionData: List<ImportTransaction>)
 
     fun getTransactions(
         startDate: String? = null,

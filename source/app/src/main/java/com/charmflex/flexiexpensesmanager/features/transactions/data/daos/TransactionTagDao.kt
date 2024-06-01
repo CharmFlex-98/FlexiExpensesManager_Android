@@ -24,4 +24,17 @@ internal interface TransactionTagDao : TransactionDao, TagDao {
         }
         insertTransactionTag(transactionTagEntities)
     }
+
+    @Transaction
+    suspend fun insertAllTransactionsAndTransactionTags(transactions: List<TransactionEntity>, transactionsTagsIds: List<List<Int>>) {
+        val ids = insertAllTransactions(transactions)
+        val transactionTagEntities = mutableListOf<TransactionTagEntity>()
+        transactionsTagsIds.forEachIndexed { index, transactionTags ->
+            val items = transactionTags.map {
+                TransactionTagEntity(tagId = it, transactionId = ids[index].toInt())
+            }
+            if (items.isNotEmpty()) transactionTagEntities.addAll(items)
+        }
+        insertTransactionTag(transactionTagEntities)
+    }
 }

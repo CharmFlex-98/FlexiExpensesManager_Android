@@ -45,7 +45,9 @@ internal fun ImportDataScreen(importDataViewModel: ImportDataViewModel) {
 
     val viewState by importDataViewModel.viewState.collectAsState()
 
-    SGScaffold {
+    SGScaffold(
+        modifier = Modifier.padding(grid_x2)
+    ) {
         if (viewState.importedData.isEmpty()) {
             PreLoadScreen(viewState = viewState) {
                 importDataViewModel.importData(it)
@@ -53,8 +55,11 @@ internal fun ImportDataScreen(importDataViewModel: ImportDataViewModel) {
         } else {
             LoadedScreen(
                 viewState = viewState,
+                onFixError = {
+                    importDataViewModel.onFixError(it)
+                },
             ) {
-                importDataViewModel.onFixError(it)
+                importDataViewModel.saveData()
             }
         }
     }
@@ -124,7 +129,8 @@ private fun ColumnScope.PreLoadScreen(
 @Composable
 private fun ColumnScope.LoadedScreen(
     viewState: ImportDataViewState,
-    onFixError: (ImportedData.MissingData) -> Unit
+    onFixError: (ImportedData.MissingData) -> Unit,
+    onSave: () -> Unit
 ) {
     val tabs = listOf("All Data", "Error")
     var tabIndex by remember {
@@ -141,7 +147,10 @@ private fun ColumnScope.LoadedScreen(
     }
     when (tabIndex) {
         0 -> {
-            ListTable(items = viewState.importedData) { index, item ->
+            ListTable(
+                modifier = Modifier.weight(1f),
+                items = viewState.importedData
+            ) { index, item ->
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -171,6 +180,7 @@ private fun ColumnScope.LoadedScreen(
                                         entityItemName = it.name
                                     )
                                 }
+
                                 else -> {}
                             }
                             item.accountFrom?.let {
@@ -211,6 +221,14 @@ private fun ColumnScope.LoadedScreen(
                         }
                     }
                 }
+            }
+            SGLargePrimaryButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = grid_x1),
+                text = "Save"
+            ) {
+                onSave()
             }
         }
 

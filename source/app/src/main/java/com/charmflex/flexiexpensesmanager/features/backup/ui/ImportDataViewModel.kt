@@ -8,9 +8,14 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TagRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
+import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupManager
 import com.charmflex.flexiexpensesmanager.features.backup.checker.ImportDataChecker
+import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
+import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTagEntity
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ImportTransaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -24,7 +29,8 @@ internal class ImportDataViewModel @Inject constructor(
     private val backupManager: TransactionBackupManager,
     private val fileProvider: FEFileProvider,
     private val importDataChecker: ImportDataChecker,
-    private val routeNavigator: RouteNavigator
+    private val routeNavigator: RouteNavigator,
+    private val transactionTagRepository: TransactionRepository
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(ImportDataViewState())
     val viewState = _viewState.asStateFlow()
@@ -114,6 +120,44 @@ internal class ImportDataViewModel @Inject constructor(
             )
         }
     }
+
+    fun saveData() {
+        viewModelScope.launch {
+            toggleLoader(true)
+            val validImportedData = _viewState.value.importedData.filter { it.isValid }
+            val importedTransaction = validImportedData.map {
+                val fromAccount = (it.accountFrom as? ImportedData.RequiredDataState.Acquired)?.id
+                val toAccount = (it.accountTo as? ImportedData.RequiredDataState.Acquired)?.id
+                val category = (it.categoryColumns as? ImportedData.RequiredDataState.Acquired)?.id
+                val tags = it.tags.mapNotNull {
+                    (it as? ImportedData.RequiredDataState.Acquired)?.id
+                }
+                ImportTransaction(
+                    transactionName = it.transactionName,
+                    transactionAccountFrom = fromAccount,
+                    transactionAccountTo = toAccount,
+                    transactionTypeCode = it.transactionType,
+                    amountInCent = (it.amount*100).toLong(),
+                    currency = it.currency,
+                    rate = it.currencyRate.toFloat(),
+                    transactionDate = it.date,
+                    transactionCategoryId = category,
+                    tagIds = tags
+                )
+            }
+            resultOf {
+                transactionTagRepository.addAllImportTransactions(importedTransaction)
+            }.fold(
+                onSuccess = {
+                    toggleLoader(false)
+                    routeNavigator.pop()
+                },
+                onFailure = {
+                    toggleLoader(false)
+                }
+            )
+        }
+    }
 }
 
 internal data class ImportDataViewState(
@@ -137,6 +181,11 @@ internal data class ImportedData(
     val categoryColumns: RequiredDataState?,
     val tags: List<RequiredDataState>
 ) {
+    val isValid: Boolean
+        get() = accountFrom !is RequiredDataState.Missing || accountTo !is RequiredDataState.Missing || categoryColumns !is RequiredDataState.Missing || tags.filterIsInstance(
+            RequiredDataState.Missing::class.java
+        ).isEmpty()
+
     sealed interface RequiredDataState {
         val name: String
 
