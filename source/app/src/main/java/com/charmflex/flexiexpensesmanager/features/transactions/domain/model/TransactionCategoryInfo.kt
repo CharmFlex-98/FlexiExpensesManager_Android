@@ -11,10 +11,15 @@ internal data class TransactionCategories(
         val categoryId: Int,
         val categoryName: String,
         val level: Int,
-        val parentNodeId: Int?,
-        val childNodes: List<Node>
+        val parentNode: Node?,
+        val childNodes: MutableList<Node> = mutableListOf()
     ) {
-        val isRoot get() = parentNodeId == null
+        fun addChildren(nodes: List<Node>) {
+            childNodes.addAll(nodes)
+        }
+
+        val parentNodeId get() = parentNode?.categoryId
+
         val isLeaf get() = childNodes.isEmpty()
 
         val allowSubCategory get() = level < 3

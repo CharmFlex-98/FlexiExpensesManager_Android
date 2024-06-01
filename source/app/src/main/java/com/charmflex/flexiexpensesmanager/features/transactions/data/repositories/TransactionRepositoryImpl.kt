@@ -6,6 +6,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.Transa
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTagEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.mapper.TransactionMapper
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ImportTransaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import kotlinx.coroutines.flow.Flow
@@ -86,6 +87,26 @@ internal class TransactionRepositoryImpl @Inject constructor(
             rate = rate
         )
         transactionDao.insertTransaction(transaction)
+    }
+
+    override suspend fun addAllImportTransactions(transactionData: List<ImportTransaction>) {
+        val transactionTags = transactionData.map {
+            it.tagIds
+        }
+        val transactionEntities = transactionData.map {
+            TransactionEntity(
+                transactionName = it.transactionName,
+                accountFromId = it.transactionAccountFrom,
+                accountToId = it.transactionAccountTo,
+                transactionTypeCode = it.transactionTypeCode,
+                amountInCent = it.amountInCent,
+                transactionDate = it.transactionDate,
+                categoryId = it.transactionCategoryId,
+                currency = it.currency,
+                rate = it.rate
+            )
+        }
+        transactionTagDao.insertAllTransactionsAndTransactionTags(transactionEntities, transactionTags)
     }
 
     override fun getTransactions(

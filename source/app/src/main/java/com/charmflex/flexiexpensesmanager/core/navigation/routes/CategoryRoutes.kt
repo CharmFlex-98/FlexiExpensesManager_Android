@@ -7,15 +7,18 @@ internal object CategoryRoutes {
 
     object Args {
         const val TRANSACTION_TYPE = "transaction_type"
+        const val IMPORT_FIX_CATEGORY_NAME = "import_fix_cat_name"
     }
 
     val EDITOR = buildRoute("$ROOT/editor") {
         addArg(Args.TRANSACTION_TYPE)
+        addArg(Args.IMPORT_FIX_CATEGORY_NAME)
     }
 
-    fun editorDestination(transactionType: TransactionType): String {
+    fun editorDestination(transactionType: TransactionType, newCategoryName: String? = null): String {
         return buildDestination(EDITOR) {
             withArg(Args.TRANSACTION_TYPE, transactionType.name)
+            newCategoryName?.let { withArg(Args.IMPORT_FIX_CATEGORY_NAME, it) }
         }
     }
 }

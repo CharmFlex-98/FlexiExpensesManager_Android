@@ -11,6 +11,7 @@ import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigatorListener
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AuthRoutes
 import com.charmflex.flexiexpensesmanager.features.account.destinations.AccountDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.auth.destination.AuthDestinationBuilder
+import com.charmflex.flexiexpensesmanager.features.backup.destination.BackupDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.category.category.destinations.CategoryDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.currency.destinations.CurrencyDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.transactions.destination.TransactionDestinationBuilder
@@ -50,6 +51,7 @@ private fun createDestinations(): List<DestinationBuilder> {
         CategoryDestinationBuilder(),
         AccountDestinationBuilder(),
         CurrencyDestinationBuilder(),
-        TagDestinationBuilder()
+        TagDestinationBuilder(),
+        BackupDestinationBuilder()
     )
 }

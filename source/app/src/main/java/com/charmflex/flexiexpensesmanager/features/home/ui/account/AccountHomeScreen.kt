@@ -1,15 +1,18 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.account
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,6 +41,11 @@ internal fun AccountHomeScreen(viewModel: AccountHomeViewModel) {
             .verticalScroll(rememberScrollState())
             .padding(grid_x2)
     ) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(grid_x2)) {
+            Text(text = "Total Asset: ${viewState.totalAsset}")
+        }
         viewState.accountsSummary.forEach {
             AccountGroupSection(it)
         }

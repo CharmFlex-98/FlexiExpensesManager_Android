@@ -3,7 +3,9 @@ package com.charmflex.flexiexpensesmanager.features.currency.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.navigation.popWithHomeRefresh
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetAllCurrencyNamesUseCase
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
@@ -157,7 +159,7 @@ internal class CurrencySettingViewModel @Inject constructor(
         if (currency.isNotBlank()) {
             viewModelScope.launch {
                 userCurrencyRepository.setPrimaryCurrency(currency)
-                routeNavigator.pop()
+                routeNavigator.popWithHomeRefresh()
             }
         }
     }

@@ -14,9 +14,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// TODO: Maybe can remove the mapper?
 internal class AccountHomeViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
-    private val accountHomeUIMapper: AccountHomeUIMapper
+    private val accountHomeUIMapper: AccountHomeUIMapper,
+    private val currencyFormatter: CurrencyFormatter,
+    private val userCurrencyRepository: UserCurrencyRepository
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(AccountHomeViewState())
@@ -31,8 +34,11 @@ internal class AccountHomeViewModel @Inject constructor(
             accountRepository.getAccountsSummary().collectLatest { summary ->
                 toggleLoading(true)
                 _viewState.update {
+                    val summary = accountHomeUIMapper.map(summary)
+                    val totalAsset = summary.map { it.balanceInCent }.reduceOrNull { acc, l -> acc + l }
                     it.copy(
-                        accountsSummary = accountHomeUIMapper.map(summary)
+                        accountsSummary = summary,
+                        totalAsset = currencyFormatter.format(totalAsset ?: 0, userCurrencyRepository.getPrimaryCurrency())
                     )
                 }
                 toggleLoading(false)
@@ -51,12 +57,14 @@ internal class AccountHomeViewModel @Inject constructor(
 
 internal data class AccountHomeViewState(
     val accountsSummary: List<AccountGroupSummaryUI> = listOf(),
-    val isLoading: Boolean = false
+    val totalAsset: String = "",
+    val isLoading: Boolean = false,
 ) {
     internal data class AccountGroupSummaryUI(
         val accountGroupName: String,
         val accountsSummary: List<AccountSummaryUI>,
         val balance: String,
+        val balanceInCent: Long,
         val textColor: Color
     ) {
         data class AccountSummaryUI(

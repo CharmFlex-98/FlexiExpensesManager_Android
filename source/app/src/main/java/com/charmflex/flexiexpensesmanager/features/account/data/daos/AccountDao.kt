@@ -12,6 +12,10 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 internal interface AccountDao {
+
+    @Query("SELECT * FROM AccountEntity WHERE id = :id")
+    suspend fun getAccountById(id: Int): AccountEntity
+
     @Query(
         "SELECT ag.id as account_group_id," +
                 "ag.name as account_group_name," +
@@ -55,7 +59,7 @@ internal interface AccountDao {
     suspend fun deleteAccountGroup(accountGroupId: Int)
 
     @Insert
-    suspend fun insertAccount(accountEntity: AccountEntity)
+    suspend fun insertAccount(accountEntity: AccountEntity): Long
 
     @Query("DELETE FROM AccountEntity WHERE id = :accountId")
     suspend fun deleteAccount(accountId: Int)

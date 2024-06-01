@@ -35,7 +35,7 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
             emit(it to it.filter { entity -> entity.parentId == 0 })
         }.map { (res, rootItems) ->
             TransactionCategories(
-                items = rootItems.map { buildNode(1, res, it) }
+                items = rootItems.map { buildNode(1, res, it, null) }
             )
         }
     }
@@ -47,7 +47,7 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
             emit(it to it.filter { entity -> entity.parentId == 0 })
         }.map { (res, rootItems) ->
             TransactionCategories(
-                items = rootItems.map { buildNode(1, res, it) }
+                items = rootItems.map { buildNode(1, res, it, null) }
             )
         }
     }
@@ -68,20 +68,27 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
     private fun buildNode(
         level: Int,
         items: List<TransactionCategoryEntity>,
-        entity: TransactionCategoryEntity
+        entity: TransactionCategoryEntity,
+        parentNode: TransactionCategories.Node?
     ): TransactionCategories.Node {
         return TransactionCategories.Node(
             level = level,
             categoryId = entity.id,
             categoryName = entity.name,
-            parentNodeId = entity.parentId,
-            childNodes = items.filter { it.parentId == entity.id }.map {
-                buildNode(
-                    level = level + 1,
-                    items = items,
-                    entity = it
-                )
-            }
-        )
+            parentNode = parentNode
+        ).also { node ->
+            node.addChildren(
+                items
+                    .filter { it.parentId == entity.id }
+                    .map {
+                    buildNode(
+                        level = level + 1,
+                        items = items,
+                        entity = it,
+                        parentNode = node
+                    )
+                }
+            )
+        }
     }
 }

@@ -25,11 +25,41 @@
 -dontwarn com.google.auto.service.AutoService
 -dontwarn javax.lang.model.**
 -dontwarn javax.tools.Diagnostic*
--dontwarn org.osgi.framework.**
--dontwarn org.apache.batik.**
--dontwarn net.sf.saxon.**
--dontwarn javax.xml.stream.**
+
+
+-dontwarn org.apache.**
+-dontwarn org.openxmlformats.schemas.**
+-dontwarn org.etsi.**
+-dontwarn org.w3.**
+-dontwarn com.microsoft.schemas.**
+-dontwarn com.graphbuilder.**
+-dontwarn javax.naming.**
+-dontwarn java.lang.management.**
+-dontwarn org.slf4j.impl.**
 -dontwarn java.awt.**
+-dontwarn net.sf.saxon.**
+-dontwarn org.apache.batik.**
+-dontwarn org.apache.logging.log4j.**
+
+-dontnote org.apache.**
+-dontnote org.openxmlformats.schemas.**
+-dontnote org.etsi.**
+-dontnote org.w3.**
+-dontnote com.microsoft.schemas.**
+-dontnote com.graphbuilder.**
+-dontnote javax.naming.**
+-dontnote java.lang.management.**
+-dontnote org.slf4j.impl.**
+
+-keeppackagenames org.apache.poi.ss.formula.function
+
+-keep,allowoptimization,allowobfuscation class org.apache.logging.log4j.** { *; }
+-keep,allowoptimization class org.apache.commons.compress.archivers.zip.** { *; }
+-keep,allowoptimization class org.apache.poi.schemas.** { *; }
+-keep,allowoptimization class org.apache.xmlbeans.** { *; }
+-keep,allowoptimization class org.openxmlformats.schemas.** { *; }
+-keep,allowoptimization class com.microsoft.schemas.** { *; }
+
 -keepclassmembers,allowobfuscation class * {
  @com.google.gson.annotations.SerializedName <fields>;
 }

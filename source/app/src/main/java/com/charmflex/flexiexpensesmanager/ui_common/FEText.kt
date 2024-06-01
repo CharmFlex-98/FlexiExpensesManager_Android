@@ -197,7 +197,8 @@ fun FECallout3(
 @Composable
 fun FEMetaData1(
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
+    color: Color = Color.Unspecified
 ) {
     Text(
         modifier = modifier,
@@ -205,7 +206,8 @@ fun FEMetaData1(
         style = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp,
-            lineHeight = 16.sp
+            lineHeight = 16.sp,
+            color = color
         )
     )
 }
@@ -213,7 +215,8 @@ fun FEMetaData1(
 @Composable
 fun FEMetaData2(
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
+    color: Color = Color.Unspecified
 ) {
     Text(
         modifier = modifier,
@@ -221,7 +224,8 @@ fun FEMetaData2(
         style = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 10.sp,
-            lineHeight = 12.sp
+            lineHeight = 12.sp,
+            color = color
         )
     )
 }

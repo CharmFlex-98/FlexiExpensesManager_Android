@@ -1,9 +1,11 @@
 package com.charmflex.flexiexpensesmanager.features.account.domain.repositories
+import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroupSummary
 import kotlinx.coroutines.flow.Flow
 
 internal interface AccountRepository {
+    suspend fun getAccountById(id: Int): AccountGroup.Account
     fun getAllAccounts(): Flow<List<AccountGroup>>
 
     fun getAccountsSummary(): Flow<List<AccountGroupSummary>>
@@ -12,7 +14,7 @@ internal interface AccountRepository {
 
     suspend fun deleteAccountGroup(accountGroupId: Int)
 
-    suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Long)
+    suspend fun addAccount(accountName: String, accountGroupId: Int, initialAmount: Long): Long
 
     suspend fun deleteAccount(accountId: Int)
 
