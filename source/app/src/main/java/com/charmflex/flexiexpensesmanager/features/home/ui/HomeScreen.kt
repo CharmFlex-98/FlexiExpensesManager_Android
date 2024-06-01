@@ -97,6 +97,11 @@ internal fun HomeScreen(
                 val viewModel = getViewModel {
                     appComponent.accountHomeViewModel()
                 }
+                LaunchedEffect(key1 = shouldRefresh) {
+                    if (shouldRefresh) {
+                        viewModel.refresh()
+                    }
+                }
                 AccountHomeScreen(viewModel = viewModel)
             }
             composable(

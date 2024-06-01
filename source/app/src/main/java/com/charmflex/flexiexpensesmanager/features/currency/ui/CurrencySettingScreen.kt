@@ -38,7 +38,11 @@ internal fun CurrencySettingScreen(
     val viewState by viewModel.viewState.collectAsState()
     val bs = viewState.bottomSheetState
     val sheetState = rememberModalBottomSheetState()
-
+    val isPrimaryCurrencySetting =
+        viewModel.flowType is CurrencySettingViewState.FlowType.PrimaryCurrencySetting
+    val title = if (isPrimaryCurrencySetting) "Primary Currency" else "Secondary Currency"
+    val label = if (isPrimaryCurrencySetting) "Set primary currency" else "Set secondary currency"
+    val actionButtonText = if (isPrimaryCurrencySetting) "Set" else "Add"
 
     SGScaffold(
         modifier = Modifier
@@ -52,10 +56,10 @@ internal fun CurrencySettingScreen(
                 .padding(vertical = grid_x1),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            FEHeading2(text = "Secondary Currency")
+            FEHeading2(text = title)
             SGTextField(
                 modifier = Modifier.fillMaxWidth(),
-                label = "Set secondary currency",
+                label = label,
                 readOnly = true,
                 value = viewState.currencyName,
                 onClicked = viewModel::onLaunchCurrencySelectionBottomSheet,
@@ -82,7 +86,7 @@ internal fun CurrencySettingScreen(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.BottomCenter
         ) {
-            SGLargePrimaryButton(modifier = Modifier.fillMaxWidth(), text = "Add") {
+            SGLargePrimaryButton(modifier = Modifier.fillMaxWidth(), text = actionButtonText) {
                 viewModel.addCurrency()
             }
         }

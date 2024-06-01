@@ -37,7 +37,8 @@ internal class HomeDestinationBuilder : DestinationBuilder {
             HomeScreen(
                 homeViewModel = homeViewModel,
                 shouldRefresh = shouldRefresh,
-                appComponent = appComponent)
+                appComponent = appComponent
+            )
         }
     }
 }

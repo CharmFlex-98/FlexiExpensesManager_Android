@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.popWithHomeRefresh
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
-import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetAllCurrencyNamesUseCase
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
@@ -24,7 +23,8 @@ internal class CurrencySettingViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(CurrencySettingViewState())
     val viewState = _viewState.asStateFlow()
 
-    private var _flowType: CurrencySettingViewState.FlowType? = null
+    var flowType: CurrencySettingViewState.FlowType? = null
+        private set
 
     init {
         fetchCurrencyOptions()
@@ -34,7 +34,7 @@ internal class CurrencySettingViewModel @Inject constructor(
         flowType: String
     ) {
         viewModelScope.launch {
-            _flowType = when (flowType) {
+            this@CurrencySettingViewModel.flowType = when (flowType) {
                 CurrencyRoutes.Args.CURRENCY_TYPE_MAIN -> CurrencySettingViewState.FlowType.PrimaryCurrencySetting(
                     initialCurrency = userCurrencyRepository.getPrimaryCurrency()
                 )
@@ -42,7 +42,7 @@ internal class CurrencySettingViewModel @Inject constructor(
                 else -> CurrencySettingViewState.FlowType.AddSecondaryCurrency
             }
 
-            if (_flowType is CurrencySettingViewState.FlowType.PrimaryCurrencySetting) {
+            if (this@CurrencySettingViewModel.flowType is CurrencySettingViewState.FlowType.PrimaryCurrencySetting) {
                 _viewState.update {
                     it.copy(
                         currencyName = userCurrencyRepository.getPrimaryCurrency()
@@ -53,7 +53,7 @@ internal class CurrencySettingViewModel @Inject constructor(
     }
 
     fun isMainCurrencyType(): Boolean {
-        return _flowType is CurrencySettingViewState.FlowType.PrimaryCurrencySetting
+        return flowType is CurrencySettingViewState.FlowType.PrimaryCurrencySetting
     }
 
     private fun fetchCurrencyOptions() {
@@ -103,7 +103,7 @@ internal class CurrencySettingViewModel @Inject constructor(
     }
 
     fun onCurrencySelected(newValue: String) {
-        when (_flowType) {
+        when (flowType) {
             null -> {}
 
             is CurrencySettingViewState.FlowType.PrimaryCurrencySetting -> {
@@ -138,7 +138,7 @@ internal class CurrencySettingViewModel @Inject constructor(
     }
 
     fun addCurrency() {
-        when (val type = _flowType) {
+        when (val type = flowType) {
             null -> {}
 
             is CurrencySettingViewState.FlowType.PrimaryCurrencySetting -> {

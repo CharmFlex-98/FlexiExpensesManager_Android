@@ -10,6 +10,7 @@ import com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper.Accoun
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,7 +32,7 @@ internal class AccountHomeViewModel @Inject constructor(
 
     private fun load() {
         viewModelScope.launch {
-            accountRepository.getAccountsSummary().collectLatest { summary ->
+            accountRepository.getAccountsSummary().firstOrNull()?.let { summary ->
                 toggleLoading(true)
                 _viewState.update {
                     val summary = accountHomeUIMapper.map(summary)
@@ -44,6 +45,10 @@ internal class AccountHomeViewModel @Inject constructor(
                 toggleLoading(false)
             }
         }
+    }
+
+    fun refresh() {
+        load()
     }
 
     private fun toggleLoading(isLoading: Boolean) {
