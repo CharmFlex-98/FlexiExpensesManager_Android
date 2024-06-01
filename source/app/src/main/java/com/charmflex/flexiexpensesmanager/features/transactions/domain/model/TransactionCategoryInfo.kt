@@ -12,12 +12,10 @@ internal data class TransactionCategories(
         val categoryName: String,
         val level: Int,
         val parentNode: Node?,
+        val childNodes: MutableList<Node> = mutableListOf()
     ) {
-        private val _childNodes: MutableList<Node> = mutableListOf()
-        val childNodes: List<Node> = _childNodes
-
         fun addChildren(nodes: List<Node>) {
-            _childNodes.addAll(nodes)
+            childNodes.addAll(nodes)
         }
 
         val parentNodeId get() = parentNode?.categoryId

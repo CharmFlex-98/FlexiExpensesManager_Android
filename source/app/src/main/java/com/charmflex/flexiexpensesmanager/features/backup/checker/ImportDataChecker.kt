@@ -30,6 +30,16 @@ internal class ImportDataChecker @Inject constructor(
         val accounts =
             accountRepository.getAllAccounts().firstOrNull()?.map { it.accounts }?.flatten()
         val tags = tagRepository.getAllTags().firstOrNull()
+        val incomeCategories =
+            categoryRepository.getCategoriesIncludeDeleted(TransactionType.INCOME.name)
+                .firstOrNull()?.let {
+                generateCategoriesMap(it)
+            }
+        val expensesCategories =
+            categoryRepository.getCategoriesIncludeDeleted(TransactionType.EXPENSES.name)
+                .firstOrNull()?.let {
+                generateCategoriesMap(it)
+            }
         missingData.forEachIndexed { index, data ->
             when (data.dataType) {
                 ImportedData.MissingData.DataType.ACCOUNT_FROM, ImportedData.MissingData.DataType.ACCOUNT_TO -> {
@@ -52,8 +62,30 @@ internal class ImportDataChecker @Inject constructor(
                                         )
                                     )
                                 }
-                            updatedMissingData.remove(data)
                         }
+                        updatedMissingData.remove(data)
+                    }
+                }
+
+                ImportedData.MissingData.DataType.EXPENSES_CATEGORY, ImportedData.MissingData.DataType.INCOME_CATEGORY -> {
+                    val categoryChain = data.name
+                    val categoryID =
+                        if (data.dataType == ImportedData.MissingData.DataType.EXPENSES_CATEGORY) {
+                            expensesCategories?.get(categoryChain)
+                        } else {
+                            incomeCategories?.get(categoryChain)
+                        }
+
+                    if (categoryID != null) {
+                        data.transactionIndex.forEach {
+                            updatedImportedData[it] = updatedImportedData[it].copy(
+                                categoryColumns = ImportedData.RequiredDataState.Acquired(
+                                    id = categoryID,
+                                    name = categoryChain
+                                )
+                            )
+                        }
+                        updatedMissingData.remove(data)
                     }
                 }
 
@@ -77,8 +109,9 @@ internal class ImportDataChecker @Inject constructor(
                                         }
                                     }
                                 )
-                            updatedMissingData.remove(data)
                         }
+                        updatedMissingData.remove(data)
+
                     }
                 }
 
@@ -117,7 +150,13 @@ internal class ImportDataChecker @Inject constructor(
                     currencyRate = row.currencyRate,
                     amount = row.amount,
                     date = row.date,
-                    categoryColumns = generateCategoryRequiredState(row, expensesCategories, incomeCategories, index, missingData),
+                    categoryColumns = generateCategoryRequiredState(
+                        row,
+                        expensesCategories,
+                        incomeCategories,
+                        index,
+                        missingData
+                    ),
                     tags = listOf()
                 )
 
@@ -208,8 +247,12 @@ internal class ImportDataChecker @Inject constructor(
         incomeCategories: Map<String, Int>?,
         index: Int,
         missingData: MutableSet<ImportedData.MissingData>
-    ): ImportedData.RequiredDataState {
+    ): ImportedData.RequiredDataState? {
         val isExpenses = row.transactionType == TransactionType.EXPENSES.name
+        val isTransfer = row.transactionType == TransactionType.TRANSFER.name
+
+        if (isTransfer) return null
+
         val categoryColumnsToString = row.categoryColumns.joinToString("-->")
         val catID = if (isExpenses) {
             expensesCategories?.get(categoryColumnsToString)
@@ -252,13 +295,13 @@ internal class ImportDataChecker @Inject constructor(
         map: MutableMap<String, Int>
     ) {
         val updatedChain = visitedChain.toMutableList().apply { add(node.categoryName) }
+        map[updatedChain.joinToString("-->")] = node.categoryId
         if (node.childNodes.isEmpty()) {
-            map[updatedChain.joinToString("-->")] = node.categoryId
             return
         }
 
         node.childNodes.forEach {
-            appendCategoryChain(it, visitedChain, map)
+            appendCategoryChain(it, updatedChain, map)
         }
     }
 

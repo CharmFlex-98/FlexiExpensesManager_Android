@@ -134,7 +134,7 @@ internal data class ImportedData(
     val currencyRate: Double,
     val amount: Double,
     val date: String,
-    val categoryColumns: RequiredDataState,
+    val categoryColumns: RequiredDataState?,
     val tags: List<RequiredDataState>
 ) {
     sealed interface RequiredDataState {

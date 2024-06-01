@@ -3,6 +3,7 @@ package com.charmflex.flexiexpensesmanager.features.category.category.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.BackupRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.apache.poi.ss.formula.functions.Index
 import javax.inject.Inject
 
 internal class CategoryEditorViewModel @Inject constructor(
@@ -22,6 +22,7 @@ internal class CategoryEditorViewModel @Inject constructor(
     private val routeNavigator: RouteNavigator
 ) : ViewModel() {
     private var editorTypeCode: TransactionType = TransactionType.EXPENSES
+    private var isImportFixFlow: Boolean = false
 
     private val _snackBarState: MutableStateFlow<SnackBarState> =
         MutableStateFlow(SnackBarState.None)
@@ -38,6 +39,7 @@ internal class CategoryEditorViewModel @Inject constructor(
         }
 
         if (importFixCategoryNames != null) {
+            isImportFixFlow = true
             autoAddCategoryForImport(importFixCategoryNames.split("-->"))
         } else {
             listenCategoryList()
@@ -68,18 +70,23 @@ internal class CategoryEditorViewModel @Inject constructor(
         viewModelScope.launch {
             toggleLoading(true)
             categoryRepository.getCategories(editorTypeCode.name).firstOrNull()?.let {
-                val next = it.items.firstOrNull { it.categoryName == categoryChain[0] }
-                val (currentNode, index) = if (next == null) null to 0 else run {
-                    getNodeByName(categoryChain, 0, next)
-                }
-                _viewState.value = _viewState.value.copy(
-                    categoryTree = it,
-                    currentNode = currentNode,
-                    editorState = CategoryEditorViewState.EditorState(
-                        isOpened = true,
-                        value = categoryChain.getOrNull(if (currentNode == null) 0 else index + 1) ?: ""
+                val rootCategoryName = categoryChain[0]
+                val rootNode = it.items.firstOrNull { it.categoryName == rootCategoryName }
+                if (rootNode != null) {
+                    val state = getImportCategoryState(categoryChain, 0, rootNode)
+                    _viewState.value = _viewState.value.copy(
+                        categoryTree = it,
+                        currentNode = state.node,
+                        editorState = state.editorState
                     )
-                )
+                } else {
+                    _viewState.value = _viewState.value.copy(
+                        categoryTree = it,
+                        currentNode = null,
+                        editorState = CategoryEditorViewState.EditorState(isOpened = true, value = rootCategoryName)
+                    )
+                }
+
             }
             toggleLoading(false)
         }
@@ -117,18 +124,23 @@ internal class CategoryEditorViewModel @Inject constructor(
         }
     }
 
-    private fun getNodeByName(
+    private fun getImportCategoryState(
         chain: List<String>,
         index: Int,
         currentNode: TransactionCategories.Node
-    ): Pair<TransactionCategories.Node?, Int> {
-        val children = currentNode.childNodes
-        if (children.isEmpty()) return currentNode to index
-        else {
-            if (index == chain.size - 1) return currentNode to index
-            val next = children.firstOrNull { it.categoryName == chain[index + 1] }
-            return if (next == null) currentNode to index
-            else getNodeByName(chain, index + 1, currentNode)
+    ): ImportCategoryState {
+        // If already reach the end of the chain but still able to get to here, something is wrong..
+        if (index >= chain.size - 1) {
+            return ImportCategoryState(node = null, errorMessage = "Cannot find the category path...")
+        }
+
+        val nextCategoryName = chain[index + 1]
+        val nextNode = currentNode.childNodes.firstOrNull { it.categoryName == nextCategoryName }
+
+        return if (nextNode == null) {
+            ImportCategoryState(node = currentNode, editorState = CategoryEditorViewState.EditorState(isOpened = true, value = nextCategoryName))
+        } else {
+            getImportCategoryState(chain, index + 1, nextNode)
         }
     }
 
@@ -197,6 +209,14 @@ internal class CategoryEditorViewModel @Inject constructor(
                 )
             }.fold(
                 onSuccess = {
+                    // If this is import flow, just pop
+                    if (isImportFixFlow) routeNavigator.popWithArguments(
+                        mapOf(
+                            BackupRoutes.Args.UPDATE_IMPORT_DATA to true
+                        )
+                    )
+
+
                     _viewState.update {
                         it.copy(
                             editorState = CategoryEditorViewState.EditorState()
@@ -256,5 +276,10 @@ internal data class CategoryEditorViewState(
     data class DeleteDialogState(
         val categoryId: Int
     )
-
 }
+
+internal data class ImportCategoryState(
+    val editorState: CategoryEditorViewState.EditorState = CategoryEditorViewState.EditorState(),
+    val node: TransactionCategories.Node?,
+    val errorMessage: String = ""
+)

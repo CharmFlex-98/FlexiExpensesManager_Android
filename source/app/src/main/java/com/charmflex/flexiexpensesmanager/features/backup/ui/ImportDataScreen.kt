@@ -171,6 +171,7 @@ private fun ColumnScope.LoadedScreen(
                                         entityItemName = it.name
                                     )
                                 }
+                                else -> {}
                             }
                             item.accountFrom?.let {
                                 when (it) {
