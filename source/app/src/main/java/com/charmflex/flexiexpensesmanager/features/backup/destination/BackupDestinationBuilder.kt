@@ -21,8 +21,6 @@ internal class BackupDestinationBuilder : DestinationBuilder{
     private fun NavGraphBuilder.importSetting() {
         composable(
             BackupRoutes.IMPORT_SETTING, 
-            enterTransition = FEHorizontalEnterFromEnd, 
-            popExitTransition = FEHorizontalExitToEnd
         ) {
             val updateImportedData = it.savedStateHandle.remove<Boolean>(BackupRoutes.Args.UPDATE_IMPORT_DATA) ?: false
             val viewModel = getViewModel {

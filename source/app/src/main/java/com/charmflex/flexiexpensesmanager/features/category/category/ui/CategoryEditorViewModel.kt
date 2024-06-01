@@ -210,11 +210,14 @@ internal class CategoryEditorViewModel @Inject constructor(
             }.fold(
                 onSuccess = {
                     // If this is import flow, just pop
-                    if (isImportFixFlow) routeNavigator.popWithArguments(
-                        mapOf(
-                            BackupRoutes.Args.UPDATE_IMPORT_DATA to true
+                    if (isImportFixFlow) {
+                        routeNavigator.popWithArguments(
+                            mapOf(
+                                BackupRoutes.Args.UPDATE_IMPORT_DATA to true
+                            )
                         )
-                    )
+                        return@fold
+                    }
 
 
                     _viewState.update {

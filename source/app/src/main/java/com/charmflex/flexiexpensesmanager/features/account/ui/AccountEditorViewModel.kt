@@ -222,7 +222,6 @@ internal class AccountEditorViewModel @Inject constructor(
             }.fold(
                 onSuccess = {
                     _snackBarState.emit(SnackBarState.Success("Add success!"))
-                    toggleEditor(false)
                     if (_flowType is AccountEditorFlow.ImportFix) {
                         routeNavigator.popWithArguments(
                             mapOf(BackupRoutes.Args.UPDATE_IMPORT_DATA to true)

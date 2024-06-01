@@ -137,7 +137,7 @@ internal class ImportDataViewModel @Inject constructor(
                     transactionAccountFrom = fromAccount,
                     transactionAccountTo = toAccount,
                     transactionTypeCode = it.transactionType,
-                    amountInCent = (it.amount*100).toLong(),
+                    amountInCent = (it.amount.toBigDecimal().times(100.toBigDecimal())).toLong(),
                     currency = it.currency,
                     rate = it.currencyRate.toFloat(),
                     transactionDate = it.date,
