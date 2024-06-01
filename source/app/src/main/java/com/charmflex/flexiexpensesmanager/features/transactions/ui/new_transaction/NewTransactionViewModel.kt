@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.navigation.popWithHomeRefresh
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
@@ -328,8 +329,7 @@ internal class NewTransactionViewModel @Inject constructor(
     fun onBack(refreshHome: Boolean) {
         if (!refreshHome) routeNavigator.pop()
         else {
-            val data = mapOf(HomeRoutes.Args.HOME_REFRESH to true)
-            routeNavigator.popWithArguments(data = data)
+            routeNavigator.popWithHomeRefresh()
         }
     }
 
