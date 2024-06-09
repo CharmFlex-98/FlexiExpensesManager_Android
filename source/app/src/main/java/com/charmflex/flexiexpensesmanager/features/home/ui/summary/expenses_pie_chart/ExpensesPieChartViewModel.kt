@@ -28,6 +28,8 @@ internal class ExpensesPieChartViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(ExpensesPieChartViewState())
     val viewState = _viewState.asStateFlow()
 
+    val producer: ChartEntryModelProducer = ChartEntryModelProducer()
+
     init {
         load()
         loadTagOptions()
@@ -160,7 +162,6 @@ internal data class ExpensesPieChartViewState(
     }
 
     data class BarChartData(
-        val producer: ChartEntryModelProducer = ChartEntryModelProducer(),
         val currencyCode: String = "",
         val categoryExpensesAmount: List<Pair<String, Long>> = listOf()
     )

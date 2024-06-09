@@ -124,7 +124,7 @@ internal fun ColumnScope.ExpensesPieChartScreen(
                 }
 
                 is ExpensesPieChartViewState.ChartType.Bar -> {
-                    val producer = pieChartViewState.barChartData.producer
+                    val producer = viewModel.producer
                     val entries =
                         pieChartViewState.barChartData.categoryExpensesAmount.mapIndexed { index, item ->
                             FloatEntry(index.toFloat(), item.second / 100.toFloat())
