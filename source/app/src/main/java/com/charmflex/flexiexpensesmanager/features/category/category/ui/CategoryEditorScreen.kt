@@ -58,7 +58,7 @@ internal fun CategoryEditorScreen(viewModel: CategoryEditorViewModel) {
         else -> "Add Subcategory for ${n.categoryName}"
     }
     val items = when (val n = viewState.currentNode) {
-        null -> viewState.categoryTree.items
+        null -> viewState.categoryChain.categoryTree.items
         else -> n.childNodes
     }
     val isEditorOpened = viewState.editorState.isOpened

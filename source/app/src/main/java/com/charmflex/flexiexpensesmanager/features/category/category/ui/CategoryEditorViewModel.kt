@@ -52,7 +52,10 @@ internal class CategoryEditorViewModel @Inject constructor(
             categoryRepository.getCategories(editorTypeCode.name).collectLatest {
                 toggleLoading(true)
                 _viewState.value = _viewState.value.copy(
-                    categoryTree = it,
+                    categoryChain = _viewState.value.categoryChain.copy(
+                        version = _viewState.value.categoryChain.version + 1,
+                        categoryTree = it
+                    ),
                     currentNode = _viewState.value.currentNode?.let { currentNode ->
                         for (item in it.items) {
                             val res = getNode(currentNode.categoryId, item)
@@ -76,13 +79,19 @@ internal class CategoryEditorViewModel @Inject constructor(
                 if (rootNode != null) {
                     val state = getImportCategoryState(categoryChain, 0, rootNode)
                     _viewState.value = _viewState.value.copy(
-                        categoryTree = it,
+                        categoryChain = _viewState.value.categoryChain.copy(
+                            version = _viewState.value.categoryChain.version + 1,
+                            categoryTree = it
+                        ),
                         currentNode = state.node,
                         editorState = state.editorState
                     )
                 } else {
                     _viewState.value = _viewState.value.copy(
-                        categoryTree = it,
+                        categoryChain = CategoryEditorViewState.CategoryChainUI(
+                            version = _viewState.value.categoryChain.version + 1,
+                            categoryTree = it
+                        ),
                         currentNode = null,
                         editorState = CategoryEditorViewState.EditorState(isOpened = true, value = rootCategoryName)
                     )
@@ -267,12 +276,16 @@ internal class CategoryEditorViewModel @Inject constructor(
 }
 
 internal data class CategoryEditorViewState(
-    val categoryTree: TransactionCategories = TransactionCategories(items = listOf()),
+    val categoryChain: CategoryChainUI = CategoryChainUI(),
     val currentNode: TransactionCategories.Node? = null,
     val isLoading: Boolean = false,
     val editorState: EditorState = EditorState(),
     val dialogState: DeleteDialogState? = null
 ) {
+    data class CategoryChainUI(
+        val version: Int = 1,
+        val categoryTree: TransactionCategories = TransactionCategories(items = listOf())
+    )
     data class EditorState(
         val isOpened: Boolean = false,
         val value: String = ""
