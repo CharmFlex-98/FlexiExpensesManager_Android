@@ -26,12 +26,11 @@ internal class AccountHomeUIMapper @Inject constructor(
                             it.balance,
                             mainCurrency
                         ),
-                        textColor = if (it.balance < 0) Color.Red else Color.Green
+                        balanceInCent = it.balance,
                     )
                 },
                 balance = currencyFormatter.format(it.balance, mainCurrency),
                 balanceInCent = it.balance,
-                textColor = if (it.balance < 0) Color.Red else Color.Green
             )
         }
     }

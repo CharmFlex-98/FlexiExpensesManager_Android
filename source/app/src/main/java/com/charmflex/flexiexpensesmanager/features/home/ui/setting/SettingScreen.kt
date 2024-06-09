@@ -48,40 +48,48 @@ internal fun SettingScreen(viewModel: SettingViewModel) {
             else -> null
         }
     }
-    val context = LocalContext.current
-    val filePickerLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.OpenDocumentTree()) {
-        context.contentResolver
-    }
 
     LaunchedEffect(key1 = snackbarState) {
         when (val state = snackbarState) {
             is SnackBarState.Error -> {
                 snackbarHostState.showSnackBarImmediately(state.message ?: "Something went wrong")
             }
+
             is SnackBarState.Success -> {
                 snackbarHostState.showSnackBarImmediately(state.message)
             }
+
             else -> {}
         }
     }
 
-    FeColumnContainer {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(grid_x2),
+    ) {
         viewState.items.forEachIndexed { index, it ->
             if (index != 0) HorizontalDivider(color = Color.White, thickness = 0.5.dp)
             Box(
                 modifier = Modifier
-                    .padding(vertical = grid_x2)
+                    .padding(vertical = grid_x1)
                     .fillMaxWidth()
+                    .clip(RoundedCornerShape(grid_x2))
+                    .background(MaterialTheme.colorScheme.tertiary)
                     .clickable {
                         viewModel.onTap(it.action)
                     }
+                    .padding(grid_x2)
             ) {
-                FEHeading4(text = it.title)
+                FEHeading4(text = it.title, color = MaterialTheme.colorScheme.onTertiary)
             }
         }
     }
 
-    if (viewState.isLoading) Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    if (viewState.isLoading) Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
         CircularProgressIndicator()
     }
 

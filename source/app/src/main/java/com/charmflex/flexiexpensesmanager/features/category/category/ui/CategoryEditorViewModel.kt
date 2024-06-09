@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.category.category.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
@@ -116,6 +117,7 @@ internal class CategoryEditorViewModel @Inject constructor(
         if (currentNode.categoryId == categoryId) return currentNode
         else {
             for (item in currentNode.childNodes) {
+                Log.d("test", currentNode.categoryId.toString())
                 val res = getNode(categoryId, item)
                 if (res != null) return res
             }

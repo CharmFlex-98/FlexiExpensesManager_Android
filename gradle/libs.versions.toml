@@ -2,6 +2,8 @@
 # kotlin
 kotlin_kapt_version = '1.8.10'
 
+vico = "1.14.0"
+
 # accompanist
 accompanist_version = "0.34.0"
 
@@ -85,6 +87,7 @@ coil_version = "2.5.0"
 # kotlin-serialization version
 kotlin_serialization_version = "1.6.3"
 kotlin_seriallization_plugin_version = "1.8.10"
+uiTextGoogleFonts = "1.6.7"
 
 [libraries]
 # maxkeppper compose dialog
@@ -120,6 +123,13 @@ google-accompanist = { module = 'com.google.accompanist:accompanist-navigation-a
 android-room-compiler = { module = 'androidx.room:room-compiler', version.ref = 'room_version'}
 android-room = { module = 'androidx.room:room-runtime', version.ref = 'room_version'}
 android-room-ktx = { module = 'androidx.room:room-ktx', version.ref = "room_version"}
+
+# vico
+# For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
+vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
+
+# Houses the core logic for charts and other elements. Included in all other modules.
+vico-core = { group = "com.patrykandpatrick.vico", name = "core", version.ref = "vico" }
 
 # google
 google-dagger = { module = 'com.google.dagger:dagger', version.ref = 'google_dagger_version'}
@@ -176,6 +186,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 
 # coil
 coil = { module = "io.coil-kt:coil-compose", version.ref = 'coil_version'}
+androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 
 [plugins]
 # kotlin

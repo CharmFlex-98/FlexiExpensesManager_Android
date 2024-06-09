@@ -28,6 +28,7 @@ import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading5
+import com.charmflex.flexiexpensesmanager.ui_common.FeColumnContainer
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import kotlin.math.absoluteValue
 
@@ -41,9 +42,11 @@ internal fun AccountHomeScreen(viewModel: AccountHomeViewModel) {
             .verticalScroll(rememberScrollState())
             .padding(grid_x2)
     ) {
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .padding(grid_x2)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(grid_x2)
+        ) {
             Text(text = "Total Asset: ${viewState.totalAsset}")
         }
         viewState.accountsSummary.forEach {
@@ -56,19 +59,16 @@ internal fun AccountHomeScreen(viewModel: AccountHomeViewModel) {
 private fun AccountGroupSection(
     accountGroupSummary: AccountHomeViewState.AccountGroupSummaryUI,
 ) {
-    Column(
-        modifier = Modifier
-            .padding(vertical = grid_x2)
-            .clip(RoundedCornerShape(grid_x2))
-            .background(MaterialTheme.colorScheme.secondaryContainer)
-            .padding(grid_x2),
-    ) {
+    FeColumnContainer {
         Row {
             FEHeading3(
                 modifier = Modifier.weight(1f),
                 text = accountGroupSummary.accountGroupName
             )
-            FEHeading5(text = accountGroupSummary.balance, color = accountGroupSummary.textColor)
+            FEHeading5(
+                text = accountGroupSummary.balance,
+                color = if (accountGroupSummary.balanceInCent < 0) Color.Red else MaterialTheme.colorScheme.primary
+            )
 
         }
         accountGroupSummary.accountsSummary.map {
@@ -77,7 +77,10 @@ private fun AccountGroupSection(
                     modifier = Modifier.weight(1f),
                     text = it.accountName
                 )
-                FEBody3(text = it.balance, color = it.textColor)
+                FEBody3(
+                    text = it.balance,
+                    color = if (accountGroupSummary.balanceInCent < 0) Color.Red else MaterialTheme.colorScheme.primary
+                )
             }
         }
     }

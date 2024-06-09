@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.kizitonwose.calendar.compose.CalendarLayoutInfo
 import com.kizitonwose.calendar.compose.HeatMapCalendar
 import com.kizitonwose.calendar.compose.heatmapcalendar.HeatMapCalendarState
@@ -59,7 +61,7 @@ internal fun ColumnScope.ExpensesHeatMapScreen(
     val data = viewModel.heatMapState
 
     Box(
-        modifier = Modifier.weight(1f),
+        modifier = Modifier.padding(vertical = grid_x2),
         contentAlignment = Alignment.Center
     ) {
         val endDate = remember { LocalDate.now() }
@@ -67,8 +69,6 @@ internal fun ColumnScope.ExpensesHeatMapScreen(
         val startDate = remember { endDate.minusMonths(12) }
         var selection by remember { mutableStateOf<Pair<LocalDate, Color>?>(null) }
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
             verticalArrangement = Arrangement.Center
         ) {
             val state = rememberHeatMapCalendarState(

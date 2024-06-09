@@ -70,13 +70,12 @@ internal data class AccountHomeViewState(
         val accountsSummary: List<AccountSummaryUI>,
         val balance: String,
         val balanceInCent: Long,
-        val textColor: Color
     ) {
         data class AccountSummaryUI(
             val accountId: Int,
             val accountName: String,
             val balance: String,
-            val textColor: Color
+            val balanceInCent: Long,
         )
     }
 }

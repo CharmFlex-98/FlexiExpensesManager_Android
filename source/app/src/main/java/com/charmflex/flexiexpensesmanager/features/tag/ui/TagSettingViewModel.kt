@@ -17,7 +17,7 @@ internal class TagSettingViewModel @Inject constructor(
     private val tagRepository: TagRepository,
     private val routeNavigator: RouteNavigator
 ) : ViewModel() {
-    private lateinit var flowType: TagSettingFlow
+    private var flowType: TagSettingFlow = TagSettingFlow.Default
 
     private val _viewState = MutableStateFlow(TagSettingViewState())
     val viewState = _viewState.asStateFlow()

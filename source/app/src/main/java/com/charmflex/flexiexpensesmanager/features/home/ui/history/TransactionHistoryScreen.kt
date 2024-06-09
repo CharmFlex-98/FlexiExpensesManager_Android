@@ -202,6 +202,11 @@ private fun ExpensesHistoryItem(
         TransactionType.INCOME.name -> "+$amount"
         else -> amount
     }
+    val signAmountColor = when (type) {
+        TransactionType.EXPENSES.name -> Color.Red
+        TransactionType.INCOME.name -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.tertiary
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -209,7 +214,7 @@ private fun ExpensesHistoryItem(
                 onClick(id)
             }
             .background(
-                MaterialTheme.colorScheme.tertiaryContainer
+                MaterialTheme.colorScheme.surfaceContainerHighest
             )
             .padding(grid_x1)
     ) {
@@ -229,7 +234,7 @@ private fun ExpensesHistoryItem(
         Box(
             contentAlignment = Alignment.Center
         ) {
-            FEBody1(text = signedAmount)
+            FEBody1(text = signedAmount, color = signAmountColor)
         }
     }
 }

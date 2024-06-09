@@ -97,7 +97,8 @@ fun FEHeading5(
 @Composable
 fun FEBody1(
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
+    color: Color = Color.Unspecified
 ) {
     Text(
         modifier = modifier,
@@ -105,7 +106,8 @@ fun FEBody1(
         style = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 18.sp,
-            lineHeight = 28.sp
+            lineHeight = 28.sp,
+            color = color
         )
     )
 }
