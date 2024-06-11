@@ -220,7 +220,12 @@ private fun ComposeChart6(
             ),
             chartModelProducer = modelProducer,
             startAxis = rememberStartAxis(
-                titleComponent = axisLabelComponent(),
+                label = axisLabelComponent(
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                titleComponent = axisLabelComponent(
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
                 title = "Amount (${viewState.barChartData.currencyCode})",
             ),
             bottomAxis = rememberBottomAxis(
@@ -229,7 +234,12 @@ private fun ComposeChart6(
                         x.toInt()
                     )?.first ?: ""
                 },
-                titleComponent = axisLabelComponent(),
+                label = axisLabelComponent(
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                titleComponent = axisLabelComponent(
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
                 title = "Categories"
             ),
             marker = rememberMarker(),

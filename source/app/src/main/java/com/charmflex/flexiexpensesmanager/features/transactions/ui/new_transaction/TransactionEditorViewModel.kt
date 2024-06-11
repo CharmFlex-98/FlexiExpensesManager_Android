@@ -32,6 +32,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSAC
 import com.charmflex.flexiexpensesmanager.features.transactions.usecases.SubmitTransactionUseCase
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -218,8 +219,8 @@ internal class TransactionEditorViewModel @Inject constructor(
         }
     }
 
-    fun updateCategories(transactionType: TransactionType) {
-        viewModelScope.launch {
+    private suspend fun updateCategories(transactionType: TransactionType) {
+        coroutineScope {
             val categories =
                 transactionCategoryRepository.getCategories(transactionType.name).firstOrNull()
             _viewState.update {
