@@ -89,6 +89,19 @@ internal fun TransactionEditorScreen(
     val currencyVisualTransformation = remember(viewState.currencyCode) {
         viewModel.currencyVisualTransformationBuilder().create(viewState.currencyCode)
     }
+    val isNewTransaction = viewModel.isNewTransaction()
+    val title = when {
+        isNewTransaction -> "New Transaction"
+        else -> "Edit Transaction"
+    }
+    val actionTitle = when {
+        isNewTransaction -> "Congrats!"
+        else -> "Success!"
+    }
+    val actionSubtitle = when {
+        isNewTransaction -> "You have created a new transaction!"
+        else -> "You have done updating the transaction!"
+    }
     var initLoader by remember { mutableStateOf(true) }
 
     LaunchedEffect(key1 = Unit) {
@@ -111,7 +124,7 @@ internal fun TransactionEditorScreen(
         topBar = {
             TopAppBar(title = {
                 Text(
-                    text = "Create New Expenses", style = TextStyle(fontSize = 20.sp)
+                    text = title, style = TextStyle(fontSize = 20.sp)
                 )
             }, navigationIcon = {
                 IconButton(
@@ -181,7 +194,16 @@ internal fun TransactionEditorScreen(
                                 onValueChange = {},
                                 onClicked = {
                                     viewModel.onCallbackFieldTap(feField)
-                                }
+                                },
+                                trailingIcon = if (feField.allowClear) {
+                                    {
+                                        IconButton(onClick = {
+                                            viewModel.onClearField(feField)
+                                        }) {
+                                            SGIcons.Close()
+                                        }
+                                    }
+                                } else null
                             )
                         }
 
@@ -242,8 +264,8 @@ internal fun TransactionEditorScreen(
 
     if (viewState.success) {
         SGActionDialog(
-            title = stringResource(id = R.string.new_expenses_create_success_dialog_title),
-            text = stringResource(id = R.string.new_expenses_create_success_dialog_subtitle),
+            title = actionTitle,
+            text = actionSubtitle,
             onDismissRequest = { },
             primaryButtonText = stringResource(id = R.string.generic_back_to_home)
         ) {
@@ -274,7 +296,7 @@ internal fun TransactionEditorScreen(
                         viewModel.toggleBottomSheet(null)
                     }
                 }
-                
+
                 is NewTransactionViewState.CurrencySelectionBottomSheetState -> {
                     CurrencySelectionBottomSheet(currencyList = viewState.currencyList) {
                         viewModel.onCurrencySelected(it, bs.feField)
@@ -443,14 +465,14 @@ private fun CurrencySelectionBottomSheet(
                 .fillMaxWidth()
                 .verticalScroll(state = rememberScrollState())
         ) {
-            currencyList.forEach { 
+            currencyList.forEach {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
                             onSelectCurrency(it)
                         }
-                        .padding(grid_x2), 
+                        .padding(grid_x2),
                     contentAlignment = Alignment.Center
                 ) {
                     FEBody2(text = it.name)

@@ -39,8 +39,33 @@ internal class TransactionRepositoryImpl @Inject constructor(
             currency = currency,
             rate = rate,
         )
-        if (tagIds.isEmpty()) transactionDao.insertTransaction(transaction)
-        else transactionTagDao.insertTransactionAndTransactionTag(transaction, tagIds)
+        transactionTagDao.insertTransactionAndTransactionTag(transaction, tagIds)
+    }
+
+    override suspend fun editExpenses(
+        id: Long,
+        name: String,
+        fromAccountId: Int,
+        amount: Long,
+        categoryId: Int,
+        transactionDate: String,
+        currency: String,
+        rate: Float,
+        tagIds: List<Int>
+    ) {
+        val transaction = TransactionEntity(
+            id = id,
+            transactionName = name,
+            accountFromId = fromAccountId,
+            amountInCent = amount,
+            categoryId = categoryId,
+            transactionDate = transactionDate,
+            transactionTypeCode = "EXPENSES",
+            accountToId = null,
+            currency = currency,
+            rate = rate,
+        )
+        transactionTagDao.updateTransactionAndTransactionTags(transaction, tagIds)
     }
 
     override suspend fun addNewIncome(
@@ -66,6 +91,31 @@ internal class TransactionRepositoryImpl @Inject constructor(
         transactionDao.insertTransaction(transaction = transaction)
     }
 
+    override suspend fun editIncome(
+        id: Long,
+        name: String,
+        toAccountId: Int,
+        amount: Long,
+        categoryId: Int,
+        transactionDate: String,
+        currency: String,
+        rate: Float
+    ) {
+        val transaction = TransactionEntity(
+            id = id,
+            transactionName = name,
+            amountInCent = amount,
+            categoryId = categoryId,
+            transactionDate = transactionDate,
+            transactionTypeCode = "INCOME",
+            accountToId = toAccountId,
+            accountFromId = null,
+            currency = currency,
+            rate = rate
+        )
+        transactionTagDao.updateTransaction(transaction)
+    }
+
     override suspend fun addNewTransfer(
         name: String,
         fromAccountId: Int,
@@ -87,6 +137,31 @@ internal class TransactionRepositoryImpl @Inject constructor(
             rate = rate
         )
         transactionDao.insertTransaction(transaction)
+    }
+
+    override suspend fun editTransfer(
+        id: Long,
+        name: String,
+        fromAccountId: Int,
+        toAccountId: Int,
+        amount: Long,
+        transactionDate: String,
+        currency: String,
+        rate: Float
+    ) {
+        val transaction = TransactionEntity(
+            id = id,
+            transactionName = name,
+            amountInCent = amount,
+            transactionDate = transactionDate,
+            transactionTypeCode = "TRANSFER",
+            accountToId = toAccountId,
+            accountFromId = fromAccountId,
+            categoryId = null,
+            currency = currency,
+            rate = rate
+        )
+        transactionDao.updateTransaction(transaction)
     }
 
     override suspend fun addAllImportTransactions(transactionData: List<ImportTransaction>) {

@@ -8,6 +8,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
     suspend fun submitExpenses(
+        id: Long?,
         name: String,
         fromAccountId: Int,
         amount: Long,
@@ -15,9 +16,22 @@ internal class SubmitTransactionUseCase @Inject constructor(
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
     ): Result<Unit> {
         return resultOf {
+            id?.let {
+                transactionRepository.editExpenses(
+                    it,
+                    name,
+                    fromAccountId,
+                    amount,
+                    categoryId,
+                    transactionDate,
+                    currency,
+                    rate,
+                    tagIds
+                )
+            } ?:
             transactionRepository.addNewExpenses(
                 name,
                 fromAccountId,
@@ -32,6 +46,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
     }
 
     suspend fun submitIncome(
+        id: Long?,
         name: String,
         toAccountId: Int,
         amount: Long,
@@ -41,7 +56,18 @@ internal class SubmitTransactionUseCase @Inject constructor(
         rate: Float
     ): Result<Unit> {
         return resultOf {
-            transactionRepository.addNewIncome(
+            id?.let {
+                transactionRepository.editIncome(
+                    it,
+                    name,
+                    toAccountId,
+                    amount,
+                    categoryId,
+                    transactionDate,
+                    currency,
+                    rate
+                )
+            } ?: transactionRepository.addNewIncome(
                 name,
                 toAccountId,
                 amount,
@@ -50,10 +76,12 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 currency,
                 rate
             )
+
         }
     }
 
     suspend fun submitTransfer(
+        id: Long?,
         name: String,
         fromAccountId: Int,
         toAccountId: Int,
@@ -63,6 +91,18 @@ internal class SubmitTransactionUseCase @Inject constructor(
         rate: Float
     ): Result<Unit> {
         return resultOf {
+            id?.let {
+                transactionRepository.editTransfer(
+                    it,
+                    name,
+                    fromAccountId,
+                    toAccountId,
+                    amount,
+                    transactionDate,
+                    currency,
+                    rate
+                )
+            } ?:
             transactionRepository.addNewTransfer(
                 name,
                 fromAccountId,

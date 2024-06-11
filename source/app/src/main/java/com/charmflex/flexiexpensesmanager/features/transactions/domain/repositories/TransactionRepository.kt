@@ -19,6 +19,18 @@ internal interface TransactionRepository {
         tagIds: List<Int>
     )
 
+    suspend fun editExpenses(
+        id: Long,
+        name: String,
+        fromAccountId: Int,
+        amount: Long,
+        categoryId: Int,
+        transactionDate: String,
+        currency: String,
+        rate: Float,
+        tagIds: List<Int>
+    )
+
     suspend fun addNewIncome(
         name: String,
         toAccountId: Int,
@@ -29,7 +41,29 @@ internal interface TransactionRepository {
         rate: Float
     )
 
+    suspend fun editIncome(
+        id: Long,
+        name: String,
+        toAccountId: Int,
+        amount: Long,
+        categoryId: Int,
+        transactionDate: String,
+        currency: String,
+        rate: Float
+    )
+
     suspend fun addNewTransfer(
+        name: String,
+        fromAccountId: Int,
+        toAccountId: Int,
+        amount: Long,
+        transactionDate: String,
+        currency: String,
+        rate: Float
+    )
+
+    suspend fun editTransfer(
+        id: Long,
         name: String,
         fromAccountId: Int,
         toAccountId: Int,

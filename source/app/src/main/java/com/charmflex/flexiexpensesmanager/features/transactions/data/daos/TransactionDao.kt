@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.Transaction
+import androidx.room.Update
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTypeEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.responses.TransactionResponse
@@ -20,6 +21,9 @@ internal interface TransactionDao {
 
     @Insert
     suspend fun insertTransaction(transaction: TransactionEntity): Long
+
+    @Update
+    suspend fun updateTransaction(transaction: TransactionEntity)
 
     @Query(
         "SELECT t.id as transaction_id," +

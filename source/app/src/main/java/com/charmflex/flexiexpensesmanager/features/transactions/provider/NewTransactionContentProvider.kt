@@ -80,7 +80,8 @@ internal class NewTransactionContentProvider @Inject constructor() {
                 id = TRANSACTION_TAG,
                 labelId = R.string.new_transaction_tag_label,
                 hintId = R.string.new_transaction_tag_hint,
-                type = FEField.FieldType.Callback
+                type = FEField.FieldType.Callback,
+                allowClear = true
             )
         )
     }

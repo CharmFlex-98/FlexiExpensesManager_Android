@@ -30,6 +30,13 @@ object SGIcons {
     }
 
     @Composable
+    fun Close(
+        modifier: Modifier = Modifier
+    ) {
+        Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_close), contentDescription = null)
+    }
+
+    @Composable
     fun ArrowBack(
         modifier: Modifier = Modifier
     ) {

@@ -32,7 +32,6 @@ import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSAC
 import com.charmflex.flexiexpensesmanager.features.transactions.usecases.SubmitTransactionUseCase
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -100,7 +99,7 @@ internal class TransactionEditorViewModel @Inject constructor(
 
     }
 
-    private fun isNewTransaction(): Boolean = transactionId == null
+    fun isNewTransaction(): Boolean = transactionId == null
 
     private fun loadData() {
         transactionId?.let {
@@ -118,9 +117,6 @@ internal class TransactionEditorViewModel @Inject constructor(
                 accountFrom?.let { onSelectAccount(it, getField(TRANSACTION_FROM_ACCOUNT)) }
                 accountTo?.let { onSelectAccount(it, getField(TRANSACTION_TO_ACCOUNT)) }
                 category?.let { onCategorySelected(it.categoryId.toString(), it.categoryName, getField(TRANSACTION_CATEGORY)) }
-                _viewState.value.currencyList.firstOrNull { it.name == transaction.currency }?.let {
-                    onCurrencySelected(it, getField(TRANSACTION_CURRENCY))
-                }
                 transaction.tags.forEach {
                     onTagSelected(it, getField(TRANSACTION_TAG))
                 }
@@ -132,6 +128,12 @@ internal class TransactionEditorViewModel @Inject constructor(
                 }
                 getField(TRANSACTION_DATE)?.let {
                     onFieldValueChanged(it, transaction.transactionDate)
+                }
+                getField(TRANSACTION_CURRENCY)?.let {
+                    onFieldValueChanged(it, transaction.currency)
+                }
+                getField(TRANSACTION_RATE)?.let {
+                    onFieldValueChanged(it, transaction.rate.toString())
                 }
                 toggleLoader(false)
             }
@@ -328,6 +330,7 @@ internal class TransactionEditorViewModel @Inject constructor(
         }
 
         submitTransactionUseCase.submitExpenses(
+            id = transactionId,
             name = name,
             fromAccountId = fromAccount.toInt(),
             amount = amount.toLong(),
@@ -365,6 +368,7 @@ internal class TransactionEditorViewModel @Inject constructor(
         }
 
         submitTransactionUseCase.submitIncome(
+            id = transactionId,
             name = name,
             toAccountId = toAccountId.toInt(),
             amount = amount.toLong(),
@@ -401,6 +405,7 @@ internal class TransactionEditorViewModel @Inject constructor(
         }
 
         submitTransactionUseCase.submitTransfer(
+            id = transactionId,
             name = name,
             fromAccountId = fromAccountId.toInt(),
             toAccountId = toAccountId.toInt(),
@@ -525,11 +530,11 @@ internal class TransactionEditorViewModel @Inject constructor(
     }
 
     fun onTagSelected(tag: Tag, targetField: FEField?) {
-        val initialIds = _viewState.value.bottomSheetState?.feField?.value?.id
+        val initialIds = targetField?.value?.id
         val updatedIds =
             if (initialIds.isNullOrBlank()) tag.id.toString() else initialIds + ", ${tag.id}"
 
-        val tagNames = _viewState.value.bottomSheetState?.feField?.value?.value
+        val tagNames = targetField?.value?.value
         val updatedNames = if (tagNames.isNullOrBlank()) tag.name else tagNames + ", ${tag.name}"
 
         onFieldValueChanged(
@@ -537,6 +542,10 @@ internal class TransactionEditorViewModel @Inject constructor(
             updatedNames,
             updatedIds
         )
+    }
+
+    fun onClearField(feField: FEField) {
+        onFieldValueChanged(feField, "", "")
     }
 }
 
