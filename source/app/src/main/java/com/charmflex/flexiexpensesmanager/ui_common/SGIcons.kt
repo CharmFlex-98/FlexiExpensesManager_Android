@@ -87,7 +87,7 @@ object SGIcons {
 
     @Composable
     fun EditIcon(
-        modifier: Modifier
+        modifier: Modifier = Modifier
     ) {
         Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_edit), contentDescription = null)
     }

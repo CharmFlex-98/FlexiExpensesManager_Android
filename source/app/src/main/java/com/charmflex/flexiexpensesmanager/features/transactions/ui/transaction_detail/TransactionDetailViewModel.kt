@@ -9,6 +9,7 @@ import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.popWithHomeRefresh
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
@@ -70,7 +71,10 @@ internal class TransactionDetailViewModel(
                                 transactionAccountFrom = transaction.transactionAccountFrom,
                                 transactionAccountTo = transaction.transactionAccountTo,
                                 transactionTypeCode = transaction.transactionTypeCode,
-                                formattedAmount = currencyFormatter.format(transaction.amountInCent, transaction.currency),
+                                formattedAmount = currencyFormatter.format(
+                                    transaction.amountInCent,
+                                    transaction.currency
+                                ),
                                 transactionDate = transaction.transactionDate,
                                 transactionCategory = transaction.transactionCategory
                             )
@@ -91,6 +95,10 @@ internal class TransactionDetailViewModel(
                 dialogState = TransactionDetailViewState.DeleteDialogState
             )
         }
+    }
+
+    fun navigateToTransactionEdit() {
+        routeNavigator.navigateTo(TransactionRoute.editTransactionDestination(transactionId))
     }
 
     fun deleteTransaction() {

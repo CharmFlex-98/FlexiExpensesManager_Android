@@ -116,7 +116,8 @@ fun FEBody1(
 fun FEBody2(
     modifier: Modifier = Modifier,
     text: String,
-    textAlign: TextAlign? = null
+    textAlign: TextAlign? = null,
+    color: Color = Color.Unspecified
 ) {
     Text(
         modifier = modifier,
@@ -125,6 +126,7 @@ fun FEBody2(
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
             lineHeight = 24.sp,
+            color = color
         ),
         textAlign = textAlign
     )

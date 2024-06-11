@@ -15,7 +15,7 @@ fun SGDatePicker(
     useCaseState: UseCaseState,
     onDismiss: () -> Unit,
     onConfirm: (LocalDateTime) -> Unit,
-    date: LocalDateTime?,
+    date: LocalDate?,
     isVisible: Boolean,
     boundary: ClosedRange<LocalDate>
 ) {
@@ -23,7 +23,7 @@ fun SGDatePicker(
         state = useCaseState,
         selection = CalendarSelection.Date(
             withButtonView = true,
-            selectedDate = date?.toLocalDate(),
+            selectedDate = date,
             onNegativeClick = onDismiss,
             onSelectDate = {
                 onConfirm(it.atStartOfDay())

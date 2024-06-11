@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDateTime
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
@@ -74,8 +75,8 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun NewExpensesScreen(
-    viewModel: NewTransactionViewModel
+internal fun TransactionEditorScreen(
+    viewModel: TransactionEditorViewModel
 ) {
     val viewState by viewModel.viewState.collectAsState()
     val currentTransactionType by viewModel.currentTransactionType.collectAsState()
@@ -232,7 +233,7 @@ internal fun NewExpensesScreen(
             )
             viewModel.onToggleCalendar(null)
         },
-        date = viewState.calendarState.targetField?.value?.value?.toLocalDateTime(
+        date = viewState.calendarState.targetField?.value?.value?.toLocalDate(
             DATE_ONLY_DEFAULT_PATTERN
         ),
         isVisible = showCalendar,
@@ -256,11 +257,11 @@ internal fun NewExpensesScreen(
             sheetState = bottomSheetState,
             onDismiss = { viewModel.toggleBottomSheet(null) }
         ) {
-            when (viewState.bottomSheetState) {
+            when (val bs = viewState.bottomSheetState) {
                 is NewTransactionViewState.CategorySelectionBottomSheetState -> {
                     CategorySelectionBottomSheet(
                         onSelected = { id, name ->
-                            viewModel.onCategorySelected(id, name)
+                            viewModel.onCategorySelected(id, name, bs.feField)
                             viewModel.toggleBottomSheet(null)
                         },
                         transactionCategories = viewState.transactionCategories
@@ -269,21 +270,21 @@ internal fun NewExpensesScreen(
 
                 is NewTransactionViewState.AccountSelectionBottomSheetState -> {
                     AccountSelectionBottomSheet(accountGroups = viewState.accountGroups) {
-                        viewModel.onSelectAccount(it)
+                        viewModel.onSelectAccount(it, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
                 }
                 
                 is NewTransactionViewState.CurrencySelectionBottomSheetState -> {
                     CurrencySelectionBottomSheet(currencyList = viewState.currencyList) {
-                        viewModel.onCurrencySelected(it)
+                        viewModel.onCurrencySelected(it, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
                 }
 
                 is NewTransactionViewState.TagSelectionBottomSheetState -> {
                     TagSelectionBottomSheet(tagList = viewState.tagList) {
-                        viewModel.onTagSelected(it)
+                        viewModel.onTagSelected(it, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
                 }

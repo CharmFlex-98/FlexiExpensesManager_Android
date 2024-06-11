@@ -1,12 +1,12 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.popWithHomeRefresh
-import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
@@ -18,6 +18,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Tra
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.NewTransactionContentProvider
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_AMOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_CATEGORY
@@ -30,6 +31,8 @@ import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSAC
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_TO_ACCOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.usecases.SubmitTransactionUseCase
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -38,15 +41,17 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-internal class NewTransactionViewModel @Inject constructor(
+internal class TransactionEditorViewModel @Inject constructor(
     private val contentProvider: NewTransactionContentProvider,
     private val accountRepository: AccountRepository,
+    private val transactionRepository: TransactionRepository,
     private val routeNavigator: RouteNavigator,
     private val transactionCategoryRepository: TransactionCategoryRepository,
     private val submitTransactionUseCase: SubmitTransactionUseCase,
     private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
     private val getUserCurrencyUseCase: GetUserCurrencyUseCase,
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
+    private val transactionId: Long?
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(NewTransactionViewState())
     val viewState = _viewState.asStateFlow()
@@ -56,11 +61,123 @@ internal class NewTransactionViewModel @Inject constructor(
     val currentTransactionType = _currentTransactionType.asStateFlow()
     val snackBarState = mutableStateOf<SnackBarState>(SnackBarState.None)
 
+    class Factory @Inject constructor(
+        private val contentProvider: NewTransactionContentProvider,
+        private val accountRepository: AccountRepository,
+        private val transactionRepository: TransactionRepository,
+        private val routeNavigator: RouteNavigator,
+        private val transactionCategoryRepository: TransactionCategoryRepository,
+        private val submitTransactionUseCase: SubmitTransactionUseCase,
+        private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
+        private val getUserCurrencyUseCase: GetUserCurrencyUseCase,
+        private val tagRepository: TagRepository
+    ) {
+        fun create(transactionId: Long?): TransactionEditorViewModel {
+            return TransactionEditorViewModel(
+                contentProvider,
+                accountRepository,
+                transactionRepository,
+                routeNavigator,
+                transactionCategoryRepository,
+                submitTransactionUseCase,
+                currencyVisualTransformationBuilder,
+                getUserCurrencyUseCase,
+                tagRepository,
+                transactionId
+            )
+        }
+    }
+
     init {
-        onTransactionTypeChanged(_currentTransactionType.value)
         onUpdateUserCurrencyOptions()
         observeTransactionTagOptions()
         observeAccountsUpdate()
+        if (isNewTransaction().not()) {
+            loadData()
+        } else {
+            onTransactionTypeChanged(_currentTransactionType.value)
+        }
+
+    }
+
+    private fun isNewTransaction(): Boolean = transactionId == null
+
+    private fun loadData() {
+        transactionId?.let {
+            viewModelScope.launch {
+                toggleLoader(true)
+                val transaction = transactionRepository.getTransactionById(it)
+                val job = onTransactionTypeChanged(TransactionType.fromString(transaction.transactionTypeCode))
+
+                job.join()
+
+                val accountFrom = getAccountById(transaction.transactionAccountFrom?.id)
+                val accountTo = getAccountById(transaction.transactionAccountTo?.id)
+                val category = getCategoryById(transaction.transactionCategory?.id)
+
+                accountFrom?.let { onSelectAccount(it, getField(TRANSACTION_FROM_ACCOUNT)) }
+                accountTo?.let { onSelectAccount(it, getField(TRANSACTION_TO_ACCOUNT)) }
+                category?.let { onCategorySelected(it.categoryId.toString(), it.categoryName, getField(TRANSACTION_CATEGORY)) }
+                _viewState.value.currencyList.firstOrNull { it.name == transaction.currency }?.let {
+                    onCurrencySelected(it, getField(TRANSACTION_CURRENCY))
+                }
+                transaction.tags.forEach {
+                    onTagSelected(it, getField(TRANSACTION_TAG))
+                }
+                getField(TRANSACTION_NAME)?.let {
+                    onFieldValueChanged(it, transaction.transactionName)
+                }
+                getField(TRANSACTION_AMOUNT)?.let {
+                    onFieldValueChanged(it, transaction.amountInCent.toString())
+                }
+                getField(TRANSACTION_DATE)?.let {
+                    onFieldValueChanged(it, transaction.transactionDate)
+                }
+                toggleLoader(false)
+            }
+        }
+    }
+
+    private fun getField(fieldId: String): FEField? {
+        return _viewState.value.fields.firstOrNull { it.id == fieldId }
+    }
+
+    private fun getAccountById(accountId: Int?) : AccountGroup.Account? {
+        if (accountId == null) return null
+
+        for (accGroup in _viewState.value.accountGroups) {
+            val account = accGroup.accounts.firstOrNull { it.accountId == accountId }
+            if (account != null) return account
+        }
+
+        return null
+    }
+
+    private fun getCategoryById(categoryId: Int?): TransactionCategories.Node? {
+        if (categoryId == null) return null
+
+        _viewState.value.transactionCategories?.items?.forEach {
+            val node = getNode(categoryId, it)
+            if (node != null) return node
+        }
+
+        return null
+    }
+
+    private fun getNode(
+        categoryId: Int,
+        currentNode: TransactionCategories.Node
+    ): TransactionCategories.Node? {
+        if (currentNode.categoryId == categoryId) return currentNode
+        else {
+            for (item in currentNode.childNodes) {
+                Log.d("test", currentNode.categoryId.toString())
+                val res = getNode(categoryId, item)
+                if (res != null) return res
+            }
+
+            return null
+        }
     }
 
     fun currencyVisualTransformationBuilder(): CurrencyVisualTransformation.Builder {
@@ -71,9 +188,9 @@ internal class NewTransactionViewModel @Inject constructor(
         snackBarState.value = SnackBarState.None
     }
 
-    fun onTransactionTypeChanged(transactionType: TransactionType = TransactionType.EXPENSES) {
+    fun onTransactionTypeChanged(transactionType: TransactionType = TransactionType.EXPENSES): Job {
         _currentTransactionType.update { transactionType }
-        viewModelScope.launch {
+        return viewModelScope.launch {
             val fields = contentProvider.getContent(transactionType)
             val currency = unwrapResult(getUserCurrencyUseCase.primary())
             val updatedFields = fields.map {
@@ -94,8 +211,9 @@ internal class NewTransactionViewModel @Inject constructor(
                     fields = updatedFields,
                 )
             }
+
+            updateCategories(transactionType)
         }
-        updateCategories(transactionType)
     }
 
     fun updateCategories(transactionType: TransactionType) {
@@ -381,20 +499,20 @@ internal class NewTransactionViewModel @Inject constructor(
         }
     }
 
-    fun onCategorySelected(id: String, category: String) {
-        onFieldValueChanged(_viewState.value.bottomSheetState?.feField, category, id)
+    fun onCategorySelected(id: String, category: String, targetField: FEField?) {
+        onFieldValueChanged(targetField, category, id)
     }
 
-    fun onSelectAccount(account: AccountGroup.Account) {
+    fun onSelectAccount(account: AccountGroup.Account, targetField: FEField?) {
         onFieldValueChanged(
-            _viewState.value.bottomSheetState?.feField,
+            targetField,
             account.accountName,
             account.accountId.toString()
         )
     }
 
-    fun onCurrencySelected(currencyRate: CurrencyRate) {
-        onFieldValueChanged(_viewState.value.bottomSheetState?.feField, currencyRate.name)
+    fun onCurrencySelected(currencyRate: CurrencyRate, targetField: FEField?) {
+        onFieldValueChanged(targetField, currencyRate.name)
         onFieldValueChanged(
             _viewState.value.fields.firstOrNull { it.id == TRANSACTION_RATE },
             currencyRate.rate.toString()
@@ -406,7 +524,7 @@ internal class NewTransactionViewModel @Inject constructor(
         }
     }
 
-    fun onTagSelected(tag: Tag) {
+    fun onTagSelected(tag: Tag, targetField: FEField?) {
         val initialIds = _viewState.value.bottomSheetState?.feField?.value?.id
         val updatedIds =
             if (initialIds.isNullOrBlank()) tag.id.toString() else initialIds + ", ${tag.id}"
@@ -415,7 +533,7 @@ internal class NewTransactionViewModel @Inject constructor(
         val updatedNames = if (tagNames.isNullOrBlank()) tag.name else tagNames + ", ${tag.name}"
 
         onFieldValueChanged(
-            _viewState.value.bottomSheetState?.feField,
+            targetField,
             updatedNames,
             updatedIds
         )
