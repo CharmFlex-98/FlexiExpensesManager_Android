@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.features.backup.elements
 
 import org.apache.poi.xssf.usermodel.XSSFRow
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.time.LocalDate
 
 internal class Cell(
     override val xssfWorkbook: XSSFWorkbook,
@@ -19,6 +20,9 @@ internal class Cell(
                     setCellValue(content.value)
                 }
                 is Content.BooleanContent -> {
+                    setCellValue(content.value)
+                }
+                is Content.DateContent -> {
                     setCellValue(content.value)
                 }
                 Content.EmptyContent -> {
@@ -40,6 +44,10 @@ internal sealed interface Content {
 
     data class BooleanContent(
         val value: Boolean
+    ) : Content
+
+    data class DateContent(
+        val value: LocalDate
     ) : Content
 
     object EmptyContent : Content

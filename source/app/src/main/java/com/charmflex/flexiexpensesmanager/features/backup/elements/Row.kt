@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.features.backup.elements
 
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.time.LocalDate
 
 internal class Row(
     override val xssfWorkbook: XSSFWorkbook,
@@ -26,6 +27,15 @@ internal class Row(
             xssfWorkbook,
             row,
             Content.DoubleContent(value),
+            currentCellIndex++
+        )
+    }
+
+    fun dateCell(value: LocalDate) {
+        Cell(
+            xssfWorkbook,
+            row,
+            Content.DateContent(value),
             currentCellIndex++
         )
     }

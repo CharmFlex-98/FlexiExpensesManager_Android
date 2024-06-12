@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.core.content.FileProvider
 import com.charmflex.flexiexpensesmanager.core.di.Dispatcher
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
+import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.features.backup.data.mapper.TransactionBackupDataMapper
 import com.charmflex.flexiexpensesmanager.features.backup.elements.Sheet
 import com.charmflex.flexiexpensesmanager.features.backup.elements.workbook
@@ -22,6 +23,8 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
+import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 
 internal interface TransactionBackupManager {
@@ -68,7 +71,7 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                     val currency = row.safeGetCell(4).stringCellValue
                     val currencyRate = row.safeGetCell(5).numericCellValue
                     val amount = row.safeGetCell(6).numericCellValue
-                    val date = row.safeGetCell(7).stringCellValue
+                    val date = row.safeGetCell(7).dateCellValue.toLocalDate()
                     val categoryColumns = listOf(
                         row.safeGetCell(8).stringCellValue,
                         row.safeGetCell(9).stringCellValue,
@@ -152,7 +155,7 @@ internal class TransactionBackupManagerImpl @Inject constructor(
         currencyType: String,
         currencyRate: Double,
         amount: Double,
-        date: String,
+        date: LocalDate,
         categoryColumns: List<String>,
         tags: List<String>
     ) {
@@ -164,7 +167,7 @@ internal class TransactionBackupManagerImpl @Inject constructor(
             stringCell(currencyType)
             doubleCell(currencyRate)
             doubleCell(amount)
-            stringCell(date)
+            dateCell(date)
             for (c in 0..2) {
                 if (c <= categoryColumns.size - 1) stringCell(categoryColumns[c])
                 else emptyCell()
@@ -199,7 +202,7 @@ internal data class TransactionBackupData(
     val currency: String,
     val currencyRate: Double,
     val amount: Double,
-    val date: String,
+    val date: LocalDate,
     val categoryColumns: List<String>,
     val tags: List<String>
 )

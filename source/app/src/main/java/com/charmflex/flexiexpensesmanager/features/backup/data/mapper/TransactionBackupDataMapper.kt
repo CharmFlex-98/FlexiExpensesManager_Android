@@ -1,10 +1,14 @@
 package com.charmflex.flexiexpensesmanager.features.backup.data.mapper
 
+import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.DEFAULT_DATE_TIME_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.Mapper
+import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupData
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategory
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
+import java.time.LocalDate
 import javax.inject.Inject
 
 internal class TransactionBackupDataMapper @Inject constructor(
@@ -29,7 +33,7 @@ internal class TransactionBackupDataMapper @Inject constructor(
                 currency = it.currency,
                 currencyRate = it.rate.toDouble(),
                 amount = it.amountInCent / 100.toDouble(),
-                date = it.transactionDate,
+                date = it.transactionDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN) ?: LocalDate.now(),
                 categoryColumns = generateCategoryColumns(currentCategory?.let { res -> mutableListOf(res.name) } ?: mutableListOf(),  transactionCategoryMap, currentCategory).reversed(),
                 tags = it.tags.map { it.name }
             )

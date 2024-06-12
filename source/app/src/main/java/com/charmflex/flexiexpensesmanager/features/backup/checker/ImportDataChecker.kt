@@ -1,6 +1,8 @@
 package com.charmflex.flexiexpensesmanager.features.backup.checker
 
 import com.charmflex.flexiexpensesmanager.core.di.Dispatcher
+import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupData
 import com.charmflex.flexiexpensesmanager.features.backup.ui.ImportedData
@@ -149,7 +151,7 @@ internal class ImportDataChecker @Inject constructor(
                     currency = row.currency,
                     currencyRate = row.currencyRate,
                     amount = row.amount,
-                    date = row.date,
+                    date = row.date.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
                     categoryColumns = generateCategoryRequiredState(
                         row,
                         expensesCategories,

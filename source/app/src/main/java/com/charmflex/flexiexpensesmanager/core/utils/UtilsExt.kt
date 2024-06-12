@@ -5,6 +5,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Date
 import java.util.Locale
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -41,6 +42,10 @@ fun String.toLocalDateTime(pattern: String): LocalDateTime? {
 fun String.toLocalDate(pattern: String): LocalDate? {
     if (this.isEmpty()) return null
     return LocalDate.parse(this, getDateTimeFormatter(pattern))
+}
+
+fun Date.toLocalDate(): LocalDate {
+    return this.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate()
 }
 
 fun LocalDate?.toStringWithPattern(pattern: String): String {
