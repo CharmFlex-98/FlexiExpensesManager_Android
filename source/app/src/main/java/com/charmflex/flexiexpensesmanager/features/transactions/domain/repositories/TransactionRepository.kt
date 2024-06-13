@@ -86,6 +86,7 @@ internal interface TransactionRepository {
         endDate: String? = null,
         offset: Int = 0,
         limit: Int = 0,
+        accountIdFilter: Int? = null,
         tagFilter: List<Int> = listOf()
     ): Flow<List<Transaction>>
 

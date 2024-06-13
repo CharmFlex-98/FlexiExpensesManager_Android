@@ -44,6 +44,13 @@ object SGIcons {
     }
 
     @Composable
+    fun Graph(
+        modifier: Modifier = Modifier
+    ) {
+        Icon(modifier = modifier , painter = painterResource(id = R.drawable.ic_graph), contentDescription = null)
+    }
+
+    @Composable
     fun Calendar(
         modifier: Modifier = Modifier
     ) {

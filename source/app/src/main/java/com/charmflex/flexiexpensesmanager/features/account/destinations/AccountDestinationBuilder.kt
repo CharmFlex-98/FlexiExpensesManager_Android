@@ -8,14 +8,20 @@ import androidx.navigation.navArgument
 import com.charmflex.flexiexpensesmanager.core.di.AppComponent
 import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
+import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalEnterFromEnd
+import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalExitToEnd
+import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideDown
+import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideUp
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.account.ui.AccountEditorScreen
+import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryScreen
 
 internal class AccountDestinationBuilder : DestinationBuilder {
     private val appComponent = AppComponentProvider.instance.getAppComponent()
     override fun NavGraphBuilder.buildGraph() {
         accountEditor()
+        accountDetailScreen()
     }
 
     private fun NavGraphBuilder.accountEditor() {
@@ -37,6 +43,27 @@ internal class AccountDestinationBuilder : DestinationBuilder {
                 }
             }
             AccountEditorScreen(viewModel = viewModel)
+        }
+    }
+
+    private fun NavGraphBuilder.accountDetailScreen() {
+        composable(
+            AccountRoutes.DETAIL,
+            enterTransition = FEVerticalSlideUp,
+            arguments = listOf(
+                navArgument(
+                    AccountRoutes.Args.ACCOUNT_ID,
+                ) {
+                    nullable = false
+                    type = NavType.IntType
+                }
+            )
+        ) {
+            val accountId = it.arguments?.getInt(AccountRoutes.Args.ACCOUNT_ID)
+            val viewModel = getViewModel {
+                appComponent.expensesHistoryViewModelFactory().create(accountId)
+            }
+            TransactionHistoryScreen(transactionHistoryViewModel = viewModel)
         }
     }
 }

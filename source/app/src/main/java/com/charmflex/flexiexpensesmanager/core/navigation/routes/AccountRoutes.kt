@@ -6,14 +6,23 @@ object AccountRoutes {
 
     object Args {
         const val IMPORT_FIX_ACCOUNT_NAME = "import_fix_account_name"
+        const val ACCOUNT_ID = "account_id"
     }
 
     val EDITOR = buildRoute("$ROOT/editor") {
         addArg(Args.IMPORT_FIX_ACCOUNT_NAME)
     }
 
+    val DETAIL = buildRoute("$ROOT/detail") {
+        addArg(Args.ACCOUNT_ID)
+    }
+
     fun editorDestination(importFixAccountName: String? = null): String = buildDestination(EDITOR) {
         importFixAccountName?.let { withArg(Args.IMPORT_FIX_ACCOUNT_NAME, it) }
+    }
+
+    fun accountDetailDestination(accountId: Int): String = buildDestination(DETAIL) {
+        withArg(Args.ACCOUNT_ID, accountId.toString())
     }
 
 }

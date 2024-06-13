@@ -9,6 +9,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.MONTH_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.YEAR_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
+import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper.TransactionHistoryMapper
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
@@ -19,15 +20,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
-internal class TransactionHistoryViewModel @Inject constructor(
+internal class TransactionHistoryViewModel(
     private val mapper: TransactionHistoryMapper,
+    private val accountRepository: AccountRepository,
     private val transactionRepository: TransactionRepository,
     private val routeNavigator: RouteNavigator,
+    private val accountIdFilter: Int? = null
 ) : ViewModel() {
 
     private val _tabState = MutableStateFlow(TabState())
@@ -39,9 +42,47 @@ internal class TransactionHistoryViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(TransactionHistoryViewState())
     val viewState = _viewState.asStateFlow()
 
+    class Factory @Inject constructor(
+        private val mapper: TransactionHistoryMapper,
+        private val accountRepository: AccountRepository,
+        private val transactionRepository: TransactionRepository,
+        private val routeNavigator: RouteNavigator,
+    ) {
+        fun create(accountIdFilter: Int? = null): TransactionHistoryViewModel {
+            return TransactionHistoryViewModel(
+                mapper, accountRepository, transactionRepository, routeNavigator, accountIdFilter
+            )
+        }
+    }
+
     init {
+        initTitle()
+        observeTransactionList()
+    }
+
+    private fun initTitle() {
+        accountIdFilter?.let {
+            viewModelScope.launch {
+                val account = accountRepository.getAccountById(it)
+                _viewState.update {
+                    it.copy(
+                        title = account.accountName
+                    )
+                }
+            }
+        }
+    }
+
+    private fun observeTransactionList() {
         viewModelScope.launch {
-            transactionRepository.getTransactions(limit = 100)
+            transactionRepository.getTransactions(limit = 100, accountIdFilter = accountIdFilter)
+                .transform {
+                    val items = it.filter {
+                        it.transactionAccountFrom?.id == accountIdFilter ||
+                                it.transactionAccountTo?.id == accountIdFilter
+                    }
+                    emit(items)
+                }
                 .collectLatest { list ->
                     _offset.value += list.size
                     updateList(list = list)
@@ -52,7 +93,7 @@ internal class TransactionHistoryViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             toggleLoader(true)
-            transactionRepository.getTransactions(offset = offset.value, limit = 100)
+            transactionRepository.getTransactions(offset = offset.value, limit = 100, accountIdFilter = accountIdFilter)
                 .catch {
                     toggleLoader(false)
                 }
@@ -61,6 +102,8 @@ internal class TransactionHistoryViewModel @Inject constructor(
                 }
         }
     }
+
+    fun isAccountStatusFlow() = accountIdFilter != null
 
     private fun updateList(list: List<Transaction>, clearOldList: Boolean = true) {
         viewModelScope.launch {
@@ -126,7 +169,7 @@ internal class TransactionHistoryViewModel @Inject constructor(
         toggleLoadMoreLoader(true)
         viewModelScope.launch {
             delay(1000) // mimic fetching data :)
-            transactionRepository.getTransactions(offset = offset.value, limit = 100)
+            transactionRepository.getTransactions(offset = offset.value, limit = 100, accountIdFilter = accountIdFilter)
                 .catch {
                     // TODO: Need to do something?
                     toggleLoadMoreLoader(false)
@@ -186,7 +229,8 @@ internal class TransactionHistoryViewModel @Inject constructor(
 internal data class TransactionHistoryViewState(
     val items: List<TransactionHistoryItem> = listOf(),
     val isLoading: Boolean = false,
-    val isLoadMore: Boolean = false
+    val isLoadMore: Boolean = false,
+    val title: String = ""
 )
 
 internal data class TabState(

@@ -3,6 +3,8 @@ package com.charmflex.flexiexpensesmanager.features.home.ui.account
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
@@ -20,7 +22,8 @@ internal class AccountHomeViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val accountHomeUIMapper: AccountHomeUIMapper,
     private val currencyFormatter: CurrencyFormatter,
-    private val userCurrencyRepository: UserCurrencyRepository
+    private val userCurrencyRepository: UserCurrencyRepository,
+    private val routeNavigator: RouteNavigator
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(AccountHomeViewState())
@@ -50,6 +53,10 @@ internal class AccountHomeViewModel @Inject constructor(
 
     fun refresh() {
         load()
+    }
+
+    fun onAccountClick(accountSummaryUI: AccountHomeViewState.AccountGroupSummaryUI.AccountSummaryUI) {
+        routeNavigator.navigateTo(AccountRoutes.accountDetailDestination(accountSummaryUI.accountId))
     }
 
     private fun toggleLoading(isLoading: Boolean) {

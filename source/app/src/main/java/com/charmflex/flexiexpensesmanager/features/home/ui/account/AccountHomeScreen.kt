@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.account
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,8 @@ import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading5
 import com.charmflex.flexiexpensesmanager.ui_common.FeColumnContainer
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x0_5
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import kotlin.math.absoluteValue
 
@@ -50,7 +53,9 @@ internal fun AccountHomeScreen(viewModel: AccountHomeViewModel) {
             Text(text = "Total Asset: ${viewState.totalAsset}")
         }
         viewState.accountsSummary.forEach {
-            AccountGroupSection(it)
+            AccountGroupSection(it) { account ->
+                viewModel.onAccountClick(account)
+            }
         }
     }
 }
@@ -58,9 +63,10 @@ internal fun AccountHomeScreen(viewModel: AccountHomeViewModel) {
 @Composable
 private fun AccountGroupSection(
     accountGroupSummary: AccountHomeViewState.AccountGroupSummaryUI,
+    onAccountClick: (AccountHomeViewState.AccountGroupSummaryUI.AccountSummaryUI) -> Unit,
 ) {
     FeColumnContainer {
-        Row {
+        Row(modifier = Modifier.padding(vertical = grid_x1)) {
             FEHeading3(
                 modifier = Modifier.weight(1f),
                 text = accountGroupSummary.accountGroupName
@@ -71,8 +77,15 @@ private fun AccountGroupSection(
             )
 
         }
-        accountGroupSummary.accountsSummary.map {
-            Row {
+        accountGroupSummary.accountsSummary.mapIndexed { index, it ->
+            HorizontalDivider()
+            Row(
+                modifier = Modifier
+                    .clickable {
+                        onAccountClick(it)
+                    }
+                    .padding(grid_x0_5)
+            ) {
                 FEBody1(
                     modifier = Modifier.weight(1f),
                     text = it.accountName

@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Tab
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
+import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
@@ -50,15 +52,50 @@ import com.charmflex.flexiexpensesmanager.ui_common.FECallout3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading4
 import com.charmflex.flexiexpensesmanager.ui_common.ListTable
 import com.charmflex.flexiexpensesmanager.ui_common.SGAnimatedTransition
+import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
+import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x0_5
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x8
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TransactionHistoryScreen(
+    transactionHistoryViewModel: TransactionHistoryViewModel
+) {
+    val viewState by transactionHistoryViewModel.viewState.collectAsState()
+    if (transactionHistoryViewModel.isAccountStatusFlow()) {
+        SGScaffold(
+            topBar = {
+                BasicTopBar(
+                    title = viewState.title,
+                    actions = {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            SGIcons.Graph()
+                        }
+                    }
+                )
+            },
+        ) {
+            Box {
+                TransactionList(transactionHistoryViewModel = transactionHistoryViewModel)
+            }
+        }
+    } else {
+        TransactionList(transactionHistoryViewModel = transactionHistoryViewModel)
+    }
+
+    if (viewState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TransactionList(
     transactionHistoryViewModel: TransactionHistoryViewModel
 ) {
     val viewState by transactionHistoryViewModel.viewState.collectAsState()
@@ -85,7 +122,9 @@ internal fun TransactionHistoryScreen(
     }
 
     ListTable(
-        modifier = Modifier.fillMaxSize().padding(grid_x2),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(grid_x2),
         items = scrollItems,
         scrollState = scrollState,
         onLoadMore = { transactionHistoryViewModel.getNextTransactions() },
@@ -133,13 +172,6 @@ internal fun TransactionHistoryScreen(
                     }
                 }
             }
-        }
-    }
-
-
-    if (viewState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
         }
     }
 }

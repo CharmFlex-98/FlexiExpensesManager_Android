@@ -81,7 +81,7 @@ internal fun HomeScreen(
                 route = HomeRoutes.DETAIL,
             ) {
                 val viewModel = getViewModel {
-                    appComponent.expensesHistoryViewModel()
+                    appComponent.expensesHistoryViewModelFactory().create(null)
                 }
                 LaunchedEffect(shouldRefresh) {
                     if (shouldRefresh) {
