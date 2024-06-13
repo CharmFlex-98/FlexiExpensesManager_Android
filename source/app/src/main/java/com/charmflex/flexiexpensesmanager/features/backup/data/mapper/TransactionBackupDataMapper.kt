@@ -11,17 +11,10 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositor
 import java.time.LocalDate
 import javax.inject.Inject
 
-internal class TransactionBackupDataMapper @Inject constructor(
-    private val transactionCategoryRepository: TransactionCategoryRepository,
-) : Mapper<List<Transaction>, List<TransactionBackupData>> {
-    override suspend fun map(from: List<Transaction>): List<TransactionBackupData> {
-        val transactionCategoryMap = transactionCategoryRepository.getAllCategoriesIncludedDeleted().groupBy {
-            it.id
-        }.mapValues {
-            it.value[0]
-        }
-
-        return from.map {
+internal class TransactionBackupDataMapper @Inject constructor() : Mapper<Pair<List<Transaction>, Map<Int, TransactionCategory>>, List<TransactionBackupData>> {
+    override fun map(from: Pair<List<Transaction>, Map<Int, TransactionCategory>>): List<TransactionBackupData> {
+        val transactionCategoryMap = from.second
+        return from.first.map {
             val currentCategory = it.transactionCategory?.id?.let {
                 transactionCategoryMap.getOrElse(it) { null }
             }

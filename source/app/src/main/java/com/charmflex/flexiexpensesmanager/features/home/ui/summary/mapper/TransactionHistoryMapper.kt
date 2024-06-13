@@ -17,7 +17,7 @@ import javax.inject.Inject
 internal class TransactionHistoryMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) : Mapper<List<Transaction>, List<TransactionHistoryItem>> {
-    override suspend fun map(from: List<Transaction>): List<TransactionHistoryItem> {
+    override fun map(from: List<Transaction>): List<TransactionHistoryItem> {
         val res = mutableListOf<TransactionHistoryItem>()
         val sectionSet = mutableSetOf<String>()
         from.groupBy {

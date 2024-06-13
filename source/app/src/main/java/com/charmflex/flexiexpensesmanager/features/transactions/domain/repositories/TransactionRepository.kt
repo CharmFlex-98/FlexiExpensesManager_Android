@@ -75,10 +75,17 @@ internal interface TransactionRepository {
 
     suspend fun addAllImportTransactions(transactionData: List<ImportTransaction>)
 
+    fun getAllTransactions(
+        startDate: String? = null,
+        endDate: String? = null,
+        tagFilter: List<Int> = listOf()
+    ) : Flow<List<Transaction>>
+
     fun getTransactions(
         startDate: String? = null,
         endDate: String? = null,
         offset: Int = 0,
+        limit: Int = 0,
         tagFilter: List<Int> = listOf()
     ): Flow<List<Transaction>>
 

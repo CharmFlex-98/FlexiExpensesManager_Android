@@ -32,10 +32,11 @@ internal class AccountHomeViewModel @Inject constructor(
 
     private fun load() {
         viewModelScope.launch {
+            val mainCurrency = userCurrencyRepository.getPrimaryCurrency()
             accountRepository.getAccountsSummary().firstOrNull()?.let { summary ->
                 toggleLoading(true)
                 _viewState.update {
-                    val summary = accountHomeUIMapper.map(summary)
+                    val summary = accountHomeUIMapper.map(summary to mainCurrency)
                     val totalAsset = summary.map { it.balanceInCent }.reduceOrNull { acc, l -> acc + l }
                     it.copy(
                         accountsSummary = summary,

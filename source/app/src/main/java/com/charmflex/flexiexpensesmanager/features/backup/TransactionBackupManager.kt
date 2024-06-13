@@ -10,6 +10,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.features.backup.data.mapper.TransactionBackupDataMapper
 import com.charmflex.flexiexpensesmanager.features.backup.elements.Sheet
 import com.charmflex.flexiexpensesmanager.features.backup.elements.workbook
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +40,7 @@ internal interface TransactionBackupManager {
 
 internal class TransactionBackupManagerImpl @Inject constructor(
     private val transactionRepository: TransactionRepository,
+    private val transactionCategoryRepository: TransactionCategoryRepository,
     private val transactionBackupDataMapper: TransactionBackupDataMapper,
     private val fileProvider: FEFileProvider,
     private val appContext: Context,
@@ -101,8 +103,13 @@ internal class TransactionBackupManagerImpl @Inject constructor(
     override suspend fun write(fileName: String) {
         val file = fileProvider.getCacheFile(fileName = fileName)
         withContext(dispatcher) {
-            transactionRepository.getTransactions().firstOrNull()?.let { transactions ->
-                val excelData = transactionBackupDataMapper.map(transactions)
+            val categoriesMap = transactionCategoryRepository.getAllCategoriesIncludedDeleted().groupBy {
+                it.id
+            }.mapValues {
+                it.value[0]
+            }
+            transactionRepository.getAllTransactions().firstOrNull()?.let { transactions ->
+                val excelData = transactionBackupDataMapper.map(transactions to categoriesMap)
                 workbook(xssfWorkbook) {
                     sheet("guide") {}
                     sheet("record") {

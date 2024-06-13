@@ -23,7 +23,7 @@ internal class TransactionHeatMapMapper(
             return TransactionHeatMapMapper(lowerBoundThreshold, higherBoundThreshold)
         }
     }
-    override suspend fun map(from: List<DailyTransaction>): Map<LocalDate, Color> {
+    override fun map(from: List<DailyTransaction>): Map<LocalDate, Color> {
         val res = mutableMapOf<LocalDate, Color>()
         val dailyTransactions = from.sortedBy { it.amountInCent }
         val size = from.size

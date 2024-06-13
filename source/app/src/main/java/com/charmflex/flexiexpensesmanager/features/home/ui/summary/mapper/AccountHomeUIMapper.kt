@@ -10,12 +10,11 @@ import javax.inject.Inject
 
 internal class AccountHomeUIMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
-    private val userCurrencyRepository: UserCurrencyRepository
 ) :
-    Mapper<List<AccountGroupSummary>, List<AccountHomeViewState.AccountGroupSummaryUI>> {
-    override suspend fun map(from: List<AccountGroupSummary>): List<AccountHomeViewState.AccountGroupSummaryUI> {
-        val mainCurrency = userCurrencyRepository.getPrimaryCurrency()
-        return from.map {
+    Mapper<Pair<List<AccountGroupSummary>, String>, List<AccountHomeViewState.AccountGroupSummaryUI>> {
+    override fun map(from: Pair<List<AccountGroupSummary>, String>): List<AccountHomeViewState.AccountGroupSummaryUI> {
+        val mainCurrency = from.second
+        return from.first.map {
             AccountHomeViewState.AccountGroupSummaryUI(
                 accountGroupName = it.accountGroupName,
                 accountsSummary = it.accountsSummary.map {

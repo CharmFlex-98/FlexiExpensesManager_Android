@@ -87,7 +87,9 @@ internal fun TransactionHistoryScreen(
     ListTable(
         modifier = Modifier.fillMaxSize().padding(grid_x2),
         items = scrollItems,
-        scrollState = scrollState
+        scrollState = scrollState,
+        onLoadMore = { transactionHistoryViewModel.getNextTransactions() },
+        isLoadMore = viewState.isLoadMore,
     ) { index, item ->
         when (item) {
             is TransactionHistoryHeader -> {

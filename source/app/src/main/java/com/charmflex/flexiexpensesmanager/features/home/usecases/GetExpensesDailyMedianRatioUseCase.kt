@@ -11,7 +11,7 @@ internal class GetExpensesDailyMedianRatioUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
     suspend operator fun invoke(): List<DailyTransaction> {
-        return transactionRepository.getTransactions()
+        return transactionRepository.getAllTransactions()
             .firstOrNull()?.let { transactions ->
                 transactions
                     .groupBy {

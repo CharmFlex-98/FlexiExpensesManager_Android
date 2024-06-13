@@ -7,7 +7,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Tra
 import javax.inject.Inject
 
 internal class TransactionMapper @Inject constructor() : Mapper<TransactionResponse, Transaction> {
-    override suspend fun map(from: TransactionResponse): Transaction {
+    override fun map(from: TransactionResponse): Transaction {
         return Transaction(
             transactionId = from.transactionId,
             transactionName = from.transactionName,

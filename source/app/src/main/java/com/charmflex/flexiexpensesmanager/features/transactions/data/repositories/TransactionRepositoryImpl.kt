@@ -184,14 +184,29 @@ internal class TransactionRepositoryImpl @Inject constructor(
         transactionTagDao.insertAllTransactionsAndTransactionTags(transactionEntities, transactionTags)
     }
 
+    override fun getAllTransactions(
+        startDate: String?,
+        endDate: String?,
+        tagFilter: List<Int>
+    ): Flow<List<Transaction>> {
+        return transactionDao.getAllTransactions(
+            startDate, endDate, tagFilter = tagFilter
+        ).map {
+            it.map {
+                transactionMapper.map(it)
+            }
+        }
+    }
+
     override fun getTransactions(
         startDate: String?,
         endDate: String?,
         offset: Int,
+        limit: Int,
         tagFilter: List<Int>
     ): Flow<List<Transaction>> {
         return transactionDao.getTransactions(
-            startDate, endDate, offset, tagFilter = tagFilter
+            startDate, endDate, offset, limit, tagFilter = tagFilter
         ).map {
             it.map {
                 transactionMapper.map(it)
