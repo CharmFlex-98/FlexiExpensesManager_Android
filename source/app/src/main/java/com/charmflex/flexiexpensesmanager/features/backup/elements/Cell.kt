@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.backup.elements
 
+import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import org.apache.poi.xssf.usermodel.XSSFRow
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.time.LocalDate
@@ -23,7 +24,12 @@ internal class Cell(
                     setCellValue(content.value)
                 }
                 is Content.DateContent -> {
-                    setCellValue(content.value)
+                    setCellValue(content.value).apply {
+                        val cellStyle = xssfWorkbook.createCellStyle()
+                        val creationHelper = xssfWorkbook.creationHelper
+                        cellStyle.setDataFormat(creationHelper.createDataFormat().getFormat(DATE_ONLY_DEFAULT_PATTERN))
+                        setCellStyle(cellStyle)
+                    }
                 }
                 Content.EmptyContent -> {
                     setBlank()
