@@ -207,7 +207,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
         tagFilter: List<Int>
     ): Flow<List<Transaction>> {
         return transactionDao.getTransactions(
-            startDate, endDate, offset, limit, tagFilter = tagFilter
+            startDate, endDate, offset, limit, accountIdFilter = accountIdFilter, tagFilter = tagFilter
         ).map {
             it.map {
                 transactionMapper.map(it)
