@@ -82,7 +82,6 @@ internal interface TransactionDao {
             " LEFT JOIN TagEntity tg ON tg.id = tt.tagId" +
             " WHERE (:startDate IS NULL OR transaction_date >= :startDate) " +
                 "AND (:noTagSelected OR tt.tagId IN (:tagFilter)) " +
-                "AND (:noFilterByAccountId OR t.account_from_id = :accountIdFilter OR t.account_to_id =:accountIdFilter) " +
                 "AND (:endDate IS NULL OR transaction_date <= :endDate)" +
                 " GROUP BY t.id" +
                 " ORDER BY transaction_date DESC" +
@@ -92,8 +91,6 @@ internal interface TransactionDao {
         endDate: String?,
         offset: Int,
         limit: Int,
-        accountIdFilter: Int?,
-        noFilterByAccountId: Boolean = accountIdFilter == null,
         tagFilter: List<Int>,
         noTagSelected: Boolean = tagFilter.isEmpty()
     ) : Flow<List<TransactionResponse>>

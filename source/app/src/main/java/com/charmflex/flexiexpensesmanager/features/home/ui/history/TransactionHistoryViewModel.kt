@@ -74,30 +74,14 @@ internal class TransactionHistoryViewModel(
     }
 
     private fun observeTransactionList() {
+        toggleLoader(true)
         viewModelScope.launch {
             transactionRepository.getTransactions(limit = 100, accountIdFilter = accountIdFilter)
-                .transform {
-                    val items = it.filter {
-                        it.transactionAccountFrom?.id == accountIdFilter ||
-                                it.transactionAccountTo?.id == accountIdFilter
-                    }
-                    emit(items)
-                }
-                .collectLatest { list ->
-                    _offset.value += list.size
-                    updateList(list = list)
-                }
-        }
-    }
-
-    fun refresh() {
-        viewModelScope.launch {
-            toggleLoader(true)
-            transactionRepository.getTransactions(offset = offset.value, limit = 100, accountIdFilter = accountIdFilter)
                 .catch {
                     toggleLoader(false)
                 }
-                .firstOrNull()?.let { list ->
+                .collectLatest { list ->
+                    _offset.value = list.size
                     updateList(list = list)
                 }
         }

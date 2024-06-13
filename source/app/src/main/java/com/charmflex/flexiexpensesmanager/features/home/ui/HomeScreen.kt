@@ -83,11 +83,6 @@ internal fun HomeScreen(
                 val viewModel = getViewModel {
                     appComponent.expensesHistoryViewModelFactory().create(null)
                 }
-                LaunchedEffect(shouldRefresh) {
-                    if (shouldRefresh) {
-                        viewModel.refresh()
-                    }
-                }
 
                 TransactionHistoryScreen(transactionHistoryViewModel = viewModel)
             }
