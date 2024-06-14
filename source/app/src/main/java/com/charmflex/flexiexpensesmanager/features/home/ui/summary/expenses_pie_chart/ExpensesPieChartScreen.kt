@@ -117,8 +117,8 @@ internal fun ColumnScope.ExpensesPieChartScreen(
                         animation = TweenSpec(durationMillis = 1000),
                         pieChartData = pieChartViewState.pieChartData,
                         ratioLineColor = Color.LightGray,
-                        textRatioStyle = TextStyle(color = Color.Gray),
-                        descriptionStyle = TextStyle(color = Color.White),
+                        textRatioStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
+                        descriptionStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
                         legendPosition = LegendPosition.BOTTOM
                     )
                 }
