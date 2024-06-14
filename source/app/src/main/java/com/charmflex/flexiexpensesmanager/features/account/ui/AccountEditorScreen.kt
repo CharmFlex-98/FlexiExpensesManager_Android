@@ -70,6 +70,7 @@ internal fun AccountEditorScreen(
 
             else -> {}
         }
+        viewModel.resetSnackBarState()
     }
 
     BackHandler {

@@ -1,13 +1,16 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.setting
 
 import android.app.Activity
+import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading4
 import com.charmflex.flexiexpensesmanager.ui_common.SGDialog
+import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGMediumPrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGSnackBar
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
@@ -62,7 +66,7 @@ internal fun SettingScreen(
         viewModel.onDataClearedEvent.collectLatest {
             when (it) {
                 OnDataCleared.Refresh -> onRefresh()
-                OnDataCleared.Finish -> (localContext as? Activity)?.finishAndRemoveTask()
+                OnDataCleared.Finish -> (localContext as? Activity)?.finish()
             }
         }
     }
@@ -105,10 +109,17 @@ internal fun SettingScreen(
     }
 
     viewState.dialogState?.let {
-        SGDialog(title = stringResource(id = it.title), subtitle = stringResource(id = it.subtitle)) {
+        SGDialog(
+            title = stringResource(id = it.title),
+            subtitle = stringResource(id = it.subtitle),
+            onDismissRequest = viewModel::closeDialog
+        ) {
             when (it) {
                 is SettingDialogState.ResetDataDialogState -> {
-                    ResetDataDialogContentSelection(resetDataDialogState = it, viewModel::toggleResetSelection) {
+                    ResetDataDialogContentSelection(
+                        resetDataDialogState = it,
+                        viewModel::toggleResetSelection
+                    ) {
                         viewModel.onFactoryResetConfirmed()
                     }
                 }
@@ -150,9 +161,12 @@ private fun ResetDataDialogContentSelection(
                     onToggleSelection(it)
                 })
             }
-
         }
-        SGMediumPrimaryButton(text = stringResource(id = R.string.generic_confirm)) {
+        Spacer(modifier = Modifier.height(grid_x1))
+        SGLargePrimaryButton(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(id = R.string.generic_confirm)
+        ) {
             onFactoryResetConfirmed()
         }
     }

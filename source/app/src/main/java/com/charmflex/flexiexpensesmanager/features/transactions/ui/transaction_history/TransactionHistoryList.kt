@@ -66,7 +66,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TransactionHistoryList(
-    transactionHistoryViewModel: TransactionHistoryViewModelParent,
+    transactionHistoryViewModel: TransactionHistoryViewModel,
 ) {
     val viewState by transactionHistoryViewModel.viewState.collectAsState()
     val scrollItems = viewState.items

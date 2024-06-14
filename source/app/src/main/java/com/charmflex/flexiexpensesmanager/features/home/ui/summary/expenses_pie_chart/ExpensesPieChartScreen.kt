@@ -82,6 +82,7 @@ internal fun ColumnScope.ExpensesPieChartScreen(
     viewModel: ExpensesPieChartViewModel
 ) {
     val pieChartViewState by viewModel.viewState.collectAsState()
+    val tagFilters by viewModel.tagFilter.collectAsState()
     val chartType = pieChartViewState.chartType
     Column(
         modifier = Modifier
@@ -138,8 +139,8 @@ internal fun ColumnScope.ExpensesPieChartScreen(
 
 
     if (pieChartViewState.showTagFilterDialog) {
-        var tagFilterTemp by remember(pieChartViewState.tagFilter) {
-            mutableStateOf(pieChartViewState.tagFilter)
+        var tagFilterTemp by remember {
+            mutableStateOf(tagFilters)
         }
 
         Dialog(onDismissRequest = { viewModel.onToggleTagDialog(false) }) {

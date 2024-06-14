@@ -5,8 +5,7 @@ import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.A
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.mapper.TransactionHistoryMapper
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
-import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.TransactionHistoryItem
-import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.TransactionHistoryViewModelParent
+import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.TransactionHistoryViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -15,7 +14,7 @@ internal class AccountTransactionHistoryViewModel @Inject constructor(
     routeNavigator: RouteNavigator,
     private val transactionRepository: TransactionRepository,
     private val accountIdFilter: Int
-) : TransactionHistoryViewModelParent(mapper, routeNavigator) {
+) : TransactionHistoryViewModel(mapper, routeNavigator) {
 
     init {
         observeTransactionList()
@@ -23,7 +22,6 @@ internal class AccountTransactionHistoryViewModel @Inject constructor(
 
     class Factory @Inject constructor(
         private val mapper: TransactionHistoryMapper,
-        private val accountRepository: AccountRepository,
         private val transactionRepository: TransactionRepository,
         private val routeNavigator: RouteNavigator,
     ) {

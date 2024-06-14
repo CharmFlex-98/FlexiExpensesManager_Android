@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
-import com.charmflex.flexiexpensesmanager.core.navigation.popWithHomeRefresh
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
@@ -453,11 +452,8 @@ internal class TransactionEditorViewModel @Inject constructor(
         }
     }
 
-    fun onBack(refreshHome: Boolean) {
-        if (!refreshHome) routeNavigator.pop()
-        else {
-            routeNavigator.popWithHomeRefresh()
-        }
+    fun onBack() {
+        routeNavigator.pop()
     }
 
     fun onCallbackFieldTap(field: FEField) {

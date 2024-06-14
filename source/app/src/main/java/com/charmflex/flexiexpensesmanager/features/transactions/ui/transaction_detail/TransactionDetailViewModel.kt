@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
-import com.charmflex.flexiexpensesmanager.core.navigation.popWithHomeRefresh
-import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
@@ -140,9 +138,8 @@ internal class TransactionDetailViewModel(
         }
     }
 
-    fun onBack(shouldRefresh: Boolean = false) {
-        if (shouldRefresh) routeNavigator.popWithHomeRefresh()
-        else routeNavigator.pop()
+    fun onBack() {
+        routeNavigator.pop()
     }
 }
 

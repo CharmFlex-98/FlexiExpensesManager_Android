@@ -3,7 +3,6 @@ package com.charmflex.flexiexpensesmanager.features.home.ui
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,22 +18,25 @@ import com.charmflex.flexiexpensesmanager.core.di.AppComponent
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.account.AccountHomeScreen
+import com.charmflex.flexiexpensesmanager.features.home.ui.account.AccountHomeViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryHomeScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardScreen
+import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardViewModel
+import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHomeViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_heat_map.ExpensesHeatMapPlugin
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_chart.ExpensesPieChartDashboardPlugin
 import com.charmflex.flexiexpensesmanager.features.home.ui.setting.SettingScreen
+import com.charmflex.flexiexpensesmanager.features.home.ui.setting.SettingViewModel
 import com.charmflex.flexiexpensesmanager.ui_common.SGBottomNavItem
 import com.charmflex.flexiexpensesmanager.ui_common.SGBottomNavigationBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.example.compose.FlexiExpensesManagerTheme
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 internal fun HomeScreen(
-    homeViewModel: HomeViewModel,
     appComponent: AppComponent,
+    refreshOnHomeShown: Boolean
 ) {
     val expensesPieChartViewModel = getViewModel {
         appComponent.expensesPieChartViewModel()
@@ -47,6 +49,57 @@ internal fun HomeScreen(
         ExpensesHeatMapPlugin(expensesHeatMapViewModel)
     )
 
+    // Dashboard
+    val dashboardViewModel = getViewModel {
+        appComponent.dashBoardViewModel().apply {
+            initPlugins(
+                dashboardPlugins
+            )
+        }
+    }
+
+    // Transaction History
+    val transactionHomeViewModel = getViewModel {
+        appComponent.expensesHistoryViewModel()
+    }
+
+    // Account Home
+    val accountHomeViewModel = getViewModel {
+        appComponent.accountHomeViewModel()
+    }
+
+    // Setting
+    val settingViewModel = getViewModel {
+        appComponent.settingViewModel()
+    }
+
+    val homeViewModel: HomeViewModel = getViewModel {
+        appComponent.homeViewModel().apply {
+            initHomeRefreshable(dashboardViewModel, transactionHomeViewModel, accountHomeViewModel)
+        }
+    }
+
+    if (refreshOnHomeShown) {
+        homeViewModel.notifyRefresh()
+    }
+
+    HomeBody(
+        homeViewModel,
+        dashboardViewModel,
+        transactionHomeViewModel,
+        accountHomeViewModel,
+        settingViewModel
+    )
+}
+
+@Composable
+private fun HomeBody(
+    homeViewModel: HomeViewModel,
+    dashboardViewModel: DashboardViewModel,
+    transactionHomeViewModel: TransactionHomeViewModel,
+    accountHomeViewModel: AccountHomeViewModel,
+    settingViewModel: SettingViewModel
+) {
     val bottomNavController = rememberNavController()
     SGScaffold(
         bottomBar = { HomeScreenBottomNavigationBar(bottomBarNavController = bottomNavController) },
@@ -64,52 +117,22 @@ internal fun HomeScreen(
             composable(
                 route = HomeRoutes.SUMMARY,
             ) {
-                val viewModel = getViewModel {
-                    appComponent.dashBoardViewModel().apply {
-                        initPlugins(
-                            dashboardPlugins
-                        )
-                    }
-                }
-
-                LaunchedEffect(key1 = Unit) {
-                    homeViewModel.refresh.collectLatest {
-                        viewModel.refresh()
-                    }
-                }
-                DashboardScreen(viewModel)
+                DashboardScreen(dashboardViewModel)
             }
             composable(
                 route = HomeRoutes.DETAIL,
             ) {
-                val viewModel = getViewModel {
-                    appComponent.expensesHistoryViewModel()
-                }
-
-                // No need refresh here because the way it obtains data is by listening to flow.
-
-                TransactionHistoryHomeScreen(transactionHistoryViewModel = viewModel)
+                TransactionHistoryHomeScreen(transactionHomeViewModel = transactionHomeViewModel)
             }
             composable(
                 route = HomeRoutes.ACCOUNTS,
             ) {
-                val viewModel = getViewModel {
-                    appComponent.accountHomeViewModel()
-                }
-                LaunchedEffect(key1 = Unit) {
-                    homeViewModel.refresh.collectLatest {
-                        viewModel.refresh()
-                    }
-                }
-                AccountHomeScreen(viewModel = viewModel)
+                AccountHomeScreen(viewModel = accountHomeViewModel)
             }
             composable(
                 route = HomeRoutes.SETTING,
             ) {
-                val viewModel = getViewModel {
-                    appComponent.settingViewModel()
-                }
-                SettingScreen(viewModel = viewModel) {
+                SettingScreen(viewModel = settingViewModel) {
                     homeViewModel.notifyRefresh()
                 }
             }

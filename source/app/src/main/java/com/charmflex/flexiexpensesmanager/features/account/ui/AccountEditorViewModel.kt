@@ -48,6 +48,10 @@ internal class AccountEditorViewModel @Inject constructor(
             if (importFixAccountName != null) AccountEditorFlow.ImportFix(importFixAccountName) else AccountEditorFlow.Default
     }
 
+    fun resetSnackBarState() {
+        _snackBarState.value = SnackBarState.None
+    }
+
     private fun deleteAccountGroup(id: Int) {
         viewModelScope.launch {
             resultOf {
@@ -226,11 +230,12 @@ internal class AccountEditorViewModel @Inject constructor(
                         routeNavigator.popWithArguments(
                             mapOf(BackupRoutes.Args.UPDATE_IMPORT_DATA to true)
                         )
+                    } else {
+                        toggleEditor(false)
                     }
                 },
                 onFailure = {
                     _snackBarState.emit(SnackBarState.Success("Add failed!"))
-                    toggleEditor(false)
                 }
             )
         }

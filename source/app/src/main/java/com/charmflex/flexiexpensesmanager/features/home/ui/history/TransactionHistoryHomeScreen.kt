@@ -12,10 +12,10 @@ import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_h
 
 @Composable
 internal fun TransactionHistoryHomeScreen(
-    transactionHistoryViewModel: TransactionHistoryViewModel
+    transactionHomeViewModel: TransactionHomeViewModel
 ) {
-    val viewState by transactionHistoryViewModel.viewState.collectAsState()
-    TransactionHistoryList(transactionHistoryViewModel = transactionHistoryViewModel)
+    val viewState by transactionHomeViewModel.viewState.collectAsState()
+    TransactionHistoryList(transactionHistoryViewModel = transactionHomeViewModel)
     if (viewState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()

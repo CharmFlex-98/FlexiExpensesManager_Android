@@ -1,6 +1,5 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.account
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
@@ -8,11 +7,14 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
+import com.charmflex.flexiexpensesmanager.features.home.ui.HomeItemRefreshable
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper.AccountHomeUIMapper
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,7 +26,12 @@ internal class AccountHomeViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val userCurrencyRepository: UserCurrencyRepository,
     private val routeNavigator: RouteNavigator
-) : ViewModel() {
+) : ViewModel(), HomeItemRefreshable {
+    private var job: Job = SupervisorJob()
+        get() {
+            if (field.isCancelled) field = SupervisorJob()
+            return field
+        }
 
     private val _viewState = MutableStateFlow(AccountHomeViewState())
     val viewState = _viewState.asStateFlow()
@@ -34,10 +41,10 @@ internal class AccountHomeViewModel @Inject constructor(
     }
 
     private fun load() {
-        viewModelScope.launch {
+        toggleLoading(true)
+        viewModelScope.launch(job) {
             val mainCurrency = userCurrencyRepository.getPrimaryCurrency()
-            accountRepository.getAccountsSummary().firstOrNull()?.let { summary ->
-                toggleLoading(true)
+            accountRepository.getAccountsSummary().collectLatest { summary ->
                 _viewState.update {
                     val summary = accountHomeUIMapper.map(summary to mainCurrency)
                     val totalAsset = summary.map { it.balanceInCent }.reduceOrNull { acc, l -> acc + l }
@@ -51,7 +58,7 @@ internal class AccountHomeViewModel @Inject constructor(
         }
     }
 
-    fun refresh() {
+    override fun refresh() {
         load()
     }
 

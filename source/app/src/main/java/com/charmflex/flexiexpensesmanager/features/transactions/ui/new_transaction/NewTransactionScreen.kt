@@ -128,7 +128,7 @@ internal fun TransactionEditorScreen(
                 )
             }, navigationIcon = {
                 IconButton(
-                    onClick = { viewModel.onBack(false) }
+                    onClick = { viewModel.onBack() }
                 ) {
                     SGIcons.ArrowBack()
                 }
@@ -239,7 +239,7 @@ internal fun TransactionEditorScreen(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(id = R.string.new_expenses_cancel_button)
                 ) {
-                    viewModel.onBack(false)
+                    viewModel.onBack()
                 }
             }
         }
@@ -269,7 +269,7 @@ internal fun TransactionEditorScreen(
             onDismissRequest = { },
             primaryButtonText = stringResource(id = R.string.generic_back_to_home)
         ) {
-            viewModel.onBack(true)
+            viewModel.onBack()
         }
     }
 

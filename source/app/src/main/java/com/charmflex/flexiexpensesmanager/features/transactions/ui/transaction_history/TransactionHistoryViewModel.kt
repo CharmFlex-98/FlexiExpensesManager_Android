@@ -12,6 +12,8 @@ import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.mapper.TransactionHistoryMapper
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,10 +24,16 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-internal abstract class TransactionHistoryViewModelParent(
+internal abstract class TransactionHistoryViewModel(
     private val mapper: TransactionHistoryMapper,
     private val routeNavigator: RouteNavigator
 ) : ViewModel() {
+    private var job: Job = SupervisorJob()
+        get() {
+            if (field.isCancelled) field = SupervisorJob()
+            return field
+        }
+
     private val _tabState = MutableStateFlow(TabState())
     val tabState = _tabState.asStateFlow()
 
@@ -51,9 +59,10 @@ internal abstract class TransactionHistoryViewModelParent(
         }
     }
 
-    fun observeTransactionList() {
+     fun observeTransactionList() {
+        job.cancel()
         toggleLoader(true)
-        viewModelScope.launch {
+        viewModelScope.launch(job) {
             getTransactionListFlow(offset = 0)
                 .catch {
                     toggleLoader(false)

@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.backup.ui
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
@@ -152,9 +153,10 @@ internal class ImportDataViewModel @Inject constructor(
             }.fold(
                 onSuccess = {
                     toggleLoader(false)
-                    routeNavigator.popWithHomeRefresh()
+                    routeNavigator.pop()
                 },
                 onFailure = {
+                    Log.d("test", it.message.toString())
                     toggleLoader(false)
                 }
             )

@@ -10,6 +10,7 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.HomeScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.HomeViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 internal class HomeDestinationBuilder : DestinationBuilder {
     private val appComponent by lazy { AppComponentProvider.instance.getAppComponent() }
@@ -26,17 +27,11 @@ internal class HomeDestinationBuilder : DestinationBuilder {
         composable(
             route = HomeRoutes.HOME
         ) {
-            val homeViewModel: HomeViewModel = getViewModel {
-                appComponent.homeViewModel()
-            }
             val refreshOnScreenShown = it.savedStateHandle.remove<Boolean>(HomeRoutes.Args.HOME_REFRESH) ?: false
-            if (refreshOnScreenShown) {
-                homeViewModel.notifyRefresh()
-            }
 
             HomeScreen(
-                homeViewModel = homeViewModel,
-                appComponent = appComponent
+                appComponent = appComponent,
+                refreshOnHomeShown = refreshOnScreenShown
             )
         }
     }

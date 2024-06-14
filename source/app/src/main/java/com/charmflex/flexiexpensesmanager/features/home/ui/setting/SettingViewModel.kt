@@ -136,14 +136,18 @@ internal class SettingViewModel @Inject constructor(
         }
     }
 
-    fun onFactoryResetConfirmed() {
-        val selection =
-            (_viewState.value.dialogState as? SettingDialogState.ResetDataDialogState)?.selection
+    fun closeDialog() {
         _viewState.update {
             it.copy(
                 dialogState = null
             )
         }
+    }
+
+    fun onFactoryResetConfirmed() {
+        val selection =
+            (_viewState.value.dialogState as? SettingDialogState.ResetDataDialogState)?.selection
+        closeDialog()
 
         selection?.let {
             when (it) {
@@ -169,7 +173,7 @@ internal class SettingViewModel @Inject constructor(
                 appDataService.clearAppData(AppDataClearServiceType.ALL)
             }.fold(
                 onSuccess = {
-                    // TODO
+                    _onDataClearedEvent.tryEmit(OnDataCleared.Finish)
                 },
                 onFailure = {
                     // TODO

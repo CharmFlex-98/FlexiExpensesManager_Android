@@ -1,23 +1,25 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.history
 
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
-import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
-import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
+import com.charmflex.flexiexpensesmanager.features.home.ui.HomeItemRefreshable
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.mapper.TransactionHistoryMapper
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
-import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.TransactionHistoryViewModelParent
+import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.TransactionHistoryViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-internal class TransactionHistoryViewModel @Inject constructor(
+internal class TransactionHomeViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     mapper: TransactionHistoryMapper,
     routeNavigator: RouteNavigator,
-) : TransactionHistoryViewModelParent(mapper, routeNavigator) {
-
+) : TransactionHistoryViewModel(mapper, routeNavigator), HomeItemRefreshable {
 
     init {
+        observeTransactionList()
+    }
+
+    override fun refresh() {
         observeTransactionList()
     }
 

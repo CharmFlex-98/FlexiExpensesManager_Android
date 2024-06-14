@@ -3,32 +3,34 @@ package com.charmflex.flexiexpensesmanager.features.home.usecases
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
 
 internal class GetExpensesDailyMedianRatioUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
-    suspend operator fun invoke(): List<DailyTransaction> {
-        return transactionRepository.getAllTransactions()
-            .firstOrNull()?.let { transactions ->
-                transactions
-                    .groupBy {
-                        it.transactionDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)
-                    }
-                    .filter { it.key != null }
-                    .map {
-                        DailyTransaction(
-                            it.key!!,
-                            it.value.map { transaction ->
-                                transaction.amountInCent
-                            }.reduce { acc, i ->
-                                acc + i
-                            }
-                        )
-                    }
-            } ?: return listOf()
+    operator fun invoke(): Flow<List<DailyTransaction>> {
+        return transactionRepository.getAllTransactions().map { transactions ->
+            transactions
+                .groupBy {
+                    it.transactionDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)
+                }
+                .filter { it.key != null }
+                .map {
+                    DailyTransaction(
+                        it.key!!,
+                        it.value.map { transaction ->
+                            transaction.amountInCent
+                        }.reduce { acc, i ->
+                            acc + i
+                        }
+                    )
+                }
+        }
     }
 }
 

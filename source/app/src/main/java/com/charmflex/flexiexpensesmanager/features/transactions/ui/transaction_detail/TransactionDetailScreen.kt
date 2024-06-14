@@ -75,7 +75,7 @@ internal fun TransactionDetailScreen(
             secondaryButtonText = negativeButtonText
         ) {
             when (it) {
-                is TransactionDetailViewState.SuccessDialog -> viewModel.onBack(true)
+                is TransactionDetailViewState.SuccessDialog -> viewModel.onBack()
                 is TransactionDetailViewState.DeleteDialogState -> viewModel.deleteTransaction()
             }
         }

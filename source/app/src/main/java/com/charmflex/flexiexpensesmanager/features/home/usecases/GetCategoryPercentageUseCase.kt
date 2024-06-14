@@ -4,6 +4,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Tra
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -12,7 +13,7 @@ internal class GetCategoryPercentageUseCase @Inject constructor(
     private val categoryRepository: TransactionCategoryRepository,
     private val transactionRepository: TransactionRepository
 ) {
-    suspend operator fun invoke(tagFilter: List<Int> = listOf()): Map<String, Long>? {
+    operator fun invoke(tagFilter: List<Int> = listOf()): Flow<Map<String, Long>?> {
         return transactionRepository.getAllTransactions(tagFilter = tagFilter).map { list ->
             categoryRepository.getCategoriesIncludeDeleted(TransactionType.EXPENSES.name)
                 .firstOrNull()?.let {
@@ -40,7 +41,7 @@ internal class GetCategoryPercentageUseCase @Inject constructor(
                         }
                     resMap
                 }
-        }.firstOrNull()
+        }
     }
 
     private fun getChildrenCategoryIds(
