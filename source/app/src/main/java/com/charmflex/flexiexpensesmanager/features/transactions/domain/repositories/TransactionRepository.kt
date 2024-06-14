@@ -84,7 +84,7 @@ internal interface TransactionRepository {
     fun getTransactions(
         startDate: String? = null,
         endDate: String? = null,
-        offset: Int = 0,
+        offset: Long = 0,
         limit: Int = 0,
         accountIdFilter: Int? = null,
         tagFilter: List<Int> = listOf()

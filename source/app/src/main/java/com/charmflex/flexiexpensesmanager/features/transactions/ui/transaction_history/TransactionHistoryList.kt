@@ -1,7 +1,5 @@
-package com.charmflex.flexiexpensesmanager.features.home.ui.history
+package com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history
 
-import android.util.Log
-import android.widget.Space
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
@@ -19,17 +17,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Tab
@@ -54,67 +49,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
-import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
-import com.charmflex.flexiexpensesmanager.ui_common.FECallout3
-import com.charmflex.flexiexpensesmanager.ui_common.FEHeading4
 import com.charmflex.flexiexpensesmanager.ui_common.FEMetaData1
 import com.charmflex.flexiexpensesmanager.ui_common.ListTable
 import com.charmflex.flexiexpensesmanager.ui_common.SGAnimatedTransition
-import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
-import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x0_5
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x10
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x4
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x6
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x7
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x8
 import kotlinx.coroutines.launch
-import org.apache.poi.ss.usermodel.HorizontalAlignment
-
-@Composable
-internal fun TransactionHistoryScreen(
-    transactionHistoryViewModel: TransactionHistoryViewModel
-) {
-    val viewState by transactionHistoryViewModel.viewState.collectAsState()
-    if (transactionHistoryViewModel.isAccountStatusFlow()) {
-        SGScaffold(
-            topBar = {
-                BasicTopBar(
-                    title = viewState.title,
-                    actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            SGIcons.Graph()
-                        }
-                    }
-                )
-            },
-        ) {
-            Box {
-                TransactionList(transactionHistoryViewModel = transactionHistoryViewModel)
-            }
-        }
-    } else {
-        TransactionList(transactionHistoryViewModel = transactionHistoryViewModel)
-    }
-
-    if (viewState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TransactionList(
-    transactionHistoryViewModel: TransactionHistoryViewModel
+internal fun TransactionHistoryList(
+    transactionHistoryViewModel: TransactionHistoryViewModelParent,
 ) {
     val viewState by transactionHistoryViewModel.viewState.collectAsState()
     val scrollItems = viewState.items

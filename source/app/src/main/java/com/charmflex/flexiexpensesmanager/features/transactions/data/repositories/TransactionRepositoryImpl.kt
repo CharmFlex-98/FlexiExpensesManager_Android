@@ -201,7 +201,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
     override fun getTransactions(
         startDate: String?,
         endDate: String?,
-        offset: Int,
+        offset: Long,
         limit: Int,
         accountIdFilter: Int?,
         tagFilter: List<Int>

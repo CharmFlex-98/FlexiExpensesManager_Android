@@ -19,7 +19,7 @@ import com.charmflex.flexiexpensesmanager.core.di.AppComponent
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.account.AccountHomeScreen
-import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryScreen
+import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryHomeScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_heat_map.ExpensesHeatMapPlugin
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_chart.ExpensesPieChartDashboardPlugin
@@ -84,7 +84,7 @@ internal fun HomeScreen(
                     appComponent.expensesHistoryViewModelFactory().create(null)
                 }
 
-                TransactionHistoryScreen(transactionHistoryViewModel = viewModel)
+                TransactionHistoryHomeScreen(transactionHistoryViewModel = viewModel)
             }
             composable(
                 route = HomeRoutes.ACCOUNTS,

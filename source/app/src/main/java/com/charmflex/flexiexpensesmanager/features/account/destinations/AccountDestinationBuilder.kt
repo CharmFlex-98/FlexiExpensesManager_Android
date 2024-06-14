@@ -1,21 +1,16 @@
 package com.charmflex.flexiexpensesmanager.features.account.destinations
 
-import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.charmflex.flexiexpensesmanager.core.di.AppComponent
 import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
-import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalEnterFromEnd
-import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalExitToEnd
-import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideDown
 import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideUp
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.account.ui.AccountEditorScreen
-import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryScreen
+import com.charmflex.flexiexpensesmanager.features.account.ui.account_detail.AccountDetailScreen
 
 internal class AccountDestinationBuilder : DestinationBuilder {
     private val appComponent = AppComponentProvider.instance.getAppComponent()
@@ -59,11 +54,14 @@ internal class AccountDestinationBuilder : DestinationBuilder {
                 }
             )
         ) {
-            val accountId = it.arguments?.getInt(AccountRoutes.Args.ACCOUNT_ID)
-            val viewModel = getViewModel {
-                appComponent.expensesHistoryViewModelFactory().create(accountId)
+            val accountId = it.arguments?.getInt(AccountRoutes.Args.ACCOUNT_ID) ?: -1
+            val accountTransactionHistoryViewModel = getViewModel {
+                appComponent.accountTransactionHistoryViewModelFactory().create(accountId)
             }
-            TransactionHistoryScreen(transactionHistoryViewModel = viewModel)
+            val accountDetailViewModel = getViewModel {
+                appComponent.accountDetailViewModelFactory().create(accountId = accountId)
+            }
+            AccountDetailScreen(accountTransactionHistoryViewModel, accountDetailViewModel)
         }
     }
 }

@@ -90,7 +90,7 @@ internal interface TransactionDao {
     fun getTransactions(
         startDate: String?,
         endDate: String?,
-        offset: Int,
+        offset: Long,
         limit: Int,
         accountIdFilter: Int?,
         noFilterByAccountId: Boolean = accountIdFilter == null,

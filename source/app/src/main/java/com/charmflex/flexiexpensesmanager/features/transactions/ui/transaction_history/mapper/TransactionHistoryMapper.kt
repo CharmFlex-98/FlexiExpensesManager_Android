@@ -1,4 +1,4 @@
-package com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper
+package com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.mapper
 
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
@@ -9,11 +9,11 @@ import com.charmflex.flexiexpensesmanager.core.utils.Mapper
 import com.charmflex.flexiexpensesmanager.core.utils.fromISOToStringWithPattern
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
-import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryHeader
-import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryItem
-import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistorySection
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
+import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.TransactionHistoryHeader
+import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.TransactionHistoryItem
+import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.TransactionHistorySection
 import javax.inject.Inject
 
 internal class TransactionHistoryMapper @Inject constructor(
@@ -67,13 +67,6 @@ private fun String.getTransactionIconResId(): Int {
         TransactionType.INCOME.name -> R.drawable.ic_income
         else -> R.drawable.ic_spend
     }
-}
-
-private fun String.toMonthFormat(): String {
-    return this.fromISOToStringWithPattern(MONTH_ONLY_DEFAULT_PATTERN)
-}
-private fun String.toDateFormat(): String {
-    return this.fromISOToStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
 }
 
 private fun String.toMonthYearFormat(): String {
