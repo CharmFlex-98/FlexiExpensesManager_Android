@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -98,7 +99,7 @@ fun FEHeading5(
 fun FEBody1(
     modifier: Modifier = Modifier,
     text: String,
-    color: Color = Color.Unspecified
+    color: Color = Color.Unspecified,
 ) {
     Text(
         modifier = modifier,
@@ -108,7 +109,7 @@ fun FEBody1(
             fontSize = 18.sp,
             lineHeight = 28.sp,
             color = color
-        )
+        ),
     )
 }
 
@@ -185,7 +186,8 @@ fun FECallout2(
 @Composable
 fun FECallout3(
     modifier: Modifier = Modifier,
-    text: String
+    text: String,
+    color: Color = Color.Unspecified
 ) {
     Text(
         modifier = modifier,
@@ -193,7 +195,8 @@ fun FECallout3(
         style = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            lineHeight = 20.sp
+            lineHeight = 20.sp,
+            color = color
         )
     )
 }

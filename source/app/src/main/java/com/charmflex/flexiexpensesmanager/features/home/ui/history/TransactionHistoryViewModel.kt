@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.history
 
+import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
@@ -246,6 +247,8 @@ internal data class TransactionHistorySection(
         val name: String,
         val amount: String,
         val category: String,
-        val type: String
+        val type: String,
+        @DrawableRes
+        val iconResId: Int
     )
 }

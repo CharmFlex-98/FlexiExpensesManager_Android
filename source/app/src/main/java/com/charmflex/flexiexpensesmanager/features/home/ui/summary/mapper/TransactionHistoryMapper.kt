@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper
 
+import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_ONLY_DEFAULT_PATTERN
@@ -12,6 +13,7 @@ import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHi
 import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistoryItem
 import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHistorySection
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import javax.inject.Inject
 
 internal class TransactionHistoryMapper @Inject constructor(
@@ -48,6 +50,7 @@ internal class TransactionHistoryMapper @Inject constructor(
                             amount = currencyFormatter.format(it.amountInCent, it.currency),
                             type = it.transactionTypeCode,
                             category = it.transactionCategory?.name ?: "",
+                            iconResId = it.transactionTypeCode.getTransactionIconResId()
                         )
                     }
                 )
@@ -55,6 +58,14 @@ internal class TransactionHistoryMapper @Inject constructor(
         }
 
         return res
+    }
+}
+
+private fun String.getTransactionIconResId(): Int {
+    return when (this) {
+        TransactionType.TRANSFER.name -> R.drawable.ic_transfer_icon
+        TransactionType.INCOME.name -> R.drawable.ic_income
+        else -> R.drawable.ic_spend
     }
 }
 

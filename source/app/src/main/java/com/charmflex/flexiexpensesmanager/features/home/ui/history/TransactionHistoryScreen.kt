@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.history
 
 import android.util.Log
+import android.widget.Space
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
@@ -17,6 +18,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -24,10 +28,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,7 +48,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
@@ -50,15 +62,21 @@ import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
 import com.charmflex.flexiexpensesmanager.ui_common.FECallout3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading4
+import com.charmflex.flexiexpensesmanager.ui_common.FEMetaData1
 import com.charmflex.flexiexpensesmanager.ui_common.ListTable
 import com.charmflex.flexiexpensesmanager.ui_common.SGAnimatedTransition
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x0_5
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x10
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x4
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x6
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x7
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x8
 import kotlinx.coroutines.launch
+import org.apache.poi.ss.usermodel.HorizontalAlignment
 
 @Composable
 internal fun TransactionHistoryScreen(
@@ -161,7 +179,8 @@ private fun TransactionList(
                         selected = index == tabState.selectedTabIndex,
                         onClick = {
                             coroutineScope.launch {
-                                val scrollToIndex = transactionHistoryViewModel.findFirstItemIndexByTab(item)
+                                val scrollToIndex =
+                                    transactionHistoryViewModel.findFirstItemIndexByTab(item)
                                 scrollState.scrollToItem(scrollToIndex)
                                 scrollState.scrollBy(-tabHeight)
                             }
@@ -182,15 +201,16 @@ private fun ExpensesHistoryDateHeaderView(
     date: String
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .wrapContentWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.wrapContentWidth(),
             horizontalAlignment = Alignment.Start
         ) {
-            month?.let { FEBody3(text = it) }
-            FECallout3(text = date)
+            month?.let { FEBody1(text = it) }
+            FEMetaData1(text = date, color = Color.Gray)
         }
     }
 }
@@ -213,6 +233,7 @@ private fun ExpensesHistorySectionView(
                 amount = it.amount,
                 category = it.category,
                 type = it.type,
+                iconResId = it.iconResId,
                 onClick = {
                     onClick(it)
                 }
@@ -229,6 +250,7 @@ private fun ExpensesHistoryItem(
     amount: String,
     category: String,
     type: String,
+    iconResId: Int,
     onClick: (Long) -> Unit
 ) {
     val signedAmount = when (type) {
@@ -250,22 +272,50 @@ private fun ExpensesHistoryItem(
             .background(
                 MaterialTheme.colorScheme.surfaceContainerHighest
             )
-            .padding(grid_x1)
+            .padding(vertical = grid_x2, horizontal = grid_x1),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(
-            verticalArrangement = Arrangement.Top
-        ) {
-            FEBody1(text = category)
-        }
         Box(
+            modifier = Modifier.padding(grid_x1),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                modifier = Modifier.size(grid_x4),
+                painter = painterResource(id = iconResId),
+                contentDescription = null
+            )
+        }
+        Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = grid_x0_5),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
         ) {
-            FEHeading4(text = name)
+            Text(
+                text = name,
+                style = TextStyle(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 20.sp,
+                    lineHeight = 28.sp
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(grid_x1))
+            Text(
+                text = if (category.isNotEmpty()) category else "TRANSFER",
+                style = TextStyle(
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
         Box(
+            modifier = Modifier.padding(grid_x1),
             contentAlignment = Alignment.Center
         ) {
             FEBody1(text = signedAmount, color = signAmountColor)
