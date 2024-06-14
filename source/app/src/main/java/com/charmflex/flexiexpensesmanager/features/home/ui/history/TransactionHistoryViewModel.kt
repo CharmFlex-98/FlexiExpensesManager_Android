@@ -16,6 +16,7 @@ internal class TransactionHistoryViewModel @Inject constructor(
     routeNavigator: RouteNavigator,
 ) : TransactionHistoryViewModelParent(mapper, routeNavigator) {
 
+
     init {
         observeTransactionList()
     }

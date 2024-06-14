@@ -36,6 +36,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -106,7 +107,9 @@ internal class TransactionEditorViewModel @Inject constructor(
         transactionId?.let {
             viewModelScope.launch {
                 toggleLoader(true)
-                val transaction = transactionRepository.getTransactionById(it)
+                val transaction =
+                    transactionRepository.getTransactionById(it).firstOrNull() ?: return@launch
+
                 val job = onTransactionTypeChanged(TransactionType.fromString(transaction.transactionTypeCode))
 
                 job.join()

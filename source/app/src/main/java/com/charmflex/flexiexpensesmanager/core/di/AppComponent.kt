@@ -7,6 +7,7 @@ import com.charmflex.flexiexpensesmanager.features.account.di.AccountInjector
 import com.charmflex.flexiexpensesmanager.features.account.di.modules.AccountModule
 import com.charmflex.flexiexpensesmanager.features.auth.di.AuthInjector
 import com.charmflex.flexiexpensesmanager.features.backup.di.BackupInjector
+import com.charmflex.flexiexpensesmanager.features.backup.di.BackupModule
 import com.charmflex.flexiexpensesmanager.features.category.category.di.CategoryInjector
 import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyInjector
 import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyModule
@@ -27,6 +28,7 @@ import javax.inject.Singleton
         DBModule::class,
         MainModule::class,
         CurrencyModule::class,
+        BackupModule::class
     ]
 )
 @Singleton

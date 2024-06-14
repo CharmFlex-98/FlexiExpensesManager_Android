@@ -215,14 +215,18 @@ internal class TransactionRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getTransactionById(transactionId: Long): Transaction {
+    override fun getTransactionById(transactionId: Long): Flow<Transaction> {
         val res = transactionDao.getTransactionById(transactionId)
-        return transactionMapper.map(res)
+        return res.map {
+            transactionMapper.map(it)
+        }
     }
 
     override suspend fun deleteTransactionById(transactionId: Long) {
         transactionDao.deleteTransactionById(transactionId)
     }
 
-
+    override suspend fun deleteAllTransactions() {
+        transactionDao.deleteAllTransactions()
+    }
 }

@@ -11,6 +11,8 @@ import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRe
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -24,6 +26,11 @@ internal class ExpensesPieChartViewModel @Inject constructor(
     private val tagRepository: TagRepository,
     private val userCurrencyRepository: UserCurrencyRepository
 ) : ViewModel() {
+    private var job: Job = SupervisorJob()
+        get() {
+            if (field.isCancelled) return SupervisorJob().apply { field = this }
+            return field
+        }
 
     private val _viewState = MutableStateFlow(ExpensesPieChartViewState())
     val viewState = _viewState.asStateFlow()
@@ -36,7 +43,8 @@ internal class ExpensesPieChartViewModel @Inject constructor(
     }
 
     fun load() {
-        viewModelScope.launch {
+        job.cancel()
+        viewModelScope.launch(job) {
             val res =
                 getCategoryPercentageUseCase(
                     tagFilter = _viewState.value.tagFilter.filter { it.selected }

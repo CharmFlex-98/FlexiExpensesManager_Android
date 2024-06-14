@@ -18,6 +18,8 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositor
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -59,10 +61,11 @@ internal class TransactionDetailViewModel(
     private fun loadDetail() {
         toggleLoader(false)
         viewModelScope.launch {
-            resultOf {
-                transactionRepository.getTransactionById(transactionId = transactionId)
-            }.fold(
-                onSuccess = { transaction ->
+            transactionRepository.getTransactionById(transactionId = transactionId)
+                .catch {
+                    toggleLoader(false)
+                }
+                .collectLatest { transaction ->
                     _viewState.update {
                         it.copy(
                             detail = TransactionDetailViewState.Detail(
@@ -81,11 +84,7 @@ internal class TransactionDetailViewModel(
                         )
                     }
                     toggleLoader(false)
-                },
-                onFailure = {
-                    toggleLoader(false)
-                }
-            )
+            }
         }
     }
 

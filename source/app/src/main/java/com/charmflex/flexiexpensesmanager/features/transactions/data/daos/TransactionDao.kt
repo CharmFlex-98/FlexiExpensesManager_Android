@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.data.daos
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -122,8 +123,11 @@ internal interface TransactionDao {
                 " LEFT JOIN TagEntity tg ON tg.id = tt.tagId" +
                 " WHERE t.id = :id"
     )
-    suspend fun getTransactionById(id: Long): TransactionResponse
+    fun getTransactionById(id: Long): Flow<TransactionResponse>
 
     @Query("DELETE FROM TransactionEntity WHERE id = :transactionId")
     suspend fun deleteTransactionById(transactionId: Long)
+
+    @Query("DELETE FROM TransactionEntity")
+    suspend fun deleteAllTransactions()
 }

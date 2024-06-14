@@ -90,7 +90,9 @@ internal interface TransactionRepository {
         tagFilter: List<Int> = listOf()
     ): Flow<List<Transaction>>
 
-    suspend fun getTransactionById(transactionId: Long): Transaction
+    fun getTransactionById(transactionId: Long): Flow<Transaction>
 
     suspend fun deleteTransactionById(transactionId: Long)
+
+    suspend fun deleteAllTransactions()
 }

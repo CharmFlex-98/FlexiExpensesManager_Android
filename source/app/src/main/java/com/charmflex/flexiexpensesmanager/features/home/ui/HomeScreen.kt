@@ -29,11 +29,11 @@ import com.charmflex.flexiexpensesmanager.ui_common.SGBottomNavigationBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.example.compose.FlexiExpensesManagerTheme
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 internal fun HomeScreen(
     homeViewModel: HomeViewModel,
-    shouldRefresh: Boolean = false,
     appComponent: AppComponent,
 ) {
     val expensesPieChartViewModel = getViewModel {
@@ -72,8 +72,10 @@ internal fun HomeScreen(
                     }
                 }
 
-                LaunchedEffect(key1 = shouldRefresh) {
-                    if (shouldRefresh) viewModel.refresh()
+                LaunchedEffect(key1 = Unit) {
+                    homeViewModel.refresh.collectLatest {
+                        viewModel.refresh()
+                    }
                 }
                 DashboardScreen(viewModel)
             }
@@ -84,6 +86,8 @@ internal fun HomeScreen(
                     appComponent.expensesHistoryViewModel()
                 }
 
+                // No need refresh here because the way it obtains data is by listening to flow.
+
                 TransactionHistoryHomeScreen(transactionHistoryViewModel = viewModel)
             }
             composable(
@@ -92,8 +96,8 @@ internal fun HomeScreen(
                 val viewModel = getViewModel {
                     appComponent.accountHomeViewModel()
                 }
-                LaunchedEffect(key1 = shouldRefresh) {
-                    if (shouldRefresh) {
+                LaunchedEffect(key1 = Unit) {
+                    homeViewModel.refresh.collectLatest {
                         viewModel.refresh()
                     }
                 }
@@ -105,7 +109,9 @@ internal fun HomeScreen(
                 val viewModel = getViewModel {
                     appComponent.settingViewModel()
                 }
-                SettingScreen(viewModel = viewModel)
+                SettingScreen(viewModel = viewModel) {
+                    homeViewModel.notifyRefresh()
+                }
             }
         }
     }

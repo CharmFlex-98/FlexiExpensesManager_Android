@@ -219,7 +219,7 @@ internal fun TransactionEditorScreen(
                                 visualTransformation = if (feField.type is FEField.FieldType.Currency) {
                                     currencyVisualTransformation
                                 } else VisualTransformation.None,
-                                keyboardType = if (type is FEField.FieldType.Number) KeyboardType.Number else KeyboardType.Text
+                                keyboardType = if (type is FEField.FieldType.Number || type is FEField.FieldType.Currency) KeyboardType.Number else KeyboardType.Text
                             ) { newValue ->
                                 viewModel.onFieldValueChanged(feField, newValue)
                             }

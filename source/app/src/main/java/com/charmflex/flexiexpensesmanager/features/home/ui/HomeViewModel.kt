@@ -37,7 +37,7 @@ internal class HomeViewModel @Inject constructor(
         routeNavigator.navigateTo(TransactionRoute.newTransactionDestination())
     }
 
-    fun notifyObservers() {
+    fun notifyRefresh() {
         _refresh.tryEmit(true)
     }
 }

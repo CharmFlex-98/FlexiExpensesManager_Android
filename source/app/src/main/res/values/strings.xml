@@ -52,4 +52,7 @@
     <string name="new_transaction_currency_rate_hint">Conversion Rate</string>
     <string name="new_transaction_tag_label">Tag</string>
     <string name="new_transaction_tag_hint">Select a tag (Optional)</string>
+    <string name="setting_factory_reset_title">Factory Reset</string>
+    <string name="setting_factory_reset_dialog_subtitle">Choose the desired behaviour.</string>
+    <string name="generic_confirm">Confirm</string>
 </resources>
