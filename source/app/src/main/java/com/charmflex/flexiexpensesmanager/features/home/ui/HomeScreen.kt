@@ -81,7 +81,7 @@ internal fun HomeScreen(
                 route = HomeRoutes.DETAIL,
             ) {
                 val viewModel = getViewModel {
-                    appComponent.expensesHistoryViewModelFactory().create(null)
+                    appComponent.expensesHistoryViewModel()
                 }
 
                 TransactionHistoryHomeScreen(transactionHistoryViewModel = viewModel)

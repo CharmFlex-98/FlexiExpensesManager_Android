@@ -10,27 +10,14 @@ import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_h
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-internal class TransactionHistoryViewModel(
+internal class TransactionHistoryViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
-    private val accountIdFilter: Int? = null,
     mapper: TransactionHistoryMapper,
     routeNavigator: RouteNavigator,
 ) : TransactionHistoryViewModelParent(mapper, routeNavigator) {
 
     init {
         observeTransactionList()
-    }
-
-    class Factory @Inject constructor(
-        private val mapper: TransactionHistoryMapper,
-        private val transactionRepository: TransactionRepository,
-        private val routeNavigator: RouteNavigator,
-    ) {
-        fun create(accountIdFilter: Int? = null): TransactionHistoryViewModel {
-            return TransactionHistoryViewModel(
-                transactionRepository, accountIdFilter, mapper, routeNavigator
-            )
-        }
     }
 
     override fun getTransactionListFlow(offset: Long): Flow<List<Transaction>> {

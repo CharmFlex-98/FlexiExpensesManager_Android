@@ -13,7 +13,7 @@ internal interface HomeInjector {
     fun dashBoardViewModel(): DashboardViewModel
     fun expensesPieChartViewModel(): ExpensesPieChartViewModel
     fun expensesHeatMapViewModel(): ExpensesHeatMapViewModel
-    fun expensesHistoryViewModelFactory(): TransactionHistoryViewModel.Factory
+    fun expensesHistoryViewModel(): TransactionHistoryViewModel
     fun accountHomeViewModel(): AccountHomeViewModel
     fun settingViewModel(): SettingViewModel
 }
