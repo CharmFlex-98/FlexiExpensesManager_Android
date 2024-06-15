@@ -10,6 +10,7 @@ import kotlin.math.max
 
 internal class CurrencyVisualTransformation(
     private val currencyFormatter: CurrencyFormatter,
+    private val outputFormatter: CurrencyTextFieldOutputFormatter,
     private val currencyCode: String,
 ) : VisualTransformation, OffsetMapping {
 
@@ -18,11 +19,13 @@ internal class CurrencyVisualTransformation(
 
     class Builder @Inject constructor(
         private val currencyFormatter: CurrencyFormatter,
+        private val outputFormatter: CurrencyTextFieldOutputFormatter,
     ) {
 
         fun create(currencyCode: String): CurrencyVisualTransformation {
             return CurrencyVisualTransformation(
                 currencyFormatter,
+                outputFormatter,
                 currencyCode
             )
         }
@@ -36,15 +39,8 @@ internal class CurrencyVisualTransformation(
 
     private fun getFormattedText(annotatedString: AnnotatedString): String {
         val text = annotatedString.text
-        val trimmedText = text.trim()
-
-        if (trimmedText.isEmpty()) {
-            return text
-        }
-
-        if (trimmedText.isDigitsOnly().not()) {
-            return text
-        }
+        val trimmedText = outputFormatter.format(text)
+        if (trimmedText.isEmpty()) return trimmedText
 
         return try {
             currencyFormatter.format(trimmedText.toLong(), currencyCode)
@@ -59,5 +55,16 @@ internal class CurrencyVisualTransformation(
 
     override fun transformedToOriginal(offset: Int): Int {
         return originalText.length
+    }
+}
+
+internal class CurrencyTextFieldOutputFormatter @Inject constructor() {
+    fun format(value: String): String {
+        val trimmedText = value.trim()
+
+        if (trimmedText.isEmpty()) return trimmedText
+        if (trimmedText.isDigitsOnly().not()) return trimmedText.split(',', '.', '-', '_').first()
+
+        return trimmedText
     }
 }

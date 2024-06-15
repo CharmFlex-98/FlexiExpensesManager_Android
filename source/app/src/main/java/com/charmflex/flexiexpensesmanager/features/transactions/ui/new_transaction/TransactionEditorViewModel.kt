@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyTextFieldOutputFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
@@ -70,7 +71,7 @@ internal class TransactionEditorViewModel @Inject constructor(
         private val submitTransactionUseCase: SubmitTransactionUseCase,
         private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
         private val getUserCurrencyUseCase: GetUserCurrencyUseCase,
-        private val tagRepository: TagRepository
+        private val tagRepository: TagRepository,
     ) {
         fun create(transactionId: Long?): TransactionEditorViewModel {
             return TransactionEditorViewModel(

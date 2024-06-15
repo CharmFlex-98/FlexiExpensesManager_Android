@@ -39,8 +39,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyTextFieldOutputFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDateTime
@@ -89,6 +91,7 @@ internal fun TransactionEditorScreen(
     val currencyVisualTransformation = remember(viewState.currencyCode) {
         viewModel.currencyVisualTransformationBuilder().create(viewState.currencyCode)
     }
+    val outputCurrencyFormatter = remember { CurrencyTextFieldOutputFormatter() }
     val isNewTransaction = viewModel.isNewTransaction()
     val title = when {
         isNewTransaction -> "New Transaction"
@@ -219,7 +222,10 @@ internal fun TransactionEditorScreen(
                                 visualTransformation = if (feField.type is FEField.FieldType.Currency) {
                                     currencyVisualTransformation
                                 } else VisualTransformation.None,
-                                keyboardType = if (type is FEField.FieldType.Number || type is FEField.FieldType.Currency) KeyboardType.Number else KeyboardType.Text
+                                keyboardType = if (type is FEField.FieldType.Number || type is FEField.FieldType.Currency) KeyboardType.Number else KeyboardType.Text,
+                                outputFormatter = if (feField.type is FEField.FieldType.Currency) {
+                                    { outputCurrencyFormatter.format(it) }
+                                } else null
                             ) { newValue ->
                                 viewModel.onFieldValueChanged(feField, newValue)
                             }

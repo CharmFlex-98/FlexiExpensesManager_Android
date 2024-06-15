@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyTextFieldOutputFormatter
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -37,7 +38,8 @@ fun SGTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     trailingIcon: @Composable (() -> Unit)? = null,
     onClicked: (() -> Unit)? = null,
-    onValueChange: (String) -> Unit
+    outputFormatter: ((String) -> String)? = null,
+    onValueChange: (String) -> Unit,
 ) {
     val onClick by rememberUpdatedState(newValue = onClicked)
     val interactionSource = remember {
@@ -61,7 +63,7 @@ fun SGTextField(
             }
         }
     }
-    val supportingText =  when {
+    val supportingText = when {
         errorText != null -> errorText
         maxLength != null -> "${value.length}/$maxLength"
         else -> null
@@ -69,12 +71,16 @@ fun SGTextField(
     OutlinedTextField(
         modifier = modifier,
         value = value,
-        onValueChange = {
-            if (maxLength == null) onValueChange(it)
-            else if (it.length <= maxLength) onValueChange(it)
+        onValueChange = { res ->
+            val updatedValue = outputFormatter?.let {
+                it(res)
+            } ?: res
+
+            if (maxLength == null) onValueChange(updatedValue)
+            else if (updatedValue.length <= maxLength) onValueChange(updatedValue)
         },
         label = { Text(text = label) },
-        placeholder = hint?.let { {Text(text = hint)} },
+        placeholder = hint?.let { { Text(text = hint) } },
         supportingText = supportingText?.let {
             { Text(text = supportingText) }
         },
@@ -117,7 +123,10 @@ fun SGAutoCompleteTextField(
             onClicked = null,
             onValueChange = {}
         )
-        ExposedDropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = { expanded = false }) {
+        ExposedDropdownMenu(
+            modifier = modifier,
+            expanded = expanded,
+            onDismissRequest = { expanded = false }) {
             suggestions.forEach {
                 DropdownMenuItem(
                     modifier = modifier,
