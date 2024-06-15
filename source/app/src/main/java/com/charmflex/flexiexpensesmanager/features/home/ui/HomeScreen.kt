@@ -24,7 +24,7 @@ import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardSc
 import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.history.TransactionHomeViewModel
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_heat_map.ExpensesHeatMapPlugin
-import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_chart.ExpensesPieChartDashboardPlugin
+import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_chart.ExpensesChartDashboardPlugin
 import com.charmflex.flexiexpensesmanager.features.home.ui.setting.SettingScreen
 import com.charmflex.flexiexpensesmanager.features.home.ui.setting.SettingViewModel
 import com.charmflex.flexiexpensesmanager.ui_common.SGBottomNavItem
@@ -45,7 +45,7 @@ internal fun HomeScreen(
         appComponent.expensesHeatMapViewModel()
     }
     val dashboardPlugins = listOf(
-        ExpensesPieChartDashboardPlugin(expensesPieChartViewModel),
+        ExpensesChartDashboardPlugin(expensesPieChartViewModel),
         ExpensesHeatMapPlugin(expensesHeatMapViewModel)
     )
 

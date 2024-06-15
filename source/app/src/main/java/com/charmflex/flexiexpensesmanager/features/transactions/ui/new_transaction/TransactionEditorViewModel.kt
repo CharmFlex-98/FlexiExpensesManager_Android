@@ -489,10 +489,7 @@ internal class TransactionEditorViewModel @Inject constructor(
     fun onToggleCalendar(field: FEField?) {
         _viewState.update {
             it.copy(
-                calendarState = it.calendarState.copy(
-                    isVisible = field != null,
-                    targetField = field
-                )
+                calendarState = field?.let { NewTransactionViewState.CalendarState(it) }
             )
         }
     }
@@ -553,7 +550,7 @@ internal class TransactionEditorViewModel @Inject constructor(
 internal data class NewTransactionViewState(
     val fields: List<FEField> = listOf(),
     val errors: Map<String, String>? = null,
-    val calendarState: CalendarState = CalendarState(),
+    val calendarState: CalendarState? = null,
     val isLoading: Boolean = false,
     val success: Boolean = false,
     val transactionCategories: TransactionCategories? = null,
@@ -575,8 +572,7 @@ internal data class NewTransactionViewState(
     val showBottomSheet get() = bottomSheetState != null
 
     data class CalendarState(
-        val isVisible: Boolean = false,
-        val targetField: FEField? = null
+        val targetField: FEField
     )
 
     sealed interface BottomSheetState {

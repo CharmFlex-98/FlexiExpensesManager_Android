@@ -1,26 +1,35 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_chart
 
 import android.graphics.Typeface
-import android.text.Layout
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.TweenSpec
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,18 +40,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.aay.compose.baseComponents.model.LegendPosition
 import com.aay.compose.donutChart.PieChart
+import com.charmflex.flexiexpensesmanager.R
+import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
+import com.charmflex.flexiexpensesmanager.core.utils.MONTH_YEAR_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
+import com.charmflex.flexiexpensesmanager.ui_common.DateFilterBar
+import com.charmflex.flexiexpensesmanager.ui_common.FECallout3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading4
+import com.charmflex.flexiexpensesmanager.ui_common.SGDatePicker
+import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGMediumPrimaryButton
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x0_25
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x10
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x3
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x47
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x8
+import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import com.patrykandpatrick.vico.compose.axis.axisLabelComponent
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
@@ -56,7 +79,6 @@ import com.patrykandpatrick.vico.compose.component.textComponent
 import com.patrykandpatrick.vico.compose.dimensions.dimensionsOf
 import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
 import com.patrykandpatrick.vico.compose.style.currentChartStyle
-import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
 import com.patrykandpatrick.vico.core.axis.AxisPosition
 import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 import com.patrykandpatrick.vico.core.chart.column.ColumnChart
@@ -74,28 +96,40 @@ import com.patrykandpatrick.vico.core.context.MeasureContext
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.extension.copyColor
+import java.time.LocalDate
 import kotlin.random.Random
 
 
 @Composable
 internal fun ColumnScope.ExpensesPieChartScreen(
-    viewModel: ExpensesPieChartViewModel
+    viewModel: ExpensesChartViewModel
 ) {
-    val pieChartViewState by viewModel.viewState.collectAsState()
+    val chartViewState by viewModel.viewState.collectAsState()
     val tagFilters by viewModel.tagFilter.collectAsState()
-    val chartType = pieChartViewState.chartType
+    val chartType = chartViewState.chartType
+    val dateFilter by viewModel.dateFilter.collectAsState()
     Column(
         modifier = Modifier
             .padding(horizontal = grid_x2)
             .weight(1f)
     ) {
-        Box(
-            modifier = Modifier
-                .clickable {
-                    viewModel.onToggleTagDialog(true)
-                }
-        ) {
-            Text(text = "Select tag")
+        DateFilterBar(
+            currentDateFilter = dateFilter,
+            onDateFilterChanged = {
+                viewModel.onDateFilterChanged(it)
+            },
+            onShowMonthFilter = {
+                it.toStringWithPattern(MONTH_YEAR_PATTERN)
+            },
+            onShowCustomStartFilter = {
+                it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
+            },
+            onShowCustomEndFilter = {
+                it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
+            }
+        )
+        TextButton(onClick = { viewModel.onToggleTagDialog(true) }) {
+            Text(text = stringResource(id = R.string.expenses_chart_select_tag_label))
         }
 
         TabRow(selectedTabIndex = chartType.index) {
@@ -116,7 +150,7 @@ internal fun ColumnScope.ExpensesPieChartScreen(
                     PieChart(
                         modifier = Modifier.fillMaxSize(),
                         animation = TweenSpec(durationMillis = 1000),
-                        pieChartData = pieChartViewState.pieChartData,
+                        pieChartData = chartViewState.pieChartData,
                         ratioLineColor = Color.LightGray,
                         textRatioStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
                         descriptionStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface),
@@ -127,18 +161,18 @@ internal fun ColumnScope.ExpensesPieChartScreen(
                 is ExpensesPieChartViewState.ChartType.Bar -> {
                     val producer = viewModel.producer
                     val entries =
-                        pieChartViewState.barChartData.categoryExpensesAmount.mapIndexed { index, item ->
+                        chartViewState.barChartData.categoryExpensesAmount.mapIndexed { index, item ->
                             FloatEntry(index.toFloat(), item.second / 100.toFloat())
                         }
                     producer.setEntries(entries)
-                    ComposeChart6(pieChartViewState, producer)
+                    ComposeChart6(chartViewState, producer)
                 }
             }
         }
     }
 
 
-    if (pieChartViewState.showTagFilterDialog) {
+    if (chartViewState.showTagFilterDialog) {
         var tagFilterTemp by remember {
             mutableStateOf(tagFilters)
         }
@@ -246,6 +280,32 @@ private fun ComposeChart6(
             marker = rememberMarker(),
             runInitialAnimation = false,
         )
+    }
+}
+
+internal sealed interface CustomCalendarSelection {
+    object Start : CustomCalendarSelection
+    object End : CustomCalendarSelection
+}
+
+internal sealed class FilterMenuDropDownItem(
+    @get:StringRes
+    val titleResId: Int,
+    val filterMenuItemType: FilterMenuItemType
+) {
+
+    object Monthly : FilterMenuDropDownItem(
+        titleResId = R.string.date_filter_monthly,
+        filterMenuItemType = FilterMenuItemType.MONTHLY
+    )
+
+    object Custom : FilterMenuDropDownItem(
+        titleResId = R.string.date_filter_custom,
+        filterMenuItemType = FilterMenuItemType.CUSTOM
+    )
+
+    enum class FilterMenuItemType {
+        MONTHLY, CUSTOM
     }
 }
 

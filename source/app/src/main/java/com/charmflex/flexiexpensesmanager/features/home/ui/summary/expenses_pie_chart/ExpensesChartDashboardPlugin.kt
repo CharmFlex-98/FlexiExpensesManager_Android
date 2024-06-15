@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import com.charmflex.flexiexpensesmanager.features.home.ui.dashboard.DashboardPlugin
 import javax.inject.Inject
 
-internal class ExpensesPieChartDashboardPlugin @Inject constructor(
-    private val viewModel: ExpensesPieChartViewModel
+internal class ExpensesChartDashboardPlugin @Inject constructor(
+    private val viewModel: ExpensesChartViewModel
 ): DashboardPlugin {
     @Composable
     override fun ColumnScope.Render() {

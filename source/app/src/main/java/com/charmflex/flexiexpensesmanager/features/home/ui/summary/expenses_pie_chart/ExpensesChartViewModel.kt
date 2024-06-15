@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aay.compose.donutChart.model.PieChartData
+import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.home.usecases.GetCategoryPercentageUseCase
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
@@ -15,17 +16,19 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.random.Random
 
-internal class ExpensesPieChartViewModel @Inject constructor(
+internal class ExpensesChartViewModel @Inject constructor(
     private val getCategoryPercentageUseCase: GetCategoryPercentageUseCase,
     private val tagRepository: TagRepository,
     private val userCurrencyRepository: UserCurrencyRepository
 ) : ViewModel() {
+
     private var job = SupervisorJob()
         get() {
             if (field.isCancelled) field = SupervisorJob()
@@ -38,17 +41,23 @@ internal class ExpensesPieChartViewModel @Inject constructor(
     private val _tagFilter = MutableStateFlow<List<TagFilterItem>>(emptyList())
     val tagFilter = _tagFilter.asStateFlow()
 
+    private val _dateFilter: MutableStateFlow<DateFilter> = MutableStateFlow(DateFilter.Monthly(0))
+    val dateFilter = _dateFilter.asStateFlow()
+
     val producer: ChartEntryModelProducer = ChartEntryModelProducer()
 
     init {
-        refresh()
         loadTagOptions()
+        observeTagFilterChanged()
+        observeDateFilterChanged()
+        refresh()
     }
 
     fun refresh() {
         job.cancel()
         viewModelScope.launch(job) {
             getCategoryPercentageUseCase(
+                dateFilter = _dateFilter.value,
                 tagFilter = _tagFilter.value.filter { it.selected }.map { it.id }
             ).collectLatest {
                 it?.let { res ->
@@ -62,8 +71,24 @@ internal class ExpensesPieChartViewModel @Inject constructor(
         }
     }
 
-    private fun observePrimaryCurrency() {
+    private fun observeTagFilterChanged() {
+        viewModelScope.launch {
+            tagFilter.drop(1).collectLatest {
+                refresh()
+            }
+        }
+    }
 
+    private fun observeDateFilterChanged() {
+        viewModelScope.launch {
+            dateFilter.drop(1).collectLatest {
+                refresh()
+            }
+        }
+    }
+
+    fun onDateFilterChanged(dateFilter: DateFilter) {
+        _dateFilter.value = dateFilter
     }
 
     fun onToggleTagDialog(isVisible: Boolean) {
@@ -98,7 +123,6 @@ internal class ExpensesPieChartViewModel @Inject constructor(
 
     fun onSetTagFilter(tagFilter: List<TagFilterItem>) {
         _tagFilter.value = tagFilter
-        refresh()
     }
 
     private fun generatePieChartData(data: Map<String, Long>): List<PieChartData> {
@@ -140,7 +164,7 @@ internal class ExpensesPieChartViewModel @Inject constructor(
     }
 }
 
-data class TagFilterItem(
+internal data class TagFilterItem(
     val id: Int,
     val name: String,
     val selected: Boolean = false,

@@ -55,4 +55,7 @@
     <string name="setting_factory_reset_title">Factory Reset</string>
     <string name="setting_factory_reset_dialog_subtitle">Choose the desired behaviour.</string>
     <string name="generic_confirm">Confirm</string>
+    <string name="expenses_chart_select_tag_label">Select tag</string>
+    <string name="date_filter_monthly">Monthly</string>
+    <string name="date_filter_custom">Custom</string>
 </resources>

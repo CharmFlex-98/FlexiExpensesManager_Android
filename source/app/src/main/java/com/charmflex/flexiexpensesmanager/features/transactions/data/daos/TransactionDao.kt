@@ -46,9 +46,9 @@ internal interface TransactionDao {
                 " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id" +
                 " LEFT JOIN TransactionTagEntity tt ON t.id = tt.transaction_id" +
                 " LEFT JOIN TagEntity tg ON tg.id = tt.tagId" +
-                " WHERE (:startDate IS NULL OR transaction_date >= :startDate) " +
+                " WHERE (:startDate IS NULL OR date(transaction_date) >= date(:startDate)) " +
                 "AND (:noTagSelected OR tt.tagId IN (:tagFilter)) " +
-                "AND (:endDate IS NULL OR transaction_date <= :endDate)" +
+                "AND (:endDate IS NULL OR date(transaction_date) <= date(:endDate))" +
                 " GROUP BY t.id" +
                 " ORDER BY transaction_date DESC")
     fun getAllTransactions(
@@ -81,10 +81,10 @@ internal interface TransactionDao {
             " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id" +
             " LEFT JOIN TransactionTagEntity tt ON t.id = tt.transaction_id" +
             " LEFT JOIN TagEntity tg ON tg.id = tt.tagId" +
-            " WHERE (:startDate IS NULL OR transaction_date >= :startDate) " +
+            " WHERE (:startDate IS NULL OR date(transaction_date) >= date(:startDate)) " +
                 "AND (:noTagSelected OR tt.tagId IN (:tagFilter)) " +
                 "AND (:noFilterByAccountId OR t.account_from_id = :accountIdFilter OR t.account_to_id =:accountIdFilter) " +
-                "AND (:endDate IS NULL OR transaction_date <= :endDate)" +
+                "AND (:endDate IS NULL OR date(transaction_date) <= date(:endDate))" +
                 " GROUP BY t.id" +
                 " ORDER BY transaction_date DESC" +
             " LIMIT :limit OFFSET :offset")

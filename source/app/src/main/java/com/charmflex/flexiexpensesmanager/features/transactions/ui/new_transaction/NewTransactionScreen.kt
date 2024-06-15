@@ -83,7 +83,7 @@ internal fun TransactionEditorScreen(
     val viewState by viewModel.viewState.collectAsState()
     val currentTransactionType by viewModel.currentTransactionType.collectAsState()
     val datePickerState = UseCaseState()
-    var showCalendar = viewState.calendarState.isVisible
+    val showCalendar = viewState.calendarState != null
     val snackbarHostState = remember { SnackbarHostState() }
     val snackBarState by viewModel.snackBarState
     val genericErrorMessage = stringResource(id = R.string.generic_error)
@@ -256,14 +256,12 @@ internal fun TransactionEditorScreen(
         onDismiss = { viewModel.onToggleCalendar(null) },
         onConfirm = {
             viewModel.onFieldValueChanged(
-                viewState.calendarState.targetField,
+                viewState.calendarState?.targetField,
                 it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
             )
             viewModel.onToggleCalendar(null)
         },
-        date = viewState.calendarState.targetField?.value?.value?.toLocalDate(
-            DATE_ONLY_DEFAULT_PATTERN
-        ),
+        date = viewState.calendarState?.targetField?.value?.value?.toLocalDate(DATE_ONLY_DEFAULT_PATTERN),
         isVisible = showCalendar,
         boundary = LocalDate.now().minusYears(10)..LocalDate.now()
     )
