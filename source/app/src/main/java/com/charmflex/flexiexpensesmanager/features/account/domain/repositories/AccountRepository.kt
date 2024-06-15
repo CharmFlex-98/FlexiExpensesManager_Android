@@ -8,7 +8,10 @@ internal interface AccountRepository {
     suspend fun getAccountById(id: Int): AccountGroup.Account
     fun getAllAccounts(): Flow<List<AccountGroup>>
 
-    fun getAccountsSummary(): Flow<List<AccountGroupSummary>>
+    fun getAccountsSummary(
+        startDate: String? = null,
+        endDate: String? = null
+    ): Flow<List<AccountGroupSummary>>
 
     suspend fun addAccountGroup(accountGroupName: String)
 

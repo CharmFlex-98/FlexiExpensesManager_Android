@@ -17,6 +17,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.MONTH_YEAR_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
+import com.charmflex.flexiexpensesmanager.ui_common.DateFilterBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading3
@@ -29,6 +33,7 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 @Composable
 internal fun AccountHomeScreen(viewModel: AccountHomeViewModel) {
     val viewState by viewModel.viewState.collectAsState()
+    val dateFilter by viewModel.dateFilter.collectAsState()
 
     Column(
         modifier = Modifier
@@ -36,6 +41,20 @@ internal fun AccountHomeScreen(viewModel: AccountHomeViewModel) {
             .verticalScroll(rememberScrollState())
             .padding(grid_x2)
     ) {
+        DateFilterBar(
+            currentDateFilter = dateFilter,
+            onDateFilterChanged = { viewModel.onDateFilterChanged(it) },
+            onShowMonthFilter = {
+                it.toStringWithPattern(MONTH_YEAR_PATTERN)
+            },
+            onShowCustomStartFilter = {
+                it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
+            },
+            onShowCustomEndFilter = {
+                it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
+            }
+        )
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()

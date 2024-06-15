@@ -22,9 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_chart.FilterMenuDropDownItem
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
+import java.nio.file.DirectoryStream.Filter
 import java.time.LocalDate
 
 @Composable
@@ -41,6 +43,7 @@ fun DateFilterBar(
     val selectedMenu = when (currentDateFilter) {
         is DateFilter.Monthly -> stringResource(id = FilterMenuDropDownItem.Monthly.titleResId)
         is DateFilter.Custom -> stringResource(id = FilterMenuDropDownItem.Custom.titleResId)
+        is DateFilter.All -> stringResource(id = FilterMenuDropDownItem.All.titleResId)
     }
 
     Row(
@@ -66,6 +69,9 @@ fun DateFilterBar(
                         CustomDateSelection(dateFilter = currentDateFilter, isStartSelected = false)
                 }
             )
+
+            else -> FECallout3(modifier = Modifier
+                .padding(grid_x1), text = stringResource(id = R.string._date_filter_show_all_description))
         }
 
         Spacer(modifier = Modifier.weight(1f))
@@ -127,7 +133,8 @@ private fun DateFilterMenuSelection(
         ) {
             listOf(
                 FilterMenuDropDownItem.Monthly,
-                FilterMenuDropDownItem.Custom
+                FilterMenuDropDownItem.Custom,
+                FilterMenuDropDownItem.All
             ).forEach { item ->
                 DropdownMenuItem(
                     text = {
@@ -145,6 +152,10 @@ private fun DateFilterMenuSelection(
                                     to = LocalDate.now()
                                 )
                                 onDateFilterChanged(newDateFilter)
+                            }
+
+                            FilterMenuDropDownItem.FilterMenuItemType.ALL -> {
+                                onDateFilterChanged(DateFilter.All)
                             }
                         }
                         onDismiss()

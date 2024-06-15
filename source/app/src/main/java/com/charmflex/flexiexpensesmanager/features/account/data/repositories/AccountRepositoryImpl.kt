@@ -54,8 +54,11 @@ internal class AccountRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun getAccountsSummary(): Flow<List<AccountGroupSummary>> {
-        return accountDao.getAccountsSummary()
+    override fun getAccountsSummary(
+        startDate: String?,
+        endDate: String?
+    ): Flow<List<AccountGroupSummary>> {
+        return accountDao.getAccountsSummary(startDate, endDate)
             .map {
                 it.groupBy { res -> res.accountGroupId to res.accountGroupName }
                     .map {

@@ -283,17 +283,16 @@ private fun ComposeChart6(
     }
 }
 
-internal sealed interface CustomCalendarSelection {
-    object Start : CustomCalendarSelection
-    object End : CustomCalendarSelection
-}
-
 internal sealed class FilterMenuDropDownItem(
     @get:StringRes
     val titleResId: Int,
     val filterMenuItemType: FilterMenuItemType
 ) {
 
+    object All : FilterMenuDropDownItem(
+        titleResId = R.string.date_filter_all,
+        filterMenuItemType = FilterMenuItemType.ALL
+    )
     object Monthly : FilterMenuDropDownItem(
         titleResId = R.string.date_filter_monthly,
         filterMenuItemType = FilterMenuItemType.MONTHLY
@@ -305,7 +304,7 @@ internal sealed class FilterMenuDropDownItem(
     )
 
     enum class FilterMenuItemType {
-        MONTHLY, CUSTOM
+        MONTHLY, CUSTOM, ALL
     }
 }
 

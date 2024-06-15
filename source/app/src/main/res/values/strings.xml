@@ -58,4 +58,6 @@
     <string name="expenses_chart_select_tag_label">Select tag</string>
     <string name="date_filter_monthly">Monthly</string>
     <string name="date_filter_custom">Custom</string>
+    <string name="date_filter_all">All Records</string>
+    <string name="_date_filter_show_all_description">All Records</string>
 </resources>

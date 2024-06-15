@@ -2,6 +2,8 @@ package com.charmflex.flexiexpensesmanager.features.home.usecases
 
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
+import com.charmflex.flexiexpensesmanager.core.utils.getEndDate
+import com.charmflex.flexiexpensesmanager.core.utils.getStartDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
@@ -18,8 +20,8 @@ internal class GetCategoryPercentageUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
     operator fun invoke(tagFilter: List<Int> = listOf(), dateFilter: DateFilter? = null): Flow<Map<String, Long>?> {
-        val startDate = getStartDate(dateFilter)
-        val endDate = getEndDate(dateFilter)
+        val startDate = dateFilter.getStartDate()
+        val endDate = dateFilter.getEndDate()
 
         return transactionRepository.getAllTransactions(startDate = startDate, endDate = endDate, tagFilter = tagFilter).map { list ->
             categoryRepository.getCategoriesIncludeDeleted(TransactionType.EXPENSES.name)
@@ -48,37 +50,6 @@ internal class GetCategoryPercentageUseCase @Inject constructor(
                         }
                     resMap
                 }
-        }
-    }
-
-    private fun getStartDate(dateFilter: DateFilter?): String? {
-        return  when (dateFilter) {
-            is DateFilter.Monthly -> {
-                LocalDate.now().minusMonths(dateFilter.monthBefore).withDayOfMonth(1).toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
-            }
-            is DateFilter.Custom -> {
-                dateFilter.from.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
-            }
-            null -> null
-        }
-    }
-
-    private fun getEndDate(dateFilter: DateFilter?): String? {
-        return  when (dateFilter) {
-            is DateFilter.Monthly -> {
-                val localDateNow = LocalDate.now()
-                localDateNow.minusMonths(dateFilter.monthBefore).let {
-                    val res = it.withDayOfMonth(it.lengthOfMonth())
-                    if (res.isAfter(localDateNow)) localDateNow
-                    else res
-                }.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
-            }
-            is DateFilter.Custom -> {
-                val localDateNow = LocalDate.now()
-                val res = if (dateFilter.to.isAfter(dateFilter.to)) localDateNow else dateFilter.to
-                res.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
-            }
-            null -> null
         }
     }
 

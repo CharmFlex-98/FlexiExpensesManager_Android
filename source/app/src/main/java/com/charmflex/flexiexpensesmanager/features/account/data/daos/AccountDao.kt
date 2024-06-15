@@ -29,28 +29,27 @@ internal interface AccountDao {
     fun getAllAccounts(): Flow<List<AccountResponse>>
 
     @Query(
-        "SELECT " +
-                "account_group_id, " +
-                "account_id, " +
-                "account_group_name, " +
-                "account_name, " +
-                "out_amount, " +
-                "COALESCE(SUM(t2.amount_in_cent * t2.rate), 0) AS in_amount, " +
-                "account_initial_amount FROM " +
-                "(SELECT ag.id AS account_group_id," +
-                " a.id AS account_id," +
-                " ag.name as account_group_name," +
-                " a.name as account_name," +
-                " COALESCE(SUM(t.amount_in_cent * t.rate), 0) AS out_amount," +
-                " a.initial_amount as account_initial_amount" +
-                " FROM AccountGroupEntity ag" +
-                " LEFT JOIN AccountEntity a ON ag.id = a.account_group_id" +
-                " LEFT JOIN TransactionEntity t ON t.account_from_id = a.id" +
-                " GROUP BY a.id) " +
-                "LEFT JOIN TransactionEntity t2 ON t2.account_to_id = account_id " +
-                "GROUP BY account_id"
+        "SELECT ag.id as account_group_id," +
+                "a.id as account_id," +
+                "ag.name as account_group_name," +
+                "a. name as account_name," +
+                "COALESCE(out_amount, 0) as out_amount," +
+                "COALESCE(in_amount, 0) as in_amount," +
+                "a.initial_amount as account_initial_amount FROM  AccountGroupEntity ag" +
+                " LEFT JOIN AccountEntity a on a.account_group_id = ag.id" +
+                " LEFT JOIN (" +
+                " SELECT account_from_id, SUM(t.amount_in_cent) as out_amount FROM TransactionEntity t" +
+                " WHERE ((:startDate IS NULL) OR (date(transaction_date) >= date(:startDate))) AND ((:endDate IS NULL) OR date(transaction_date) <= date(:endDate))" +
+                " Group by account_from_id) as out_amount_subquery on out_amount_subquery.account_from_id = a.id" +
+                " LEFT JOIN (" +
+                " SELECT account_to_id, SUM(t.amount_in_cent) as in_amount FROM TransactionEntity t" +
+                " WHERE ((:startDate IS NULL) OR (date(transaction_date) >= date(:startDate))) AND ((:endDate IS NULL) OR date(transaction_date) <= date(:endDate))" +
+                " Group by account_to_id) as in_amount_subquery on  in_amount_subquery.account_to_id = a.id"
     )
-    fun getAccountsSummary(): Flow<List<AccountSummaryResponse>>
+    fun getAccountsSummary(
+        startDate: String? = null,
+        endDate: String? = null
+    ): Flow<List<AccountSummaryResponse>>
 
     @Insert
     suspend fun insertAccountGroup(accountGroupEntity: AccountGroupEntity)
