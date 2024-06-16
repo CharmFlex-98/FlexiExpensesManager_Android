@@ -43,7 +43,7 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
     }
 }
 
-val MIGRATION_4_5 = object  : Migration(4, 5) {
+val MIGRATION_4_5 = object : Migration(4, 5) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE TransactionEntity ADD currency TEXT NOT NULL DEFAULT 'MYR'")
         db.execSQL("ALTER TABLE TransactionEntity ADD rate REAL NOT NULL DEFAULT 1")
@@ -65,6 +65,27 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
 
         // Rename new table
         db.execSQL("ALTER TABLE TagEntityNew RENAME TO TagEntity")
+
+        // End
+        db.execSQL("COMMIT;");
+    }
+}
+
+val MIGRATION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("BEGIN TRANSACTION;")
+
+        // Create New Transaction Table
+        db.execSQL("CREATE TABLE IF NOT EXISTS `AccountEntityNew` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `account_group_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `is_deleted` INTEGER NOT NULL DEFAULT false, `remarks` TEXT, FOREIGN KEY(`account_group_id`) REFERENCES `AccountGroupEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_AccountEntityNew_account_group_id` ON `AccountEntityNew` (`account_group_id`)")
+        // Copy from old to new
+        db.execSQL("INSERT INTO AccountEntityNew(id, account_group_id, name, is_deleted, remarks) SELECT id, account_group_id, name, is_deleted, remarks FROM AccountEntity")
+
+        // Drop old table
+        db.execSQL("DROP TABLE AccountEntity")
+
+        // Rename new table
+        db.execSQL("ALTER TABLE AccountEntityNew RENAME TO AccountEntity")
 
         // End
         db.execSQL("COMMIT;");

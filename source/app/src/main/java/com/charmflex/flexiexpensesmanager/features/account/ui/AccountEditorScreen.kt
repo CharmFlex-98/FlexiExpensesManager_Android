@@ -27,9 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.VisualTransformation
 import com.charmflex.flexiexpensesmanager.R
-import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyTextFieldOutputFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
@@ -96,7 +94,7 @@ internal fun AccountEditorScreen(
                 editorLabel = editorLabel,
                 viewState = viewState,
                 updateAccountName = viewModel::updateAccountName,
-                updateInitialAmount = viewModel::updateInitialAmount,
+                updateAmount = viewModel::updateInitialAmount,
                 visualTransformation = visualTransformation
             ) {
                 viewModel.addNewItem()
@@ -210,7 +208,7 @@ private fun ColumnScope.EditorScreen(
     editorLabel: String,
     viewState: AccountEditorViewState,
     updateAccountName: (String) -> Unit,
-    updateInitialAmount: (String) -> Unit,
+    updateAmount: (String) -> Unit,
     visualTransformation: CurrencyVisualTransformation,
     addNewItem: () -> Unit,
 ) {
@@ -230,14 +228,14 @@ private fun ColumnScope.EditorScreen(
     if (viewState.editorState is AccountEditorViewState.AccountEditorState) {
         SGTextField(
             modifier = Modifier.fillMaxWidth(),
-            label = stringResource(id = R.string.account_editor_initial_amount_label),
-            value = viewState.editorState.initialValue,
+            label = stringResource(id = R.string.account_editor_amount_label),
+            value = viewState.editorState.amount,
             keyboardType = KeyboardType.Number,
             visualTransformation = visualTransformation,
             outputFormatter = { outputCurrencyFormatter.format(it) }
 
         ) {
-            updateInitialAmount(it)
+            updateAmount(it)
         }
     }
     Spacer(modifier = Modifier.weight(1f))

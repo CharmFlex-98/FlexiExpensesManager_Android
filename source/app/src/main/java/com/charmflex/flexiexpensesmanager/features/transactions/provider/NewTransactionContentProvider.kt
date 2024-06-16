@@ -23,6 +23,7 @@ internal class NewTransactionContentProvider @Inject constructor() {
             TransactionType.EXPENSES -> expensesFields()
             TransactionType.INCOME -> incomeFields()
             TransactionType.TRANSFER -> transferFields()
+            else -> listOf()
         }.toMutableList()
         res.addAll(
             listOf(

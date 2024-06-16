@@ -1,10 +1,8 @@
-package com.charmflex.flexiexpensesmanager.features.home.usecases
+package com.charmflex.flexiexpensesmanager.features.category.category.usecases
 
-import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.core.utils.getEndDate
 import com.charmflex.flexiexpensesmanager.core.utils.getStartDate
-import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
@@ -12,10 +10,9 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import java.time.LocalDate
 import javax.inject.Inject
 
-internal class GetCategoryPercentageUseCase @Inject constructor(
+internal class GetEachRootCategoryAmountUseCase @Inject constructor(
     private val categoryRepository: TransactionCategoryRepository,
     private val transactionRepository: TransactionRepository
 ) {

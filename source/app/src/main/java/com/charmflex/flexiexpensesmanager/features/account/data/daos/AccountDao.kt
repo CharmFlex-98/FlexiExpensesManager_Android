@@ -34,8 +34,7 @@ internal interface AccountDao {
                 "ag.name as account_group_name," +
                 "a. name as account_name," +
                 "COALESCE(out_amount, 0) as out_amount," +
-                "COALESCE(in_amount, 0) as in_amount," +
-                "a.initial_amount as account_initial_amount FROM  AccountGroupEntity ag" +
+                "COALESCE(in_amount, 0) as in_amount FROM  AccountGroupEntity ag" +
                 " LEFT JOIN AccountEntity a on a.account_group_id = ag.id" +
                 " LEFT JOIN (" +
                 " SELECT account_from_id, SUM(t.amount_in_cent) as out_amount FROM TransactionEntity t" +

@@ -56,7 +56,7 @@ internal class TransactionEditorViewModel @Inject constructor(
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(NewTransactionViewState())
     val viewState = _viewState.asStateFlow()
-    var transactionType = TransactionType.values()
+    var transactionType = TransactionType.values().filter { it.name != TransactionType.UPDATE_ACCOUNT.name }
         private set
     private val _currentTransactionType = MutableStateFlow(TransactionType.EXPENSES)
     val currentTransactionType = _currentTransactionType.asStateFlow()
@@ -305,6 +305,7 @@ internal class TransactionEditorViewModel @Inject constructor(
                     TransactionType.EXPENSES -> submitExpenses()
                     TransactionType.INCOME -> submitIncome()
                     TransactionType.TRANSFER -> submitTransfer()
+                    else -> {}
                 }
             }
         }

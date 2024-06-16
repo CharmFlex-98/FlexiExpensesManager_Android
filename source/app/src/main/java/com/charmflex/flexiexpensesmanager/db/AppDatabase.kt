@@ -11,7 +11,9 @@ import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_2_3
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_3_4
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_4_5
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_5_6
+import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_6_7
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
+import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountTransactionDao
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountGroupEntity
 import com.charmflex.flexiexpensesmanager.features.currency.data.daos.CurrencyDao
@@ -37,7 +39,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.Tr
         TransactionTypeEntity::class,
         UserCurrencyRateEntity::class,
     ],
-    version = 6,
+    version = 7,
 )
 internal abstract class AppDatabase : RoomDatabase() {
     abstract fun getAccountDao(): AccountDao
@@ -46,6 +48,7 @@ internal abstract class AppDatabase : RoomDatabase() {
     abstract fun getCurrencyDao(): CurrencyDao
     abstract fun getTagDao(): TagDao
     abstract fun getTransactionTagDao(): TransactionTagDao
+    abstract fun getAccountTransactionDao(): AccountTransactionDao
 
     class Builder(
         private val appContext: Context
@@ -77,7 +80,8 @@ private fun migrationList(): List<Migration> {
         MIGRATION_2_3,
         MIGRATION_3_4,
         MIGRATION_4_5,
-        MIGRATION_5_6
+        MIGRATION_5_6,
+        MIGRATION_6_7
     )
 }
 
@@ -86,6 +90,6 @@ private const val INIT_ACCOUNT_GROUP_SCRIPT =
 private const val INIT_ACCOUNT_SCRIPT =
     "INSERT INTO AccountEntity (name, account_group_id) VALUES ('Cash', 1)"
 private const val INIT_TRANSACTION_TYPE_SCRIPT =
-    "INSERT INTO TransactionTypeEntity (code) VALUES ('INCOME'), ('EXPENSES'), ('TRANSFER')"
+    "INSERT INTO TransactionTypeEntity (code) VALUES ('INCOME'), ('EXPENSES'), ('TRANSFER'), ('UPDATE_ACCOUNT')"
 private const val INIT_TRANSACTION_CATEGORY_SCRIPT =
     "INSERT INTO TransactionCategoryEntity (id, transaction_type_code, name, parent_id) VALUES (1, 'EXPENSES', 'Food', 0), (2, 'INCOME', 'Salary', 0), (3, 'EXPENSES', 'Rental', 0), (4, 'EXPENSES', 'Lunch', 1)"

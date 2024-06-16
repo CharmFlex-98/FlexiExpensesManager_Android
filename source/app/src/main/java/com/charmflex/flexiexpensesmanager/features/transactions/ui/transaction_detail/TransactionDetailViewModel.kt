@@ -12,6 +12,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -157,7 +158,9 @@ internal data class TransactionDetailViewState(
         val formattedAmount: String,
         val transactionDate: String,
         val transactionCategory: Transaction.TransactionCategory?,
-    )
+    ) {
+        val allowEdit: Boolean get() = transactionTypeCode != TransactionType.UPDATE_ACCOUNT.name
+    }
 
     sealed interface DialogState
     object DeleteDialogState : DialogState

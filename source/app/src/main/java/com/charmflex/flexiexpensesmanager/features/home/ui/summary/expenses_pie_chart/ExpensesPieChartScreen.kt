@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -44,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.aay.compose.baseComponents.model.LegendPosition
 import com.aay.compose.donutChart.PieChart
@@ -53,8 +56,10 @@ import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_YEAR_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.ui_common.DateFilterBar
+import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FECallout3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading4
+import com.charmflex.flexiexpensesmanager.ui_common.FEMetaData2
 import com.charmflex.flexiexpensesmanager.ui_common.SGDatePicker
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGMediumPrimaryButton
@@ -64,6 +69,7 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x10
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x3
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x47
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x6
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x8
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import com.patrykandpatrick.vico.compose.axis.axisLabelComponent
@@ -110,7 +116,7 @@ internal fun ColumnScope.ExpensesPieChartScreen(
     val dateFilter by viewModel.dateFilter.collectAsState()
     Column(
         modifier = Modifier
-            .padding(horizontal = grid_x2)
+            .padding(horizontal = grid_x1)
             .weight(1f)
     ) {
         DateFilterBar(
@@ -119,9 +125,16 @@ internal fun ColumnScope.ExpensesPieChartScreen(
                 viewModel.onDateFilterChanged(it)
             }
         )
-        TextButton(onClick = { viewModel.onToggleTagDialog(true) }) {
-            Text(text = stringResource(id = R.string.expenses_chart_select_tag_label))
+        Row(modifier = Modifier.padding(vertical = grid_x1)) {
+//            TextButton(onClick = { viewModel.onToggleTagDialog(true) }) {
+//                S(text = stringResource(id = R.string.expenses_chart_select_tag_label))
+//            }
+            Spacer(modifier = Modifier.weight(1f))
+            TextButton(onClick = { viewModel.onNavigateExpensesDetailPage() }, border = BorderStroke(width = 1.dp, MaterialTheme.colorScheme.tertiary)) {
+                FECallout3(text = stringResource(id = R.string.expenses_chart_detail_button))
+            }
         }
+
 
         TabRow(selectedTabIndex = chartType.index) {
             getTabs().forEachIndexed { index, chartType ->
@@ -133,7 +146,9 @@ internal fun ColumnScope.ExpensesPieChartScreen(
             }
         }
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = grid_x1),
             contentAlignment = Alignment.Center
         ) {
             when (chartType) {
@@ -241,15 +256,17 @@ private fun ComposeChart6(
                         )
                     }
                 },
-                spacing = grid_x8,
+                spacing = grid_x6,
                 mergeMode = ColumnChart.MergeMode.Grouped,
             ),
             chartModelProducer = modelProducer,
             startAxis = rememberStartAxis(
                 label = axisLabelComponent(
+                    textSize = 7.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 titleComponent = axisLabelComponent(
+                    textSize = 9.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 title = "Amount (${viewState.barChartData.currencyCode})",
@@ -261,16 +278,20 @@ private fun ComposeChart6(
                     )?.first ?: ""
                 },
                 label = axisLabelComponent(
+                    textSize = 7.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 titleComponent = axisLabelComponent(
+                    textSize = 9.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 title = "Categories"
             ),
             marker = rememberMarker(),
             runInitialAnimation = false,
-        )
+        ) {
+            Text(text = "placeholder?")
+        }
     }
 }
 

@@ -8,17 +8,25 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
+import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalEnterFromEnd
+import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalExitToEnd
 import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideDown
 import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideUp
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.category.category.ui.CategoryEditorScreen
+import com.charmflex.flexiexpensesmanager.features.category.category.ui.detail.CategoryStatScreen
 import javax.inject.Inject
 
 internal class CategoryDestinationBuilder : DestinationBuilder {
     private val appComponent by lazy { AppComponentProvider.instance.getAppComponent() }
 
     override fun NavGraphBuilder.buildGraph() {
+        editorScreen()
+        categoryStatScreen()
+    }
+
+    private fun NavGraphBuilder.editorScreen() {
         composable(
             CategoryRoutes.EDITOR,
             enterTransition = FEVerticalSlideUp,
@@ -29,6 +37,17 @@ internal class CategoryDestinationBuilder : DestinationBuilder {
             val viewModel = getViewModel { appComponent.categoryEditorViewModel().apply { setType(type = type, importFixCatName) } }
 
             CategoryEditorScreen(viewModel = viewModel)
+        }
+    }
+
+    private fun NavGraphBuilder.categoryStatScreen() {
+        composable(
+            CategoryRoutes.STAT,
+            enterTransition = FEHorizontalEnterFromEnd,
+            exitTransition = FEHorizontalExitToEnd
+        ) {
+            val viewModel = getViewModel { appComponent.categoryStatViewModel() }
+            CategoryStatScreen(viewModel = viewModel)
         }
     }
 

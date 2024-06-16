@@ -30,13 +30,15 @@ internal fun TransactionDetailScreen(
         topBar = {
             TransactionDetailTopBar(
                 onDelete = viewModel::openDeleteWarningDialog,
-                onEdit = viewModel::navigateToTransactionEdit
+                onEdit = viewModel::navigateToTransactionEdit,
+                allowEdit = detail?.allowEdit ?: false
             )
         },
         modifier = Modifier.padding(grid_x2)
     ) {
         if (detail != null) {
             FeColumnContainer(
+                modifier = Modifier.padding(vertical = grid_x2),
                 backgroundColor = MaterialTheme.colorScheme.tertiary
             ) {
                 TransactionDetailItem(title = "Name", text = detail.transactionName)
@@ -106,13 +108,14 @@ private fun TransactionDetailItem(
 @Composable
 private fun TransactionDetailTopBar(
     onDelete: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    allowEdit: Boolean
 ) {
     BasicTopBar(
         stringResource(id = R.string.transaction_detail_screen_title),
         actions = {
             Row {
-                IconButton(onClick = onEdit) {
+                if (allowEdit) IconButton(onClick = onEdit) {
                     SGIcons.EditIcon()
                 }
                 IconButton(onClick = onDelete) {

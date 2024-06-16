@@ -1,15 +1,19 @@
 package com.charmflex.flexiexpensesmanager.features.account.ui
 
+import android.util.Log
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
-import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.BackupRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
+import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +26,8 @@ internal class AccountEditorViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val routeNavigator: RouteNavigator,
     private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
-    private val userCurrencyRepository: UserCurrencyRepository
+    private val userCurrencyRepository: UserCurrencyRepository,
+    private val resourcesProvider: ResourcesProvider
 ) : ViewModel() {
     private lateinit var _flowType: AccountEditorFlow
 
@@ -185,7 +190,7 @@ internal class AccountEditorViewModel @Inject constructor(
         _viewState.update {
             it.copy(
                 editorState = when (val vs = it.editorState) {
-                    is AccountEditorViewState.AccountEditorState -> vs.copy(initialValue = newValue)
+                    is AccountEditorViewState.AccountEditorState -> vs.copy(amount = newValue)
                     else -> vs
                 }
             )
@@ -230,11 +235,19 @@ internal class AccountEditorViewModel @Inject constructor(
                 accountRepository.addAccount(
                     accountEditorState.accountName,
                     selectedAccountGroupId,
-                    accountEditorState.initialValue.toLong()
+                    accountEditorState.amount.toLong(),
+                    _viewState.value.currencyCode,
+                    1f
                 )
             }.fold(
                 onSuccess = {
-                    _snackBarState.emit(SnackBarState.Success("Add success!"))
+                    _snackBarState.emit(
+                        SnackBarState.Success(
+                            resourcesProvider.getString(
+                                R.string.add_account_success_snackbar
+                            )
+                        )
+                    )
                     if (_flowType is AccountEditorFlow.ImportFix) {
                         routeNavigator.popWithArguments(
                             mapOf(BackupRoutes.Args.UPDATE_IMPORT_DATA to true)
@@ -244,7 +257,8 @@ internal class AccountEditorViewModel @Inject constructor(
                     }
                 },
                 onFailure = {
-                    _snackBarState.emit(SnackBarState.Success("Add failed!"))
+                    Log.d("test", it.toString())
+                    _snackBarState.emit(SnackBarState.Error(resourcesProvider.getString(R.string.add_account_failure_snackbar)))
                 }
             )
         }
@@ -276,7 +290,7 @@ internal data class AccountEditorViewState(
 
     data class AccountEditorState(
         val accountName: String = "",
-        val initialValue: String = "0",
+        val amount: String = "0",
     ) : EditorState
 
     enum class Type {

@@ -66,7 +66,9 @@ private fun AccountGroupSection(
     accountGroupSummary: AccountHomeViewState.AccountGroupSummaryUI,
     onAccountClick: (AccountHomeViewState.AccountGroupSummaryUI.AccountSummaryUI) -> Unit,
 ) {
-    FeColumnContainer {
+    FeColumnContainer(
+        modifier = Modifier.padding(vertical = grid_x2)
+    ) {
         Row(modifier = Modifier.padding(vertical = grid_x1)) {
             FEHeading3(
                 modifier = Modifier.weight(1f),

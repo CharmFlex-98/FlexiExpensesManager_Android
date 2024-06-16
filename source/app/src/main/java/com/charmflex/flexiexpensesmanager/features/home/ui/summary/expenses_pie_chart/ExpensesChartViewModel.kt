@@ -5,9 +5,12 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aay.compose.donutChart.model.PieChartData
+import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
+import com.charmflex.flexiexpensesmanager.features.category.category.usecases.GetEachRootCategoryAmountUseCase
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
-import com.charmflex.flexiexpensesmanager.features.home.usecases.GetCategoryPercentageUseCase
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.component.shape.Shapes
@@ -24,9 +27,10 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 internal class ExpensesChartViewModel @Inject constructor(
-    private val getCategoryPercentageUseCase: GetCategoryPercentageUseCase,
+    private val getEachRootCategoryAmountUseCase: GetEachRootCategoryAmountUseCase,
     private val tagRepository: TagRepository,
-    private val userCurrencyRepository: UserCurrencyRepository
+    private val userCurrencyRepository: UserCurrencyRepository,
+    private val routeNavigator: RouteNavigator
 ) : ViewModel() {
 
     private var job = SupervisorJob()
@@ -56,7 +60,7 @@ internal class ExpensesChartViewModel @Inject constructor(
     fun refresh() {
         job.cancel()
         viewModelScope.launch(job) {
-            getCategoryPercentageUseCase(
+            getEachRootCategoryAmountUseCase(
                 dateFilter = _dateFilter.value,
                 tagFilter = _tagFilter.value.filter { it.selected }.map { it.id }
             ).collectLatest {
@@ -69,6 +73,10 @@ internal class ExpensesChartViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onNavigateExpensesDetailPage() {
+        routeNavigator.navigateTo(CategoryRoutes.STAT)
     }
 
     private fun observeTagFilterChanged() {

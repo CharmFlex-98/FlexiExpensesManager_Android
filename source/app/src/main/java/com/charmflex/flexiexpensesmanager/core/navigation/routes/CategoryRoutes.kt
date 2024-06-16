@@ -15,6 +15,8 @@ internal object CategoryRoutes {
         addArg(Args.IMPORT_FIX_CATEGORY_NAME)
     }
 
+    val STAT = buildRoute("$ROOT/stat") {}
+
     fun editorDestination(transactionType: TransactionType, newCategoryName: String? = null): String {
         return buildDestination(EDITOR) {
             withArg(Args.TRANSACTION_TYPE, transactionType.name)

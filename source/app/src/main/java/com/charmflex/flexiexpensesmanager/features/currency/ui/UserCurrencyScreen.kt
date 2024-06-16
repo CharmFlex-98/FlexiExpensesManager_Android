@@ -50,14 +50,20 @@ internal fun UserCurrencyScreen(
         }
     ) {
         if (viewState.currencyList.isNotEmpty()) {
-            FeColumnContainer {
+            FeColumnContainer(
+                modifier = Modifier.padding(vertical = grid_x2)
+            ) {
                 viewState.currencyList.forEach {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(grid_x1)
                     ) {
-                        Text(modifier = Modifier.weight(1f), text = it.name, textAlign = TextAlign.Start)
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = it.name,
+                            textAlign = TextAlign.Start
+                        )
                         Text(text = it.rate.toString(), textAlign = TextAlign.End)
                     }
                 }

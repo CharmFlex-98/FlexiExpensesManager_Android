@@ -25,7 +25,6 @@ internal fun FeColumnContainer(
 ) {
     Column(
         modifier = modifier
-            .padding(vertical = grid_x2)
             .clip(RoundedCornerShape(grid_x2))
             .background(backgroundColor)
             .padding(grid_x2),

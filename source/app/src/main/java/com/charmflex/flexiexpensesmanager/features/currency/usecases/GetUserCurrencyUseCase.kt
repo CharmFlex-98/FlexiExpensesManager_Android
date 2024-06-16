@@ -4,6 +4,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import javax.inject.Inject
 
+// Get user set primary and secondary currency and it's rate
 internal class GetUserCurrencyUseCase @Inject constructor(
     private val userCurrencyRepository: UserCurrencyRepository,
     private val getCurrencyUseCase: GetCurrencyRateUseCase

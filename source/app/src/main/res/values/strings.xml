@@ -45,7 +45,7 @@
     <string name="generic_cancel">Cancel</string>
     <string name="generic_yes">Yes</string>
     <string name="transaction_detail_screen_title">Transaction Detail</string>
-    <string name="account_editor_initial_amount_label">Set initial amount</string>
+    <string name="account_editor_amount_label">Set amount</string>
     <string name="new_transaction_currency_label">Currency</string>
     <string name="new_transaction_currency_hint">Select currency</string>
     <string name="new_transaction_currency_rate_label">Rate</string>
@@ -63,4 +63,8 @@
     <string name="backup_save_data_button">Save</string>
     <string name="import_account_error_text_note_account_from">(transferring account)</string>
     <string name="import_account_error_text_note_account_to">(receiving account)</string>
+    <string name="add_account_success_snackbar">Add account success!</string>
+    <string name="add_account_failure_snackbar">Add account failed!</string>
+    <string name="expenses_chart_detail_button">Open detail</string>
+    <string name="category_stat_detail_topbar_title">Category Statistic</string>
 </resources>
