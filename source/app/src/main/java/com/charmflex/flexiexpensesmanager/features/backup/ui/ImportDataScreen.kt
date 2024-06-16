@@ -27,6 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading4
@@ -225,7 +227,8 @@ private fun ColumnScope.LoadedScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = grid_x1),
-                text = "Save"
+                text = stringResource(id = R.string.backup_save_data_button),
+                enabled = viewState.missingData.isEmpty()
             ) {
                 onSave()
             }

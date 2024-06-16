@@ -60,4 +60,5 @@
     <string name="date_filter_custom">Custom</string>
     <string name="date_filter_all">All Records</string>
     <string name="_date_filter_show_all_description">All Records</string>
+    <string name="backup_save_data_button">Save</string>
 </resources>
