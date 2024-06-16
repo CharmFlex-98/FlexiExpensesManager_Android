@@ -1,14 +1,30 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
+import com.charmflex.flexiexpensesmanager.core.utils.resultOf
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.UpdateCurrencyRateUseCase
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 internal class HomeViewModel @Inject constructor(
     private val routeNavigator: RouteNavigator,
+    private val updateCurrencyRateUseCase: UpdateCurrencyRateUseCase
 ) : ViewModel() {
     private val _homeItemsRefreshable: MutableList<HomeItemRefreshable> = mutableListOf()
+
+    init {
+        viewModelScope.launch {
+            resultOf {
+                updateCurrencyRateUseCase()
+            }.fold(
+                onSuccess = {},
+                onFailure = {}
+            )
+        }
+    }
 
     fun initHomeRefreshable(vararg items: HomeItemRefreshable) {
         _homeItemsRefreshable.addAll(items)
