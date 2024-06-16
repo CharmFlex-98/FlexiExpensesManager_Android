@@ -19,6 +19,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -155,7 +156,7 @@ private fun ColumnScope.LoadedScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer)
                         .padding(grid_x1)
                 ) {
                     Row {
@@ -239,14 +240,14 @@ private fun ColumnScope.LoadedScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        .background(MaterialTheme.colorScheme.tertiaryContainer)
                         .clickable {
                             onFixError(item)
                         }
                         .padding(grid_x2)
                 ) {
                     when (item.dataType) {
-                        ImportedData.MissingData.DataType.ACCOUNT -> {
+                        ImportedData.MissingData.DataType.ACCOUNT_FROM, ImportedData.MissingData.DataType.ACCOUNT_TO -> {
                             FEBody2(text = "Create account: ${item.name}")
                         }
 

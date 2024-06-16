@@ -5,13 +5,17 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.navigation.popWithHomeRefresh
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TagRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupManager
 import com.charmflex.flexiexpensesmanager.features.backup.checker.ImportDataChecker
+import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
+import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTagEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ImportTransaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
@@ -20,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.apache.poi.ss.formula.functions.Index
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -83,7 +88,7 @@ internal class ImportDataViewModel @Inject constructor(
     fun onFixError(missingData: ImportedData.MissingData) {
         awaitingMissingData = missingData
         when (missingData.dataType) {
-            ImportedData.MissingData.DataType.ACCOUNT -> {
+            ImportedData.MissingData.DataType.ACCOUNT_FROM, ImportedData.MissingData.DataType.ACCOUNT_TO -> {
                 routeNavigator.navigateTo(AccountRoutes.editorDestination(missingData.name))
             }
 
@@ -204,7 +209,7 @@ internal data class ImportedData(
         val transactionIndex: Set<Int>
     ) {
         enum class DataType {
-            INCOME_CATEGORY, EXPENSES_CATEGORY, ACCOUNT, TAG
+            INCOME_CATEGORY, EXPENSES_CATEGORY, ACCOUNT_FROM, ACCOUNT_TO, TAG
         }
     }
 }
