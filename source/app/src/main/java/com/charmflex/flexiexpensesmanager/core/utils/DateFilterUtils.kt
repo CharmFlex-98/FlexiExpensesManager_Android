@@ -1,15 +1,23 @@
 package com.charmflex.flexiexpensesmanager.core.utils
 
+import android.annotation.SuppressLint
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 
-sealed interface DateFilter {
+@Parcelize
+sealed interface DateFilter : Parcelable{
 
+    @SuppressLint("ParcelCreator")
     object All : DateFilter
+
+    @SuppressLint("ParcelCreator")
     data class Monthly(
         // If monthBefore = 0, means this month; if = 1, means last month and so on
         val monthBefore: Long
     ) : DateFilter
 
+    @SuppressLint("ParcelCreator")
     data class Custom(
         val from: LocalDate,
         val to: LocalDate

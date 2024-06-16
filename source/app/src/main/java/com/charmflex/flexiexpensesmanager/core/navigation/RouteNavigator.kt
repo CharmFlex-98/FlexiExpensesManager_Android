@@ -16,10 +16,10 @@ interface RouteNavigator {
 
     val navigationEvent: Flow<NavigationEvent>
 
-    fun navigateTo(route: String)
+    fun navigateTo(route: String, arg: Map<String, Any>? = null)
     fun navigateAndPopUpTo(route: String, popUpToRouteInclusive: String)
     fun pop()
-    fun popWithArguments(data: Map<String, Any>? = null)
+    fun popWithArguments(data: Map<String, Any>)
 
     companion object {
         val instance by lazy { RouteNavigatorImpl() }
@@ -32,8 +32,8 @@ class RouteNavigatorImpl @Inject constructor() : RouteNavigator {
     override val navigationEvent: Flow<NavigationEvent>
         get() = _navigationEvent.asSharedFlow()
 
-    override fun navigateTo(route: String) {
-        _navigationEvent.tryEmit(NavigateTo(route))
+    override fun navigateTo(route: String, arg: Map<String, Any>?) {
+        _navigationEvent.tryEmit(NavigateTo(route, arg))
     }
 
     override fun navigateAndPopUpTo(route: String, popUpToRouteInclusive: String) {
@@ -44,18 +44,21 @@ class RouteNavigatorImpl @Inject constructor() : RouteNavigator {
         _navigationEvent.tryEmit(Pop)
     }
 
-    override fun popWithArguments(data: Map<String, Any>?) {
+    override fun popWithArguments(data: Map<String, Any>) {
         _navigationEvent.tryEmit(PopWithArguments(data))
     }
 }
 
 sealed interface NavigationEvent
 
-data class NavigateTo(val route: String) : NavigationEvent
+data class NavigateTo(
+    val route: String,
+    val args: Map<String, Any>?
+) : NavigationEvent
 data class NavigateAndPopUpTo(val route: String, val popToRouteInclusive: String): NavigationEvent
 object Pop : NavigationEvent
 data class PopWithArguments(
-    val data: Map<String, Any>? = null
+    val data: Map<String, Any>
 ) : NavigationEvent
 
 @Composable
@@ -66,7 +69,7 @@ fun RouteNavigatorListener(
     LaunchedEffect(Unit) {
         routeNavigator.navigationEvent.collect {
             when (it) {
-                is NavigateTo -> navController.navigateTo(it.route)
+                is NavigateTo -> navController.navigateTo(it.route, it.args)
                 is NavigateAndPopUpTo -> navController.navigateAndPopUpTo(it.route, it.popToRouteInclusive)
                 is Pop -> navController.popBackStack()
                 is PopWithArguments -> navController.popWithArgs(it.data)

@@ -117,15 +117,6 @@ internal fun ColumnScope.ExpensesPieChartScreen(
             currentDateFilter = dateFilter,
             onDateFilterChanged = {
                 viewModel.onDateFilterChanged(it)
-            },
-            onShowMonthFilter = {
-                it.toStringWithPattern(MONTH_YEAR_PATTERN)
-            },
-            onShowCustomStartFilter = {
-                it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
-            },
-            onShowCustomEndFilter = {
-                it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
             }
         )
         TextButton(onClick = { viewModel.onToggleTagDialog(true) }) {

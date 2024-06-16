@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.YEAR_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
@@ -16,7 +17,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -28,7 +31,8 @@ internal abstract class TransactionHistoryViewModel(
     private val mapper: TransactionHistoryMapper,
     private val routeNavigator: RouteNavigator
 ) : ViewModel() {
-    private var job: Job = SupervisorJob()
+    var job: Job = SupervisorJob()
+        private set
         get() {
             if (field.isCancelled) field = SupervisorJob()
             return field
@@ -42,6 +46,9 @@ internal abstract class TransactionHistoryViewModel(
 
     private val _viewState = MutableStateFlow(TransactionHistoryViewState())
     val viewState = _viewState.asStateFlow()
+
+    private val _onRefreshCompleted = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val onRefreshCompleted = _onRefreshCompleted.asSharedFlow()
 
     private fun toggleLoadMoreLoader(isLoadMore: Boolean) {
         _viewState.update {
@@ -59,8 +66,7 @@ internal abstract class TransactionHistoryViewModel(
         }
     }
 
-     fun observeTransactionList() {
-        job.cancel()
+    private fun observeTransactionList() {
         toggleLoader(true)
         viewModelScope.launch(job) {
             getTransactionListFlow(offset = 0)
@@ -72,6 +78,13 @@ internal abstract class TransactionHistoryViewModel(
                     updateList(list = list)
                 }
         }
+    }
+
+    // This must be called in the init block of children classes.
+    open fun refresh() {
+        job.cancel()
+        observeTransactionList()
+        _onRefreshCompleted.tryEmit(Unit)
     }
 
     abstract fun getTransactionListFlow(offset: Long): Flow<List<Transaction>>
@@ -97,7 +110,9 @@ internal abstract class TransactionHistoryViewModel(
             val updatedList = mapper.map(list)
             _viewState.update { it ->
                 it.copy(
-                    items = if (clearOldList) updatedList else appendsTransactionHistoryItems(updatedList),
+                    items = if (clearOldList) updatedList else appendsTransactionHistoryItems(
+                        updatedList
+                    ),
                     isLoading = false,
                     isLoadMore = false
                 )
@@ -108,7 +123,7 @@ internal abstract class TransactionHistoryViewModel(
 
     private fun appendsTransactionHistoryItems(appendItems: List<TransactionHistoryItem>): List<TransactionHistoryItem> {
         return _viewState.value.items.toMutableList()
-            .apply ori@ {
+            .apply ori@{
                 val duplicateDateHeader =
                     this.lastOrNull { it is TransactionHistoryHeader }?.dateKey?.let {
                         it == appendItems.firstOrNull { it is TransactionHistoryHeader }?.dateKey
@@ -127,7 +142,12 @@ internal abstract class TransactionHistoryViewModel(
                                 addAll(toMergeItems)
                             }
                         }
-                        this@ori.add(lastSection.copy(dateKey = lastSection.dateKey, items = lastSectionMergedItems))
+                        this@ori.add(
+                            lastSection.copy(
+                                dateKey = lastSection.dateKey,
+                                items = lastSectionMergedItems
+                            )
+                        )
                     }
                 }
                 addAll(newUpdatedList)

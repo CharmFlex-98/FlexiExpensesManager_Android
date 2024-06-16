@@ -1,6 +1,5 @@
 package com.charmflex.flexiexpensesmanager.features.home.ui.account
 
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
@@ -16,11 +15,9 @@ import com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper.Accoun
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -82,12 +79,13 @@ internal class AccountHomeViewModel @Inject constructor(
         }
     }
 
-    override fun refresh() {
+    override fun refreshHome() {
         load()
     }
 
     fun onAccountClick(accountSummaryUI: AccountHomeViewState.AccountGroupSummaryUI.AccountSummaryUI) {
-        routeNavigator.navigateTo(AccountRoutes.accountDetailDestination(accountSummaryUI.accountId))
+        val args = mapOf(AccountRoutes.Args.ACCOUNT_DETAIL_DATE_FILTER to _dateFilter.value)
+        routeNavigator.navigateTo(AccountRoutes.accountDetailDestination(accountSummaryUI.accountId), args)
     }
 
     private fun toggleLoading(isLoading: Boolean) {

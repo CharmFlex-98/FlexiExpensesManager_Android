@@ -15,7 +15,7 @@ internal class DashboardViewModel @Inject constructor() : ViewModel(), HomeItemR
         _plugins.update { plugins }
     }
 
-    override fun refresh() {
+    override fun refreshHome() {
         _plugins.value.forEach {
             it.refresh()
         }

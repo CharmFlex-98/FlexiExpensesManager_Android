@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
@@ -61,11 +62,13 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x4
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x8
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TransactionHistoryList(
+    modifier: Modifier = Modifier,
     transactionHistoryViewModel: TransactionHistoryViewModel,
 ) {
     val viewState by transactionHistoryViewModel.viewState.collectAsState()
@@ -91,10 +94,14 @@ internal fun TransactionHistoryList(
         transactionHistoryViewModel.onReachHistoryItem(scrollItems.getOrNull(firstVisibleItemIndex))
     }
 
+    LaunchedEffect(key1 = Unit) {
+        transactionHistoryViewModel.onRefreshCompleted.collectLatest {
+            scrollState.animateScrollToItem(0)
+        }
+    }
+
     ListTable(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(grid_x2),
+        modifier = modifier,
         items = scrollItems,
         scrollState = scrollState,
         onLoadMore = { transactionHistoryViewModel.getNextTransactions() },

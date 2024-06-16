@@ -3,6 +3,7 @@ package com.charmflex.flexiexpensesmanager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
@@ -34,7 +35,7 @@ class MainActivity : ComponentActivity() {
 
             FlexiExpensesManagerTheme {
                 NavHost(navController = navController, startDestination = AuthRoutes.ROOT) {
-                    createDestinations().forEach {
+                    createDestinations(navController).forEach {
                         with(it) { buildGraph() }
                     }
                 }
@@ -43,13 +44,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private fun createDestinations(): List<DestinationBuilder> {
+private fun createDestinations(navController: NavController): List<DestinationBuilder> {
     return listOf(
         AuthDestinationBuilder(),
         HomeDestinationBuilder(),
         TransactionDestinationBuilder(),
         CategoryDestinationBuilder(),
-        AccountDestinationBuilder(),
+        AccountDestinationBuilder(navController),
         CurrencyDestinationBuilder(),
         TagDestinationBuilder(),
         BackupDestinationBuilder()

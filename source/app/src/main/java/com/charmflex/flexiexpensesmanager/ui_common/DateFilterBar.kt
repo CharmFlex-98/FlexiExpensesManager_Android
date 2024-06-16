@@ -23,7 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.charmflex.flexiexpensesmanager.R
+import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
+import com.charmflex.flexiexpensesmanager.core.utils.MONTH_YEAR_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_chart.FilterMenuDropDownItem
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import java.nio.file.DirectoryStream.Filter
@@ -31,11 +34,18 @@ import java.time.LocalDate
 
 @Composable
 fun DateFilterBar(
+    modifier: Modifier = Modifier,
     currentDateFilter: DateFilter,
     onDateFilterChanged: (DateFilter) -> Unit,
-    onShowMonthFilter: (LocalDate) -> String,
-    onShowCustomStartFilter: (LocalDate) -> String,
-    onShowCustomEndFilter: (LocalDate) -> String
+    onShowMonthFilter: (LocalDate) -> String = {
+        it.toStringWithPattern(MONTH_YEAR_PATTERN)
+    },
+    onShowCustomStartFilter: (LocalDate) -> String = {
+        it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
+    },
+    onShowCustomEndFilter: (LocalDate) -> String = {
+        it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
+    }
 ) {
     var dropDownExpanded by remember { mutableStateOf(false) }
     val datePickerUseCaseState = remember { UseCaseState() }
@@ -47,6 +57,7 @@ fun DateFilterBar(
     }
 
     Row(
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         when (currentDateFilter) {

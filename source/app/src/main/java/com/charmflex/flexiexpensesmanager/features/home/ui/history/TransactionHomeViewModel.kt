@@ -16,11 +16,11 @@ internal class TransactionHomeViewModel @Inject constructor(
 ) : TransactionHistoryViewModel(mapper, routeNavigator), HomeItemRefreshable {
 
     init {
-        observeTransactionList()
+        refresh()
     }
 
-    override fun refresh() {
-        observeTransactionList()
+    override fun refreshHome() {
+        refresh()
     }
 
     override fun getTransactionListFlow(offset: Long): Flow<List<Transaction>> {
