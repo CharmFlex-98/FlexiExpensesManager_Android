@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.BackupRoutes
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
+import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +20,9 @@ import javax.inject.Inject
 
 internal class AccountEditorViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
-    private val routeNavigator: RouteNavigator
+    private val routeNavigator: RouteNavigator,
+    private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
+    private val userCurrencyRepository: UserCurrencyRepository
 ) : ViewModel() {
     private lateinit var _flowType: AccountEditorFlow
 
@@ -35,12 +39,17 @@ internal class AccountEditorViewModel @Inject constructor(
                 _viewState.update {
                     it.copy(
                         accountGroups = accGroups,
-                        selectedAccountGroup = it.selectedAccountGroup?.let { accGroup -> accGroups.firstOrNull { it.accountGroupId == accGroup.accountGroupId } }
+                        selectedAccountGroup = it.selectedAccountGroup?.let { accGroup -> accGroups.firstOrNull { it.accountGroupId == accGroup.accountGroupId } },
+                        currencyCode = userCurrencyRepository.getPrimaryCurrency()
                     )
                 }
                 toggleLoader(false)
             }
         }
+    }
+
+    fun getCurrencyVisualTransformer(currencyCode: String): CurrencyVisualTransformation {
+        return currencyVisualTransformationBuilder.create(currencyCode)
     }
 
     fun initFlow(importFixAccountName: String?) {
@@ -254,7 +263,8 @@ internal data class AccountEditorViewState(
     val accountGroups: List<AccountGroup> = listOf(),
     val selectedAccountGroup: AccountGroup? = null,
     val editorState: EditorState? = null,
-    val deleteDialogState: DeleteDialogState? = null
+    val deleteDialogState: DeleteDialogState? = null,
+    val currencyCode: String = "MYR"
 ) {
     val isAccountGroupEditor get() = editorState is AccountGroupEditorState
     val isAccountEditor get() = editorState is AccountEditorState
