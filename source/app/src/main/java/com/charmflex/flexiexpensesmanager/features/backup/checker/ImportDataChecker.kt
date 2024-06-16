@@ -12,7 +12,6 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Tra
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -42,28 +41,19 @@ internal class ImportDataChecker @Inject constructor(
                 .firstOrNull()?.let {
                 generateCategoriesMap(it)
             }
-        missingData.forEachIndexed { index, data ->
+        missingData.forEachIndexed { _, data ->
             when (data.dataType) {
-                ImportedData.MissingData.DataType.ACCOUNT_FROM, ImportedData.MissingData.DataType.ACCOUNT_TO -> {
+                ImportedData.MissingData.DataType.ACCOUNT -> {
                     val account = accounts?.firstOrNull { it.accountName == data.name }
                     if (account != null) {
                         data.transactionIndex.forEach {
                             updatedImportedData[it] =
-                                if (data.dataType == ImportedData.MissingData.DataType.ACCOUNT_FROM) {
-                                    updatedImportedData[it].copy(
-                                        accountFrom = ImportedData.RequiredDataState.Acquired(
-                                            id = account.accountId,
-                                            name = account.accountName
-                                        )
+                                updatedImportedData[it].copy(
+                                    accountTo = ImportedData.RequiredDataState.Acquired(
+                                        id = account.accountId,
+                                        name = account.accountName
                                     )
-                                } else {
-                                    updatedImportedData[it].copy(
-                                        accountTo = ImportedData.RequiredDataState.Acquired(
-                                            id = account.accountId,
-                                            name = account.accountName
-                                        )
-                                    )
-                                }
+                                )
                         }
                         updatedMissingData.remove(data)
                     }
@@ -116,8 +106,6 @@ internal class ImportDataChecker @Inject constructor(
 
                     }
                 }
-
-                else -> {}
             }
         }
         return updatedImportedData to updatedMissingData
@@ -170,7 +158,7 @@ internal class ImportDataChecker @Inject constructor(
                             accountFromName,
                             index,
                             missingData,
-                            ImportedData.MissingData.DataType.ACCOUNT_FROM
+                            ImportedData.MissingData.DataType.ACCOUNT
                         )
                         importedData = importedData.copy(
                             accountFrom = ImportedData.RequiredDataState.Missing(accountFromName)
@@ -193,7 +181,7 @@ internal class ImportDataChecker @Inject constructor(
                             accountToName,
                             index,
                             missingData,
-                            ImportedData.MissingData.DataType.ACCOUNT_TO
+                            ImportedData.MissingData.DataType.ACCOUNT
                         )
                         importedData = importedData.copy(
                             accountTo = ImportedData.RequiredDataState.Missing(accountToName)
