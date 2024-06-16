@@ -156,7 +156,7 @@ private fun ColumnScope.LoadedScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.tertiaryContainer)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                         .padding(grid_x1)
                 ) {
                     Row {
@@ -240,7 +240,7 @@ private fun ColumnScope.LoadedScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.tertiaryContainer)
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                         .clickable {
                             onFixError(item)
                         }
@@ -248,7 +248,12 @@ private fun ColumnScope.LoadedScreen(
                 ) {
                     when (item.dataType) {
                         ImportedData.MissingData.DataType.ACCOUNT_FROM, ImportedData.MissingData.DataType.ACCOUNT_TO -> {
-                            FEBody2(text = "Create account: ${item.name}")
+                            val note = when (item.dataType) {
+                                ImportedData.MissingData.DataType.ACCOUNT_FROM -> stringResource(id = R.string.import_account_error_text_note_account_from)
+                                ImportedData.MissingData.DataType.ACCOUNT_TO -> stringResource(id = R.string.import_account_error_text_note_account_to)
+                                else -> ""
+                            }
+                            FEBody2(text = "Create account: ${item.name} $note")
                         }
 
                         ImportedData.MissingData.DataType.EXPENSES_CATEGORY -> {

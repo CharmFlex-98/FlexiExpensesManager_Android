@@ -61,4 +61,6 @@
     <string name="date_filter_all">All Records</string>
     <string name="_date_filter_show_all_description">All Records</string>
     <string name="backup_save_data_button">Save</string>
+    <string name="import_account_error_text_note_account_from">(transferring account)</string>
+    <string name="import_account_error_text_note_account_to">(receiving account)</string>
 </resources>
