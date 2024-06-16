@@ -218,14 +218,14 @@ private fun ColumnScope.EditorScreen(
         updateAccountName(it)
     }
     if (viewState.editorState is AccountEditorViewState.AccountEditorState) {
-        SGTextField(
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(id = R.string.account_editor_initial_amount_label),
-            value = viewState.editorState.initialValue,
-            keyboardType = KeyboardType.Number
-        ) {
-            updateInitialAmount(it)
-        }
+//        SGTextField(
+//            modifier = Modifier.fillMaxWidth(),
+//            label = stringResource(id = R.string.account_editor_initial_amount_label),
+//            value = viewState.editorState.initialValue,
+//            keyboardType = KeyboardType.Number
+//        ) {
+//            updateInitialAmount(it)
+//        }
     }
     Spacer(modifier = Modifier.weight(1f))
     SGLargePrimaryButton(
