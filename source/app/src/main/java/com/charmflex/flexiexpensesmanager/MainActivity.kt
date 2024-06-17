@@ -49,7 +49,7 @@ private fun createDestinations(navController: NavController): List<DestinationBu
         AuthDestinationBuilder(),
         HomeDestinationBuilder(),
         TransactionDestinationBuilder(),
-        CategoryDestinationBuilder(),
+        CategoryDestinationBuilder(navController),
         AccountDestinationBuilder(navController),
         CurrencyDestinationBuilder(),
         TagDestinationBuilder(),

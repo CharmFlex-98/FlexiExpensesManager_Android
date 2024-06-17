@@ -34,8 +34,6 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 internal fun CategoryStatScreen(viewModel: CategoryStatViewModel) {
     val viewState by viewModel.viewState.collectAsState()
     val dateFilter by viewModel.dateFilter.collectAsState()
-    val totalIncome = remember(viewState) { viewModel.getTotalIncome() }
-    val totalExpenses = remember(viewState) { viewModel.getTotalExpenses() }
 
     SGScaffold(
         modifier = Modifier.padding(grid_x2),
@@ -61,7 +59,7 @@ internal fun CategoryStatScreen(viewModel: CategoryStatViewModel) {
                     onClick = { viewModel.onTabChanged(tabItem) }) {
                     FEHeading4(text = stringResource(id = tabItem.nameId))
                     FEMetaData1(
-                        text = if (tabItem == CategoryStatTabItem.INCOME) totalIncome else totalExpenses,
+                        text = if (tabItem == CategoryStatTabItem.INCOME) viewState.incomeCategoryStats.amount else viewState.expensesCategoryStats.amount,
                         color = Color.Gray
                     )
                 }

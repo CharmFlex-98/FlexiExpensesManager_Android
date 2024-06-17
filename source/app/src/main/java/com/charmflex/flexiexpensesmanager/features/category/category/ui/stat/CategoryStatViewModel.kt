@@ -39,21 +39,22 @@ internal class CategoryStatViewModel @Inject constructor(
 
     init {
         observeDateFilter()
-        initCurrencyCode()
     }
 
-    private fun initCurrencyCode() {
-        viewModelScope.launch {
-            _viewState.update {
-                it.copy(
-                    currencyCode = userCurrencyRepository.getPrimaryCurrency()
-                )
-            }
-        }
-    }
-
-    fun onNavigateCategoryTransactionDetailScreen(categoryId: Int, categoryName: String, type: TransactionType) {
-        routeNavigator.navigateTo(CategoryRoutes.categoryTransactionDetail(categoryId, categoryName, type))
+    fun onNavigateCategoryTransactionDetailScreen(
+        categoryId: Int,
+        categoryName: String,
+        type: TransactionType
+    ) {
+        val args = mapOf(CategoryRoutes.Args.CATEGORY_DETAIL_DATE_FILTER to _dateFilter.value)
+        routeNavigator.navigateTo(
+            CategoryRoutes.categoryTransactionDetail(
+                categoryId,
+                categoryName,
+                type
+            ),
+            arg = args
+        )
     }
 
     private fun observeDateFilter() {
@@ -70,6 +71,22 @@ internal class CategoryStatViewModel @Inject constructor(
         observeCategoryStats(TransactionType.INCOME)
     }
 
+    private suspend fun getNullContentState(): CategoryStatViewState.OverallCategoryData {
+        return CategoryStatViewState.OverallCategoryData(
+            stats = listOf(),
+            totalAmountInCent = 0,
+            amount = currencyFormatter.format(0, userCurrencyRepository.getPrimaryCurrency())
+        )
+    }
+
+    private suspend fun updateCategoryContentState(amount: Long, stats: List<CategoryStatViewState.CategoryStat>): CategoryStatViewState.OverallCategoryData {
+        return CategoryStatViewState.OverallCategoryData(
+            stats = stats,
+            totalAmountInCent = amount,
+            amount = currencyFormatter.format(amount, userCurrencyRepository.getPrimaryCurrency())
+        )
+    }
+
     private fun observeCategoryStats(type: TransactionType) {
         toggleLoader(true)
         viewModelScope.launch(job) {
@@ -83,8 +100,8 @@ internal class CategoryStatViewModel @Inject constructor(
                     _viewState.update {
                         it.copy(
                             isLoading = false,
-                            expensesCategoryStats = if (type == TransactionType.EXPENSES) listOf() else it.expensesCategoryStats,
-                            incomeCategoryStats = if (type == TransactionType.INCOME) listOf() else it.incomeCategoryStats
+                            expensesCategoryStats = if (type == TransactionType.EXPENSES) getNullContentState() else it.expensesCategoryStats,
+                            incomeCategoryStats = if (type == TransactionType.INCOME) getNullContentState() else it.incomeCategoryStats
                         )
                     }
                     return@collectLatest
@@ -115,8 +132,8 @@ internal class CategoryStatViewModel @Inject constructor(
                 _viewState.update {
                     it.copy(
                         isLoading = false,
-                        expensesCategoryStats = if (type == TransactionType.EXPENSES) stats else it.expensesCategoryStats,
-                        incomeCategoryStats = if (type == TransactionType.INCOME) stats else it.incomeCategoryStats
+                        expensesCategoryStats = if (type == TransactionType.EXPENSES) updateCategoryContentState(totalAmount, stats) else it.expensesCategoryStats,
+                        incomeCategoryStats = if (type == TransactionType.INCOME) updateCategoryContentState(totalAmount, stats) else it.incomeCategoryStats
                     )
                 }
             }
@@ -140,25 +157,22 @@ internal class CategoryStatViewModel @Inject constructor(
     fun onDateFilterChanged(dateFilter: DateFilter) {
         _dateFilter.value = dateFilter
     }
-
-    fun getTotalExpenses(): String {
-        val totalAmount = _viewState.value.expensesCategoryStats.map { it.amountInCent }.reduceOrNull { acc, amountInCent -> acc + amountInCent } ?: 0
-        return currencyFormatter.format(totalAmount, _viewState.value.currencyCode)
-    }
-
-    fun getTotalIncome(): String {
-        val totalAmount = _viewState.value.incomeCategoryStats.map { it.amountInCent }.reduceOrNull { acc, amountInCent -> acc + amountInCent } ?: 0
-        return currencyFormatter.format(totalAmount, _viewState.value.currencyCode)
-    }
 }
 
 internal data class CategoryStatViewState(
-    val expensesCategoryStats: List<CategoryStat> = listOf(),
-    val incomeCategoryStats: List<CategoryStat> = listOf(),
+    val expensesCategoryStats: OverallCategoryData = OverallCategoryData(),
+    val incomeCategoryStats: OverallCategoryData = OverallCategoryData(),
     val isLoading: Boolean = false,
     val currencyCode: String = "",
     val selectedTab: CategoryStatTabItem = CategoryStatTabItem.EXPENSES
 ) {
+
+    data class OverallCategoryData(
+        val stats: List<CategoryStat> = listOf(),
+        val amount: String = "0",
+        val totalAmountInCent: Long = 0,
+    )
+
     data class CategoryStat(
         val id: Int,
         val type: TransactionType,
@@ -171,8 +185,8 @@ internal data class CategoryStatViewState(
 
     val categoryList
         get() = when (selectedTab) {
-            CategoryStatTabItem.INCOME -> incomeCategoryStats
-            else -> expensesCategoryStats
+            CategoryStatTabItem.INCOME -> incomeCategoryStats.stats
+            else -> expensesCategoryStats.stats
         }
 }
 

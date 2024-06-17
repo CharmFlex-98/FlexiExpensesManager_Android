@@ -32,9 +32,10 @@ internal class CategoryDetailViewModel(
     private val getTransactionListByCategoryUseCase: GetTransactionListByCategoryUseCase,
     private val categoryId: Int,
     val categoryName: String,
-    private val transactionType: TransactionType
+    private val transactionType: TransactionType,
+    dateFilter: DateFilter?
 ) : TransactionHistoryViewModel(mapper, routeNavigator) {
-    private val _dateFilter: MutableStateFlow<DateFilter> = MutableStateFlow(DateFilter.Monthly(0))
+    private val _dateFilter: MutableStateFlow<DateFilter> = MutableStateFlow(dateFilter ?: DateFilter.Monthly(0))
     val dateFilter = _dateFilter.asStateFlow()
 
     private val _categoryDetailViewState = MutableStateFlow(CategoryDetailViewState(categoryName = categoryName))
@@ -46,7 +47,7 @@ internal class CategoryDetailViewModel(
         private val routeNavigator: RouteNavigator,
         private val getTransactionListByCategoryUseCase: GetTransactionListByCategoryUseCase
     ) {
-        fun create(categoryId: Int, categoryName: String, transactionType: String): CategoryDetailViewModel {
+        fun create(categoryId: Int, categoryName: String, transactionType: String, dateFilter: DateFilter?): CategoryDetailViewModel {
             return CategoryDetailViewModel(
                 transactionRepository,
                 mapper,
@@ -54,7 +55,8 @@ internal class CategoryDetailViewModel(
                 getTransactionListByCategoryUseCase,
                 categoryId,
                 categoryName,
-                TransactionType.fromString(transactionType)
+                TransactionType.fromString(transactionType),
+                dateFilter
             )
         }
     }

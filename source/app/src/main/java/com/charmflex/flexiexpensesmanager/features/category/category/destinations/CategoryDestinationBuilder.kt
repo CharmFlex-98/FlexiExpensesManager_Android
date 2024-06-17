@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.category.category.destinations
 
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -13,12 +14,15 @@ import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalExitToStar
 import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideDown
 import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideUp
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
+import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.category.category.ui.CategoryEditorScreen
 import com.charmflex.flexiexpensesmanager.features.category.category.ui.detail.CategoryDetailScreen
 import com.charmflex.flexiexpensesmanager.features.category.category.ui.stat.CategoryStatScreen
 
-internal class CategoryDestinationBuilder : DestinationBuilder {
+internal class CategoryDestinationBuilder(
+    private val navController: NavController
+) : DestinationBuilder {
     private val appComponent by lazy { AppComponentProvider.instance.getAppComponent() }
 
     override fun NavGraphBuilder.buildGraph() {
@@ -74,10 +78,11 @@ internal class CategoryDestinationBuilder : DestinationBuilder {
                 }
             )
         ) {
+            val dateFilter = navController.previousBackStackEntry?.savedStateHandle?.remove<DateFilter>(CategoryRoutes.Args.CATEGORY_DETAIL_DATE_FILTER)
             val categoryId = it.arguments?.getInt(CategoryRoutes.Args.CATEGORY_ID) ?: -1
             val categoryName = it.arguments?.getString(CategoryRoutes.Args.CATEGORY_NAME) ?: ""
             val transactionType = it.arguments?.getString(CategoryRoutes.Args.TRANSACTION_TYPE) ?: ""
-            val viewModel = getViewModel { appComponent.categoryDetailViewModelFactory().create(categoryId, categoryName, transactionType) }
+            val viewModel = getViewModel { appComponent.categoryDetailViewModelFactory().create(categoryId, categoryName, transactionType, dateFilter) }
             CategoryDetailScreen(viewModel = viewModel)
         }
     }
