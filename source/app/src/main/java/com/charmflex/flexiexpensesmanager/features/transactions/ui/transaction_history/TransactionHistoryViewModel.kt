@@ -6,13 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
-import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.YEAR_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.mapper.TransactionHistoryMapper
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
@@ -47,9 +47,6 @@ internal abstract class TransactionHistoryViewModel(
     private val _viewState = MutableStateFlow(TransactionHistoryViewState())
     val viewState = _viewState.asStateFlow()
 
-    private val _onRefreshCompleted = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-    val onRefreshCompleted = _onRefreshCompleted.asSharedFlow()
-
     private fun toggleLoadMoreLoader(isLoadMore: Boolean) {
         _viewState.update {
             it.copy(
@@ -69,13 +66,14 @@ internal abstract class TransactionHistoryViewModel(
     private fun observeTransactionList() {
         toggleLoader(true)
         viewModelScope.launch(job) {
-            getTransactionListFlow(offset = 0)
+            getDBTransactionListFlow(offset = 0)
                 .catch {
                     toggleLoader(false)
                 }
                 .collectLatest { list ->
                     _offset.value = list.size.toLong()
-                    updateList(list = list)
+                    val filteredData = filter(list)
+                    updateList(list = filteredData)
                 }
         }
     }
@@ -84,41 +82,41 @@ internal abstract class TransactionHistoryViewModel(
     open fun refresh() {
         job.cancel()
         observeTransactionList()
-        _onRefreshCompleted.tryEmit(Unit)
     }
 
-    abstract fun getTransactionListFlow(offset: Long): Flow<List<Transaction>>
+    abstract fun getDBTransactionListFlow(offset: Long): Flow<List<Transaction>>
+
+    abstract suspend fun filter(dbData: List<Transaction>): List<Transaction>
 
     fun getNextTransactions() {
         toggleLoadMoreLoader(true)
         viewModelScope.launch {
             delay(1000) // mimic fetching data :)
-            getTransactionListFlow(offset = offset.value)
+            getDBTransactionListFlow(offset = offset.value)
                 .catch {
                     // TODO: Need to do something?
                     toggleLoadMoreLoader(false)
                 }
                 .firstOrNull()?.let { list ->
                     _offset.value += list.size
-                    updateList(list = list, clearOldList = false)
+                    val filteredData = filter(list)
+                    updateList(list = filteredData, clearOldList = false)
                 }
         }
     }
 
     private fun updateList(list: List<Transaction>, clearOldList: Boolean = true) {
-        viewModelScope.launch {
-            val updatedList = mapper.map(list)
-            _viewState.update { it ->
-                it.copy(
-                    items = if (clearOldList) updatedList else appendsTransactionHistoryItems(
-                        updatedList
-                    ),
-                    isLoading = false,
-                    isLoadMore = false
-                )
-            }
-            updateTabList(_viewState.value.items)
+        val updatedList = mapper.map(list)
+        _viewState.update { it ->
+            it.copy(
+                items = if (clearOldList) updatedList else appendsTransactionHistoryItems(
+                    updatedList
+                ),
+                isLoading = false,
+                isLoadMore = false
+            )
         }
+        updateTabList(_viewState.value.items)
     }
 
     private fun appendsTransactionHistoryItems(appendItems: List<TransactionHistoryItem>): List<TransactionHistoryItem> {

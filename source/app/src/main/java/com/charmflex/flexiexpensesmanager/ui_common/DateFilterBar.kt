@@ -26,6 +26,7 @@ import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_YEAR_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.SHORT_MONTH_YEAR_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_chart.FilterMenuDropDownItem
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
@@ -38,7 +39,7 @@ fun DateFilterBar(
     currentDateFilter: DateFilter,
     onDateFilterChanged: (DateFilter) -> Unit,
     onShowMonthFilter: (LocalDate) -> String = {
-        it.toStringWithPattern(MONTH_YEAR_PATTERN)
+        it.toStringWithPattern(SHORT_MONTH_YEAR_PATTERN)
     },
     onShowCustomStartFilter: (LocalDate) -> String = {
         it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
@@ -197,7 +198,7 @@ private fun MonthlyDateSelection(
         }
         FECallout3(
             modifier = Modifier
-                .width(grid_x10)
+                .width(grid_x12)
                 .padding(horizontal = grid_x1), text = text
         )
         if (type.monthBefore > 0) IconButton(

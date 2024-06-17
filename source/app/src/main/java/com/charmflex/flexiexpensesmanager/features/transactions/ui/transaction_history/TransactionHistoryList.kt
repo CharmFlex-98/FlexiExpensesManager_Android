@@ -94,8 +94,8 @@ internal fun TransactionHistoryList(
         transactionHistoryViewModel.onReachHistoryItem(scrollItems.getOrNull(firstVisibleItemIndex))
     }
 
-    LaunchedEffect(key1 = Unit) {
-        transactionHistoryViewModel.onRefreshCompleted.collectLatest {
+    LaunchedEffect(key1 = viewState.isLoading) {
+        if (!viewState.isLoading.not()) {
             scrollState.animateScrollToItem(0)
         }
     }

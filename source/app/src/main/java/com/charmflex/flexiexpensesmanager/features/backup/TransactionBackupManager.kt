@@ -2,8 +2,6 @@ package com.charmflex.flexiexpensesmanager.features.backup
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import androidx.core.content.FileProvider
 import com.charmflex.flexiexpensesmanager.core.di.Dispatcher
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
@@ -15,17 +13,13 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositor
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withContext
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import java.io.File
 import java.time.LocalDate
-import java.time.ZoneId
 import javax.inject.Inject
 
 internal interface TransactionBackupManager {
@@ -108,7 +102,7 @@ internal class TransactionBackupManagerImpl @Inject constructor(
             }.mapValues {
                 it.value[0]
             }
-            transactionRepository.getAllTransactions().firstOrNull()?.let { transactions ->
+            transactionRepository.getTransactions().firstOrNull()?.let { transactions ->
                 val excelData = transactionBackupDataMapper.map(transactions to categoriesMap)
                 workbook(xssfWorkbook) {
                     sheet("guide") {}

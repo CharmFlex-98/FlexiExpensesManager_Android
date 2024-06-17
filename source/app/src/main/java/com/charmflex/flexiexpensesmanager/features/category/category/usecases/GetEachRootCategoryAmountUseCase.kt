@@ -16,47 +16,48 @@ internal class GetEachRootCategoryAmountUseCase @Inject constructor(
     private val categoryRepository: TransactionCategoryRepository,
     private val transactionRepository: TransactionRepository
 ) {
-    operator fun invoke(tagFilter: List<Int> = listOf(), dateFilter: DateFilter? = null): Flow<Map<String, Long>?> {
+    operator fun invoke(tagFilter: List<Int> = listOf(), dateFilter: DateFilter? = null, transactionType: TransactionType): Flow<Map<CategoryHolder, Long>?> {
         val startDate = dateFilter.getStartDate()
         val endDate = dateFilter.getEndDate()
 
-        return transactionRepository.getAllTransactions(startDate = startDate, endDate = endDate, tagFilter = tagFilter).map { list ->
-            categoryRepository.getCategoriesIncludeDeleted(TransactionType.EXPENSES.name)
+        return transactionRepository.getTransactions(startDate = startDate, endDate = endDate, tagFilter = tagFilter).map { list ->
+            categoryRepository.getCategoriesIncludeDeleted(transactionType.name)
                 .firstOrNull()?.let {
-                    val resMap = mutableMapOf<String, Long>()
                     val rootCategories = it.items
-                    val categoryIdsMap = mutableMapOf<String, List<Int>>()
+                    val categoryToRootMap = mutableMapOf<CategoryHolder, CategoryHolder>()
                     rootCategories.forEach { root ->
-                        val childrenIds = mutableListOf(root.categoryId)
-                        getChildrenCategoryIds(root, childrenIds)
-                        categoryIdsMap[root.categoryName] = childrenIds.toList()
+                        buildCategoryToRootMapping(rootNode = root, category = root, categoryToRootMap)
                     }
+                    val rootToAmountMap = mutableMapOf<CategoryHolder, Long>()
 
                     list
                         .filter { transaction ->
-                            transaction.transactionTypeCode == TransactionType.EXPENSES.name
+                            transaction.transactionTypeCode == transactionType.name
                         }
                         .forEach {
-                            for ((rootCategory, childrenIds) in categoryIdsMap.entries) {
-                                if (childrenIds.contains(it.transactionCategory?.id)) {
-                                    val currentAmount = resMap.getOrDefault(rootCategory, 0)
-                                    resMap[rootCategory] = currentAmount + it.amountInCent
-                                    break
-                                }
+                            val categoryHolderKey = it.transactionCategory?.let { CategoryHolder(it.id, it.name) }
+                            val root = categoryToRootMap[categoryHolderKey]
+                            root?.let { rootHolder ->
+                                val currentAmount = rootToAmountMap.getOrDefault(root, 0)
+                                rootToAmountMap[CategoryHolder(rootHolder.id, rootHolder.name)] = currentAmount + it.amountInCent
                             }
                         }
-                    resMap
+                    rootToAmountMap
                 }
         }
     }
+}
 
-    private fun getChildrenCategoryIds(
-        node: TransactionCategories.Node,
-        children: MutableList<Int>
-    ) {
-        for (child in node.childNodes) {
-            children.add(child.categoryId)
-            getChildrenCategoryIds(child, children)
-        }
+internal data class CategoryHolder(
+    val id: Int,
+    val name: String,
+)
+
+internal fun buildCategoryToRootMapping(rootNode: TransactionCategories.Node, category: TransactionCategories.Node, currentMap: MutableMap<CategoryHolder, CategoryHolder>): Map<CategoryHolder, CategoryHolder> {
+    currentMap[CategoryHolder(category.categoryId, category.categoryName)] = CategoryHolder(rootNode.categoryId, rootNode.categoryName)
+    category.childNodes.forEach {
+        buildCategoryToRootMapping(rootNode, it, currentMap)
     }
+
+    return currentMap
 }

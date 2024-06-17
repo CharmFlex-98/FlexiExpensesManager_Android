@@ -23,7 +23,11 @@ internal class TransactionHomeViewModel @Inject constructor(
         refresh()
     }
 
-    override fun getTransactionListFlow(offset: Long): Flow<List<Transaction>> {
+    override fun getDBTransactionListFlow(offset: Long): Flow<List<Transaction>> {
         return transactionRepository.getTransactions(offset = offset, limit = 100)
+    }
+
+    override suspend fun filter(dbData: List<Transaction>): List<Transaction> {
+        return dbData
     }
 }

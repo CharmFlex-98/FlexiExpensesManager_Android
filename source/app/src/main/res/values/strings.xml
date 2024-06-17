@@ -67,4 +67,6 @@
     <string name="add_account_failure_snackbar">Add account failed!</string>
     <string name="expenses_chart_detail_button">Open detail</string>
     <string name="category_stat_detail_topbar_title">Category Statistic</string>
+    <string name="category_stat_tab_income">INCOME</string>
+    <string name="category_stat_tab_expenses">EXPENSES</string>
 </resources>

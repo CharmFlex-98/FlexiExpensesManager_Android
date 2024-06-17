@@ -29,6 +29,11 @@ internal interface TransactionCategoryDao {
         transactionTypeCode: String,
     ): Flow<List<TransactionCategoryEntity>>
 
+    @Query(
+        "SELECT * FROM TransactionCategoryEntity WHERE id = :categoryId"
+    )
+    fun getCategoryById(categoryId: Int): TransactionCategoryEntity
+
     @Insert
     suspend fun addCategory(categoryEntity: TransactionCategoryEntity)
 

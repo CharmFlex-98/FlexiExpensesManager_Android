@@ -1,8 +1,5 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories
 
-import com.charmflex.flexiexpensesmanager.features.backup.ui.ImportedData
-import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ExpensesData
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ImportTransaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import kotlinx.coroutines.flow.Flow
@@ -75,17 +72,12 @@ internal interface TransactionRepository {
 
     suspend fun addAllImportTransactions(transactionData: List<ImportTransaction>)
 
-    fun getAllTransactions(
-        startDate: String? = null,
-        endDate: String? = null,
-        tagFilter: List<Int> = listOf()
-    ) : Flow<List<Transaction>>
 
     fun getTransactions(
         startDate: String? = null,
         endDate: String? = null,
         offset: Long = 0,
-        limit: Int = 0,
+        limit: Int = -1,
         accountIdFilter: Int? = null,
         tagFilter: List<Int> = listOf()
     ): Flow<List<Transaction>>

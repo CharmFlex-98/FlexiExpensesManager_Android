@@ -12,6 +12,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.features.category.category.usecases.GetEachRootCategoryAmountUseCase
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.patrykandpatrick.vico.core.component.shape.LineComponent
 import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
@@ -62,12 +63,13 @@ internal class ExpensesChartViewModel @Inject constructor(
         viewModelScope.launch(job) {
             getEachRootCategoryAmountUseCase(
                 dateFilter = _dateFilter.value,
-                tagFilter = _tagFilter.value.filter { it.selected }.map { it.id }
+                tagFilter = _tagFilter.value.filter { it.selected }.map { it.id },
+                transactionType = TransactionType.EXPENSES
             ).collectLatest {
                 it?.let { res ->
                     _viewState.value = _viewState.value.copy(
-                        pieChartData = generatePieChartData(res),
-                        barChartData = generateBarChartData(res),
+                        pieChartData = generatePieChartData(res.mapKeys { it.key.name }),
+                        barChartData = generateBarChartData(res.mapKeys { it.key.name }),
                         currency = userCurrencyRepository.getPrimaryCurrency()
                     )
                 }

@@ -61,6 +61,14 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
         return transactionCategoryDao.addCategory(entity)
     }
 
+    override fun getCategoryById(categoryId: Int): Transaction.TransactionCategory {
+        val res = transactionCategoryDao.getCategoryById(categoryId)
+        return Transaction.TransactionCategory(
+            res.id,
+            res.name
+        )
+    }
+
     override suspend fun deleteCategory(categoryId: Int) {
         transactionCategoryDao.deleteCategory(categoryId)
     }

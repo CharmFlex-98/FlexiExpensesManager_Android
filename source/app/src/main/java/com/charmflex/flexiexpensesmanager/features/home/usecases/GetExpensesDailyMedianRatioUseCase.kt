@@ -5,8 +5,6 @@ import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
@@ -15,7 +13,7 @@ internal class GetExpensesDailyMedianRatioUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
     operator fun invoke(): Flow<List<DailyTransaction>> {
-        return transactionRepository.getAllTransactions().map { transactions ->
+        return transactionRepository.getTransactions().map { transactions ->
             transactions
                 .filter { it.transactionTypeCode != TransactionType.UPDATE_ACCOUNT.name }
                 .groupBy {

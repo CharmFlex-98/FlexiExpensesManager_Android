@@ -27,6 +27,13 @@ internal val FEVerticalSlideDown: (AnimatedContentTransitionScope<NavBackStackEn
     )
 }
 
+internal val FEHorizontalEnterFromStart: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
+    slideIntoContainer(
+        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+        animationSpec = tween(300)
+    )
+}
+
 internal val FEHorizontalEnterFromEnd: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
     slideIntoContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
@@ -37,6 +44,13 @@ internal val FEHorizontalEnterFromEnd: AnimatedContentTransitionScope<NavBackSta
 internal val FEHorizontalExitToEnd: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
     slideOutOfContainer(
         towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+        animationSpec = tween(300)
+    )
+}
+
+internal val FEHorizontalExitToStart: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
+    slideOutOfContainer(
+        towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
         animationSpec = tween(300)
     )
 }

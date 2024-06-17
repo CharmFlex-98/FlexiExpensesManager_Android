@@ -10,8 +10,6 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Tra
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.TransactionHistoryViewModel
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.mapper.TransactionHistoryMapper
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -63,10 +61,14 @@ internal class AccountDetailViewModel @Inject constructor(
         }
     }
 
-    override fun getTransactionListFlow(offset: Long): Flow<List<Transaction>> {
+    override fun getDBTransactionListFlow(offset: Long): Flow<List<Transaction>> {
         val startDate = _dateFilter.value.getStartDate()
         val endDate = _dateFilter.value.getEndDate()
         return transactionRepository.getTransactions(startDate = startDate, endDate = endDate, offset = offset, limit = 100, accountIdFilter = accountId)
+    }
+
+    override suspend fun filter(dbData: List<Transaction>): List<Transaction> {
+        return dbData
     }
 
     override fun refresh() {

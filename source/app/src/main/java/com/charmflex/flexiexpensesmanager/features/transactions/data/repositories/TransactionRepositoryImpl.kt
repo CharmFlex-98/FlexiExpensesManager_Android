@@ -1,10 +1,8 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.data.repositories
 
-import com.charmflex.flexiexpensesmanager.features.tag.data.entities.TagEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionTagDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
-import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTagEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.mapper.TransactionMapper
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ImportTransaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
@@ -181,21 +179,10 @@ internal class TransactionRepositoryImpl @Inject constructor(
                 rate = it.rate
             )
         }
-        transactionTagDao.insertAllTransactionsAndTransactionTags(transactionEntities, transactionTags)
-    }
-
-    override fun getAllTransactions(
-        startDate: String?,
-        endDate: String?,
-        tagFilter: List<Int>
-    ): Flow<List<Transaction>> {
-        return transactionDao.getAllTransactions(
-            startDate, endDate, tagFilter = tagFilter
-        ).map {
-            it.map {
-                transactionMapper.map(it)
-            }
-        }
+        transactionTagDao.insertAllTransactionsAndTransactionTags(
+            transactionEntities,
+            transactionTags
+        )
     }
 
     override fun getTransactions(
@@ -207,7 +194,12 @@ internal class TransactionRepositoryImpl @Inject constructor(
         tagFilter: List<Int>
     ): Flow<List<Transaction>> {
         return transactionDao.getTransactions(
-            startDate, endDate, offset, limit, accountIdFilter = accountIdFilter, tagFilter = tagFilter
+            startDate = startDate,
+            endDate = endDate,
+            offset = offset,
+            limit = limit,
+            accountIdFilter = accountIdFilter,
+            tagFilter = tagFilter
         ).map {
             it.map {
                 transactionMapper.map(it)
