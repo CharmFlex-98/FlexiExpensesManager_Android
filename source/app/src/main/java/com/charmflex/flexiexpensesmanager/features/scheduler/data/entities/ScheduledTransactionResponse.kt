@@ -1,9 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.scheduler.data.entities
 
 import androidx.room.ColumnInfo
-import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
 
-// TODO: Change column name for transaction date
 internal data class ScheduledTransactionResponse(
     @ColumnInfo("scheduler_id")
     val schedulerId: Long,
@@ -21,8 +19,10 @@ internal data class ScheduledTransactionResponse(
     val transactionTypeCode: String,
     @ColumnInfo("amount_in_cent")
     val amountInCent: Long,
-    @ColumnInfo("transaction_date")
-    val startTransactionDate: String,
+    @ColumnInfo("start_update_date")
+    val startUpdateDate: String,
+    @ColumnInfo("next_update_date")
+    val nextUpdateDate: String,
     @ColumnInfo("category_id")
     val categoryId: Int?,
     @ColumnInfo("category_name")

@@ -23,7 +23,8 @@ internal interface ScheduledTransactionDao {
                 "ato.name as account_to_name," +
                 "st.transaction_type_code," +
                 "st.amount_in_cent," +
-                "st.transaction_date," +
+                "st.start_update_date," +
+                "st.next_update_date," +
                 "st.category_id," +
                 "tc.name as category_name," +
                 "st.currency," +
@@ -53,7 +54,8 @@ internal interface ScheduledTransactionDao {
                 "ato.name as account_to_name," +
                 "st.transaction_type_code," +
                 "st.amount_in_cent," +
-                "st.transaction_date," +
+                "st.start_update_date," +
+                "st.next_update_date," +
                 "st.category_id," +
                 "tc.name as category_name," +
                 "st.currency," +

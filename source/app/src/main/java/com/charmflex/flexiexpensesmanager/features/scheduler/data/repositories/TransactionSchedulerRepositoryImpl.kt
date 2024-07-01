@@ -1,19 +1,14 @@
 package com.charmflex.flexiexpensesmanager.features.scheduler.data.repositories
 
-import com.charmflex.flexiexpensesmanager.core.storage.FileStorage
-import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.scheduler.data.daos.ScheduledTransactionTagDao
 import com.charmflex.flexiexpensesmanager.features.scheduler.data.entities.ScheduledTransactionEntity
 import com.charmflex.flexiexpensesmanager.features.scheduler.data.mappers.ScheduledTransactionMapper
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.ScheduledTransaction
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.repository.TransactionSchedulerRepository
-import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.json.Json
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -30,7 +25,7 @@ internal class TransactionSchedulerRepositoryImpl @Inject constructor(
         categoryId: Int?,
         transactionType: TransactionType,
         amount: Long,
-        startDate: String,
+        startUpdateDate: String,
         currency: String,
         rate: Float,
         tagIds: List<Int>,
@@ -43,7 +38,8 @@ internal class TransactionSchedulerRepositoryImpl @Inject constructor(
             categoryId = categoryId,
             transactionType = transactionType.name,
             amountInCent = amount,
-            transactionDate = startDate,
+            startUpdateDate = startUpdateDate,
+            nextUpdateDate = startUpdateDate,
             currency = currency,
             rate = rate,
             schedulerPeriod = schedulerPeriod.name
@@ -59,7 +55,8 @@ internal class TransactionSchedulerRepositoryImpl @Inject constructor(
         categoryId: Int?,
         transactionType: TransactionType,
         amount: Long,
-        startDate: String,
+        startUpdateDate: String,
+        nextUpdateDate: String,
         currency: String,
         rate: Float,
         tagIds: List<Int>,
@@ -73,7 +70,8 @@ internal class TransactionSchedulerRepositoryImpl @Inject constructor(
             categoryId = categoryId,
             transactionType = transactionType.name,
             amountInCent = amount,
-            transactionDate = startDate,
+            startUpdateDate = startUpdateDate,
+            nextUpdateDate = nextUpdateDate,
             currency = currency,
             rate = rate,
             schedulerPeriod = schedulerPeriod.name

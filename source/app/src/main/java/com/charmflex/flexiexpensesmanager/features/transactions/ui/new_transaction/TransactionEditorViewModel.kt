@@ -5,6 +5,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformatio
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.scheduler.di.modules.TransactionEditorProvider
+import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
@@ -91,7 +92,7 @@ internal class TransactionEditorViewModel @Inject constructor(
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionUseCase.submitExpenses(
             id, name, fromAccountId, amount, categoryId, transactionDate, currency, rate, tagIds
@@ -107,7 +108,7 @@ internal class TransactionEditorViewModel @Inject constructor(
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionUseCase.submitIncome(
             id, name, toAccountId, amount, categoryId, transactionDate, currency, rate
@@ -123,7 +124,7 @@ internal class TransactionEditorViewModel @Inject constructor(
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionUseCase.submitTransfer(
             id, name, fromAccountId, toAccountId, amount, transactionDate, currency, rate

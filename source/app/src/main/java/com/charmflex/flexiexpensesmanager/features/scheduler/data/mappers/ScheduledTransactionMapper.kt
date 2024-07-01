@@ -8,7 +8,6 @@ import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.Sched
 import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
-import javax.inject.Inject
 
 internal class ScheduledTransactionMapper :
     Mapper<ScheduledTransactionResponse, ScheduledTransaction> {
@@ -19,7 +18,8 @@ internal class ScheduledTransactionMapper :
             accountFrom = getAccount(from.scheduledAccountFromId,from.scheduledAccountFromName),
             accountTo = getAccount(from.scheduledAccountFromId, from.scheduledAccountToName),
             transactionType = TransactionType.fromString(from.transactionTypeCode),
-            startDate = from.startTransactionDate,
+            startUpdateDate = from.startUpdateDate,
+            nextUpdateDate = from.nextUpdateDate,
             category = getCategory(from.categoryId, from.categoryName),
             amountInCent = from.amountInCent,
             schedulerPeriod = SchedulerPeriod.fromString(from.schedulerPeriod),

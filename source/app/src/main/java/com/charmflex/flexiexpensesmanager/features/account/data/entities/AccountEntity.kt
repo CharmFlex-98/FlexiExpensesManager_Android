@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 // Delete account should not real delete it, because transaction need a reference to it
@@ -13,7 +14,7 @@ import androidx.room.PrimaryKey
             entity = AccountGroupEntity::class,
             parentColumns = ["id"],
             childColumns = ["account_group_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.RESTRICT
         )
     ]
 )

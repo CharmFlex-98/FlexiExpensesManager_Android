@@ -1,15 +1,11 @@
 package com.charmflex.flexiexpensesmanager.features.scheduler.domain.models
 
-import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
-import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
-import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionDomainInput
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import kotlinx.serialization.Serializable
-import java.time.LocalDate
 
 @Serializable
 internal data class ScheduledTransaction(
@@ -19,7 +15,8 @@ internal data class ScheduledTransaction(
     val accountTo: AccountGroup.Account?,
     val transactionType: TransactionType,
     val amountInCent: Long,
-    val startDate: String,
+    val startUpdateDate: String,
+    val nextUpdateDate: String,
     val category: Transaction.TransactionCategory?,
     val currency: String,
     val rate: Float,

@@ -2,11 +2,14 @@ package com.charmflex.flexiexpensesmanager.features.scheduler.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionDomainInput
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 
-@Entity
+@Entity(
+    indices = [
+        Index("id", "is_deleted")
+    ]
+)
 internal data class ScheduledTransactionEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L,
@@ -20,8 +23,10 @@ internal data class ScheduledTransactionEntity(
     val transactionType: String,
     @ColumnInfo("amount_in_cent")
     val amountInCent: Long,
-    @ColumnInfo("transaction_date")
-    val transactionDate: String,
+    @ColumnInfo("start_update_date")
+    val startUpdateDate: String,
+    @ColumnInfo("next_update_date")
+    val nextUpdateDate: String,
     @ColumnInfo("category_id")
     val categoryId: Int?,
     @ColumnInfo("currency")

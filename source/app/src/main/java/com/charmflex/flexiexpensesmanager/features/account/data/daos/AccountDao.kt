@@ -20,11 +20,10 @@ internal interface AccountDao {
         "SELECT ag.id as account_group_id," +
                 "ag.name as account_group_name," +
                 "a.id as account_id, a.name as account_name, " +
-                "a.is_deleted as is_account_deleted, " +
-                "a.remarks as remarks FROM AccountGroupEntity ag" +
-                " LEFT OUTER JOIN AccountEntity a" +
-                " ON ag.id = a.account_group_id" +
-                " WHERE a.is_deleted = 0 OR a.is_deleted IS NULL"
+                "a.remarks as remarks " +
+                "FROM (SELECT * FROM AccountGroupEntity WHERE is_deleted = 0) ag" +
+                " LEFT OUTER JOIN (SELECT * FROM AccountEntity WHERE is_deleted = 0) a" +
+                " ON ag.id = a.account_group_id"
     )
     fun getAllAccounts(): Flow<List<AccountResponse>>
 
@@ -34,7 +33,7 @@ internal interface AccountDao {
                 "ag.name as account_group_name," +
                 "a. name as account_name," +
                 "COALESCE(out_amount, 0) as out_amount," +
-                "COALESCE(in_amount, 0) as in_amount FROM  AccountGroupEntity ag" +
+                "COALESCE(in_amount, 0) as in_amount FROM (SELECT * FROM AccountGroupEntity WHERE is_deleted = 0) ag" +
                 " LEFT JOIN AccountEntity a on a.account_group_id = ag.id" +
                 " LEFT JOIN (" +
                 " SELECT account_from_id, SUM(t.amount_in_cent) as out_amount FROM TransactionEntity t" +
@@ -53,12 +52,12 @@ internal interface AccountDao {
     @Insert
     suspend fun insertAccountGroup(accountGroupEntity: AccountGroupEntity)
 
-    @Query("DELETE FROM AccountGroupEntity WHERE id = :accountGroupId")
+    @Query("UPDATE AccountGroupEntity SET is_deleted = 1 WHERE id = :accountGroupId")
     suspend fun deleteAccountGroup(accountGroupId: Int)
 
     @Insert
     suspend fun insertAccount(accountEntity: AccountEntity): Long
 
-    @Query("DELETE FROM AccountEntity WHERE id = :accountId")
+    @Query("UPDATE AccountEntity SET is_deleted = 1 WHERE id = :accountId")
     suspend fun deleteAccount(accountId: Int)
 }

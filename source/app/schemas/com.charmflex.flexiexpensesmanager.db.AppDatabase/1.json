@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ae5b65af81fea357b85564ae3be0d103",
+    "identityHash": "c1a75d526b5b2b07e785d521a8019d3a",
     "entities": [
       {
         "tableName": "AccountEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `account_group_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `is_deleted` INTEGER NOT NULL DEFAULT false, `remarks` TEXT, FOREIGN KEY(`account_group_id`) REFERENCES `AccountGroupEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `account_group_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `is_deleted` INTEGER NOT NULL DEFAULT false, `remarks` TEXT, FOREIGN KEY(`account_group_id`) REFERENCES `AccountGroupEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
         "fields": [
           {
             "fieldPath": "id",
@@ -60,7 +60,7 @@
         "foreignKeys": [
           {
             "table": "AccountGroupEntity",
-            "onDelete": "CASCADE",
+            "onDelete": "RESTRICT",
             "onUpdate": "NO ACTION",
             "columns": [
               "account_group_id"
@@ -73,7 +73,7 @@
       },
       {
         "tableName": "AccountGroupEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `is_deleted` INTEGER NOT NULL DEFAULT false)",
         "fields": [
           {
             "fieldPath": "id",
@@ -86,6 +86,13 @@
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "isDeleted",
+            "columnName": "is_deleted",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "false"
           }
         ],
         "primaryKey": {
@@ -99,7 +106,7 @@
       },
       {
         "tableName": "TagEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `tag_name` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tag_name` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -115,7 +122,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": false,
+          "autoGenerate": true,
           "columnNames": [
             "id"
           ]
@@ -125,7 +132,7 @@
       },
       {
         "tableName": "TransactionCategoryEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transaction_type_code` TEXT NOT NULL, `name` TEXT NOT NULL, `parent_id` INTEGER NOT NULL, `is_deleted` INTEGER NOT NULL DEFAULT false, FOREIGN KEY(`transaction_type_code`) REFERENCES `TransactionTypeEntity`(`code`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transaction_type_code` TEXT NOT NULL, `name` TEXT NOT NULL, `parent_id` INTEGER NOT NULL, `is_deleted` INTEGER NOT NULL DEFAULT false, FOREIGN KEY(`transaction_type_code`) REFERENCES `TransactionTypeEntity`(`code`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
         "fields": [
           {
             "fieldPath": "id",
@@ -167,19 +174,20 @@
         },
         "indices": [
           {
-            "name": "index_TransactionCategoryEntity_transaction_type_code",
+            "name": "index_TransactionCategoryEntity_transaction_type_code_is_deleted",
             "unique": false,
             "columnNames": [
-              "transaction_type_code"
+              "transaction_type_code",
+              "is_deleted"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionCategoryEntity_transaction_type_code` ON `${TABLE_NAME}` (`transaction_type_code`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionCategoryEntity_transaction_type_code_is_deleted` ON `${TABLE_NAME}` (`transaction_type_code`, `is_deleted`)"
           }
         ],
         "foreignKeys": [
           {
             "table": "TransactionTypeEntity",
-            "onDelete": "CASCADE",
+            "onDelete": "RESTRICT",
             "onUpdate": "NO ACTION",
             "columns": [
               "transaction_type_code"
@@ -192,7 +200,7 @@
       },
       {
         "tableName": "TransactionEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transaction_name` TEXT NOT NULL, `account_from_id` INTEGER, `account_to_id` INTEGER, `transaction_type_code` TEXT NOT NULL, `amount_in_cent` INTEGER NOT NULL, `transaction_date` TEXT NOT NULL, `category_id` INTEGER, FOREIGN KEY(`account_from_id`) REFERENCES `AccountEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`account_to_id`) REFERENCES `AccountEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`transaction_type_code`) REFERENCES `TransactionTypeEntity`(`code`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`category_id`) REFERENCES `TransactionCategoryEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transaction_name` TEXT NOT NULL, `account_from_id` INTEGER, `account_to_id` INTEGER, `transaction_type_code` TEXT NOT NULL, `amount_in_cent` INTEGER NOT NULL, `transaction_date` TEXT NOT NULL, `category_id` INTEGER, `currency` TEXT NOT NULL, `rate` REAL NOT NULL, `scheduler_id` INTEGER, FOREIGN KEY(`account_from_id`) REFERENCES `AccountEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`account_to_id`) REFERENCES `AccountEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`transaction_type_code`) REFERENCES `TransactionTypeEntity`(`code`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`category_id`) REFERENCES `TransactionCategoryEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`scheduler_id`) REFERENCES `ScheduledTransactionEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
         "fields": [
           {
             "fieldPath": "id",
@@ -241,6 +249,24 @@
             "columnName": "category_id",
             "affinity": "INTEGER",
             "notNull": false
+          },
+          {
+            "fieldPath": "currency",
+            "columnName": "currency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rate",
+            "columnName": "rate",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "schedulerId",
+            "columnName": "scheduler_id",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -285,12 +311,21 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionEntity_category_id` ON `${TABLE_NAME}` (`category_id`)"
+          },
+          {
+            "name": "index_TransactionEntity_scheduler_id",
+            "unique": false,
+            "columnNames": [
+              "scheduler_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TransactionEntity_scheduler_id` ON `${TABLE_NAME}` (`scheduler_id`)"
           }
         ],
         "foreignKeys": [
           {
             "table": "AccountEntity",
-            "onDelete": "CASCADE",
+            "onDelete": "RESTRICT",
             "onUpdate": "NO ACTION",
             "columns": [
               "account_from_id"
@@ -301,7 +336,7 @@
           },
           {
             "table": "AccountEntity",
-            "onDelete": "CASCADE",
+            "onDelete": "RESTRICT",
             "onUpdate": "NO ACTION",
             "columns": [
               "account_to_id"
@@ -312,7 +347,7 @@
           },
           {
             "table": "TransactionTypeEntity",
-            "onDelete": "CASCADE",
+            "onDelete": "RESTRICT",
             "onUpdate": "NO ACTION",
             "columns": [
               "transaction_type_code"
@@ -323,10 +358,21 @@
           },
           {
             "table": "TransactionCategoryEntity",
-            "onDelete": "CASCADE",
+            "onDelete": "RESTRICT",
             "onUpdate": "NO ACTION",
             "columns": [
               "category_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "ScheduledTransactionEntity",
+            "onDelete": "RESTRICT",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "scheduler_id"
             ],
             "referencedColumns": [
               "id"
@@ -443,12 +489,215 @@
           }
         ],
         "foreignKeys": []
+      },
+      {
+        "tableName": "UserCurrencyRateEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `rate` REAL NOT NULL, PRIMARY KEY(`name`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rate",
+            "columnName": "rate",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "name"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ScheduledTransactionEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scheduled_transaction_name` TEXT NOT NULL, `scheduled_account_from_id` INTEGER, `scheduled_account_to_id` INTEGER, `transaction_type_code` TEXT NOT NULL, `amount_in_cent` INTEGER NOT NULL, `start_update_date` TEXT NOT NULL, `next_update_date` TEXT NOT NULL, `category_id` INTEGER, `currency` TEXT NOT NULL, `rate` REAL NOT NULL, `scheduler_period` TEXT NOT NULL, `is_deleted` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transactionName",
+            "columnName": "scheduled_transaction_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "accountFromId",
+            "columnName": "scheduled_account_from_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "accountToId",
+            "columnName": "scheduled_account_to_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "transactionType",
+            "columnName": "transaction_type_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "amountInCent",
+            "columnName": "amount_in_cent",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startUpdateDate",
+            "columnName": "start_update_date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextUpdateDate",
+            "columnName": "next_update_date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryId",
+            "columnName": "category_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "currency",
+            "columnName": "currency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rate",
+            "columnName": "rate",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "schedulerPeriod",
+            "columnName": "scheduler_period",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDeleted",
+            "columnName": "is_deleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ScheduledTransactionEntity_id_is_deleted",
+            "unique": false,
+            "columnNames": [
+              "id",
+              "is_deleted"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ScheduledTransactionEntity_id_is_deleted` ON `${TABLE_NAME}` (`id`, `is_deleted`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ScheduledTransactionTagEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tagId` INTEGER NOT NULL, `scheduled_transaction_id` INTEGER NOT NULL, FOREIGN KEY(`tagId`) REFERENCES `TagEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`scheduled_transaction_id`) REFERENCES `ScheduledTransactionEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tagId",
+            "columnName": "tagId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduledTransactionId",
+            "columnName": "scheduled_transaction_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ScheduledTransactionTagEntity_tagId",
+            "unique": false,
+            "columnNames": [
+              "tagId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ScheduledTransactionTagEntity_tagId` ON `${TABLE_NAME}` (`tagId`)"
+          },
+          {
+            "name": "index_ScheduledTransactionTagEntity_scheduled_transaction_id",
+            "unique": false,
+            "columnNames": [
+              "scheduled_transaction_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ScheduledTransactionTagEntity_scheduled_transaction_id` ON `${TABLE_NAME}` (`scheduled_transaction_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TagEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "tagId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "ScheduledTransactionEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "scheduled_transaction_id"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ae5b65af81fea357b85564ae3be0d103')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1a75d526b5b2b07e785d521a8019d3a')"
     ]
   }
 }

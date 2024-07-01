@@ -30,26 +30,7 @@ internal class ScheduledTransactionHandlerImpl @Inject constructor(
     override suspend fun onScheduled(schedulerId: Long, schedulerPeriod: SchedulerPeriod) {
         val input = transactionSchedulerRepository.getTransactionSchedulerById(schedulerId)
         input?.let {
-            val update = createUpdateState(input)
-
-            // The size for inserting transaction during first scheduling should not more than the threshold
-            if (update.transactionDomainInputs.isNotEmpty() && update.transactionDomainInputs.size < MAX_SCHEDULED_TRANSACTION_INSERTION_BATCH) {
-                transactionRepository.insertAllTransactions(update.transactionDomainInputs)
-                transactionSchedulerRepository.updateScheduler(
-                    id = it.id.toLong(),
-                    name = it.transactionName,
-                    fromAccountId = it.accountFrom?.accountId,
-                    toAccountId = it.accountTo?.accountId,
-                    transactionType = it.transactionType,
-                    amount = it.amountInCent,
-                    categoryId = it.category?.id,
-                    startDate = update.nextDate.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
-                    currency = it.currency,
-                    rate = it.rate,
-                    tagIds = it.tags.map { it.id },
-                    schedulerPeriod = it.schedulerPeriod
-                )
-            }
+            handleUpdateData(it, MAX_SCHEDULED_TRANSACTION_INSERTION_BATCH)
         }
     }
 
@@ -59,24 +40,29 @@ internal class ScheduledTransactionHandlerImpl @Inject constructor(
         val allSchedulers = transactionSchedulerRepository.getAllTransactionSchedulers().firstOrNull() ?: emptyList()
 
         allSchedulers.forEach {
-            val updateState = createUpdateState(it)
-            if (updateState.transactionDomainInputs.isNotEmpty()) {
-                transactionRepository.insertAllTransactions(updateState.transactionDomainInputs)
-                transactionSchedulerRepository.updateScheduler(
-                    id = it.id.toLong(),
-                    name = it.transactionName,
-                    fromAccountId = it.accountFrom?.accountId,
-                    toAccountId = it.accountTo?.accountId,
-                    transactionType = it.transactionType,
-                    amount = it.amountInCent,
-                    categoryId = it.category?.id,
-                    startDate = updateState.nextDate.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
-                    currency = it.currency,
-                    rate = it.rate,
-                    tagIds = it.tags.map { it.id },
-                    schedulerPeriod = it.schedulerPeriod
-                )
-            }
+            handleUpdateData(it)
+        }
+    }
+
+    private suspend fun handleUpdateData(data: ScheduledTransaction, maxBatchInsertionCount: Int = Int.MAX_VALUE) {
+        val updateState = createUpdateState(data)
+        if (updateState.transactionDomainInputs.isNotEmpty() && updateState.transactionDomainInputs.size <= maxBatchInsertionCount) {
+            transactionRepository.insertAllTransactions(updateState.transactionDomainInputs)
+            transactionSchedulerRepository.updateScheduler(
+                id = data.id.toLong(),
+                name = data.transactionName,
+                fromAccountId = data.accountFrom?.accountId,
+                toAccountId = data.accountTo?.accountId,
+                transactionType = data.transactionType,
+                amount = data.amountInCent,
+                categoryId = data.category?.id,
+                startUpdateDate = data.startUpdateDate,
+                nextUpdateDate = updateState.nextDate.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
+                currency = data.currency,
+                rate = data.rate,
+                tagIds = data.tags.map { it.id },
+                schedulerPeriod = data.schedulerPeriod
+            )
         }
     }
 
@@ -84,7 +70,7 @@ internal class ScheduledTransactionHandlerImpl @Inject constructor(
         scheduledTransaction: ScheduledTransaction,
     ) : ScheduleTransactionUpdateState {
         val toInsert = mutableListOf<TransactionDomainInput>()
-        val startDate = scheduledTransaction.startDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)!!
+        val startDate = scheduledTransaction.startUpdateDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)!!
         var nextDate = startDate
         while (nextDate <= LocalDate.now()) {
             toInsert.add(

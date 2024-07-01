@@ -3,6 +3,7 @@ package com.charmflex.flexiexpensesmanager.features.transactions.data.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 // Delete category should not real delete it. Because transaction need a reference to it
@@ -12,14 +13,17 @@ import androidx.room.PrimaryKey
             entity = TransactionTypeEntity::class,
             parentColumns = ["code"],
             childColumns = ["transaction_type_code"],
-            onDelete = ForeignKey.CASCADE
-        )
+            onDelete = ForeignKey.RESTRICT
+        ),
+    ],
+    indices = [
+        Index("transaction_type_code", "is_deleted")
     ]
 )
 internal data class TransactionCategoryEntity(
     @PrimaryKey(true)
     val id: Int = 0,
-    @ColumnInfo("transaction_type_code", index = true)
+    @ColumnInfo("transaction_type_code")
     val transactionTypeCode: String,
     @ColumnInfo("name")
     val name: String,

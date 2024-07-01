@@ -4,11 +4,10 @@ import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.scheduler.ScheduledTransactionHandler
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.repository.TransactionSchedulerRepository
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionDomainInput
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
-import com.charmflex.flexiexpensesmanager.features.transactions.usecases.SubmitTransactionUseCase
 import javax.inject.Inject
 
+// This UseCase contains insert and update
 internal class SubmitTransactionSchedulerUseCase @Inject constructor(
     private val transactionSchedulerRepository: TransactionSchedulerRepository,
     private val scheduledTransactionHandler: ScheduledTransactionHandler,
@@ -19,7 +18,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         fromAccountId: Int,
         amount: Long,
         categoryId: Int,
-        transactionDate: String,
+        startUpdateDate: String,
+        nextUpdateDate: String,
         currency: String,
         rate: Float,
         tagIds: List<Int>,
@@ -35,7 +35,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     transactionType = TransactionType.EXPENSES,
                     amount = amount,
                     categoryId = categoryId,
-                    startDate = transactionDate,
+                    startUpdateDate = startUpdateDate,
+                    nextUpdateDate = nextUpdateDate,
                     currency = currency,
                     rate = rate,
                     tagIds = tagIds,
@@ -49,7 +50,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     transactionType = TransactionType.EXPENSES,
                     amount = amount,
                     categoryId = categoryId,
-                    startDate = transactionDate,
+                    startUpdateDate = startUpdateDate,
                     currency = currency,
                     rate = rate,
                     tagIds = tagIds,
@@ -66,7 +67,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         toAccountId: Int,
         amount: Long,
         categoryId: Int,
-        transactionDate: String,
+        startUpdateDate: String,
+        nextUpdateDate: String,
         currency: String,
         rate: Float,
         tagIds: List<Int>,
@@ -82,7 +84,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     transactionType = TransactionType.INCOME,
                     amount = amount,
                     categoryId = categoryId,
-                    startDate = transactionDate,
+                    startUpdateDate = startUpdateDate,
+                    nextUpdateDate = nextUpdateDate,
                     currency = currency,
                     rate = rate,
                     tagIds = tagIds,
@@ -96,7 +99,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     transactionType = TransactionType.INCOME,
                     amount = amount,
                     categoryId = categoryId,
-                    startDate = transactionDate,
+                    startUpdateDate = startUpdateDate,
                     currency = currency,
                     rate = rate,
                     tagIds = tagIds,
@@ -114,7 +117,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         fromAccountId: Int,
         toAccountId: Int,
         amount: Long,
-        transactionDate: String,
+        startUpdateDate: String,
+        nextUpdateDate: String,
         currency: String,
         rate: Float,
         schedulerPeriod: SchedulerPeriod,
@@ -130,7 +134,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     transactionType = TransactionType.TRANSFER,
                     amount = amount,
                     categoryId = null,
-                    startDate = transactionDate,
+                    startUpdateDate = startUpdateDate,
+                    nextUpdateDate = nextUpdateDate,
                     currency = currency,
                     rate = rate,
                     tagIds = tagIds,
@@ -144,7 +149,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     transactionType = TransactionType.TRANSFER,
                     amount = amount,
                     categoryId = null,
-                    startDate = transactionDate,
+                    startUpdateDate = startUpdateDate,
                     currency = currency,
                     rate = rate,
                     tagIds = tagIds,

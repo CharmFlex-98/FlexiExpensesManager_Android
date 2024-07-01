@@ -9,5 +9,7 @@ internal data class AccountGroupEntity(
     @PrimaryKey(true)
     val id: Int = 0,
     @ColumnInfo(name = "name")
-    val name: String
+    val name: String,
+    @ColumnInfo("is_deleted", defaultValue = "false")
+    val isDeleted: Boolean = false
 )

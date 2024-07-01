@@ -17,8 +17,6 @@ internal data class AccountResponse(
         val accountId: Int,
         @ColumnInfo("account_name")
         val accountName: String,
-        @ColumnInfo("is_account_deleted")
-        val isAccountDeleted: Boolean,
         @ColumnInfo("remarks")
         val remarks: String?
     )

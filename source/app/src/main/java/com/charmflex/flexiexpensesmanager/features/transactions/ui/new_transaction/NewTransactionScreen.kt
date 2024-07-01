@@ -242,7 +242,7 @@ internal fun TransactionEditorScreen(
                 SGLargePrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(id = R.string.new_expenses_confirm_button),
-                    enabled = viewState.allowProceed
+                    enabled = viewModel.allowProceed()
                 ) {
                     viewModel.onConfirmed()
                 }

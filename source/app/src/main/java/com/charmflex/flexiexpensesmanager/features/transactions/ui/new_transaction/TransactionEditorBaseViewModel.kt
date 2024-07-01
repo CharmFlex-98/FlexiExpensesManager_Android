@@ -61,7 +61,7 @@ internal abstract class TransactionEditorBaseViewModel(
     val currentTransactionType = _currentTransactionType.asStateFlow()
     val snackBarState = mutableStateOf<SnackBarState>(SnackBarState.None)
 
-    val scheduledPeriodType = SchedulerPeriod.values().toList()
+    val scheduledPeriodType = SchedulerPeriod.values().toList().filter { it != SchedulerPeriod.UNKNOWN }
 
 
     // Must be called by child
@@ -352,8 +352,9 @@ internal abstract class TransactionEditorBaseViewModel(
         }
     }
 
-    fun onPeriodSelected(period: SchedulerPeriod, targetField: FEField?) {
-        onFieldValueChanged(targetField, period.name)
+    // TODO: Refactor so that this doesn't need to be here
+    open fun onPeriodSelected(period: SchedulerPeriod, targetField: FEField?) {
+        onFieldValueChanged(targetField, period.name, period.name)
     }
 
     private fun handleFailure(throwable: Throwable) {
@@ -397,7 +398,7 @@ internal abstract class TransactionEditorBaseViewModel(
             transactionDate = date,
             currency = currency,
             rate = rate,
-            tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ").map { it.toInt() }
+            tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ").map { it.toInt() },
         ).fold(
             onSuccess = {
                 handleSuccess()
@@ -407,7 +408,6 @@ internal abstract class TransactionEditorBaseViewModel(
             }
         )
     }
-
 
     private suspend fun onSubmitIncome() {
         val fields = _viewState.value.fields
@@ -436,7 +436,7 @@ internal abstract class TransactionEditorBaseViewModel(
             transactionDate = date,
             currency = currency,
             rate = rate,
-            tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ").map { it.toInt() }
+            tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ").map { it.toInt() },
         ).fold(
             onSuccess = {
                 handleSuccess()
@@ -474,7 +474,7 @@ internal abstract class TransactionEditorBaseViewModel(
             transactionDate = date,
             currency = currency,
             rate = rate,
-            tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ").map { it.toInt() }
+            tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ").map { it.toInt() },
         ).fold(
             onSuccess = {
                 handleSuccess()
@@ -483,6 +483,12 @@ internal abstract class TransactionEditorBaseViewModel(
                 handleFailure(it)
             }
         )
+    }
+
+    open fun allowProceed(): Boolean {
+        return _viewState.value.fields
+            .filter { it.id != TRANSACTION_TAG }
+            .firstOrNull { it.value.value.isEmpty() } == null && _viewState.value.errors == null
     }
 }
 
@@ -513,15 +519,6 @@ internal data class TransactionEditorViewState(
     val currencyList: List<CurrencyRate> = listOf(),
     val tagList: List<Tag> = listOf()
 ) {
-    val allowProceed: Boolean
-        get() = fields.filter { it.id != TRANSACTION_TAG }
-            .firstOrNull { it.value.value.isEmpty() } == null && errors == null
-
-    fun getAccountsByGroupId(accountGroupId: Int): List<AccountGroup.Account> {
-        return accountGroups.firstOrNull { it.accountGroupId == accountGroupId }?.accounts
-            ?: listOf()
-    }
-
     val showBottomSheet get() = bottomSheetState != null
 
     data class CalendarState(

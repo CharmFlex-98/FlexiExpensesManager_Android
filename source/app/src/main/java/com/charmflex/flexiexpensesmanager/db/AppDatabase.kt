@@ -48,10 +48,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.Tr
         ScheduledTransactionEntity::class,
         ScheduledTransactionTagEntity::class
     ],
-    version = 10,
-    autoMigrations = [
-        AutoMigration(from = 7, to = 8)
-    ],
+    version = 1,
     exportSchema = true
 )
 internal abstract class AppDatabase : RoomDatabase() {
@@ -74,7 +71,7 @@ internal abstract class AppDatabase : RoomDatabase() {
                 AppDatabase::class.java,
                 "FlexiExpensesManagerDB"
             )
-                .addMigrations(*migrationList().toTypedArray())
+//                .addMigrations(*migrationList().toTypedArray())
                 .addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)

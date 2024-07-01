@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.scheduler.ui.scheduler_editor
 
+import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
@@ -10,11 +11,11 @@ import com.charmflex.flexiexpensesmanager.features.scheduler.domain.repository.T
 import com.charmflex.flexiexpensesmanager.features.scheduler.usecases.SubmitTransactionSchedulerUseCase
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_SCHEDULER_PERIOD
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TransactionEditorContentProvider
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction.TransactionEditorBaseViewModel
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction.TransactionEditorDataUI
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction.TransactionRecordableType
-import com.charmflex.flexiexpensesmanager.features.transactions.usecases.SubmitTransactionUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
@@ -72,7 +73,7 @@ internal class SchedulerEditorViewModel(
         initialise()
     }
 
-    private val selectedPeriod = MutableStateFlow<SchedulerPeriod>(SchedulerPeriod.MONTHLY)
+    private val selectedPeriod = MutableStateFlow(SchedulerPeriod.MONTHLY)
 
     override suspend fun loadTransaction(id: Long): TransactionEditorDataUI? {
         val res = transactionSchedulerRepository.getTransactionSchedulerById(id) ?: return null
@@ -84,7 +85,7 @@ internal class SchedulerEditorViewModel(
             res.amountInCent,
             res.currency,
             res.rate,
-            res.startDate,
+            res.startUpdateDate,
             res.category,
             res.tags
         )
@@ -99,7 +100,7 @@ internal class SchedulerEditorViewModel(
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionSchedulerUseCase.submitExpenses(
             id,
@@ -107,6 +108,7 @@ internal class SchedulerEditorViewModel(
             fromAccountId,
             amount,
             categoryId,
+            transactionDate,
             transactionDate,
             currency,
             rate,
@@ -124,7 +126,7 @@ internal class SchedulerEditorViewModel(
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionSchedulerUseCase.submitIncome(
             id,
@@ -132,6 +134,7 @@ internal class SchedulerEditorViewModel(
             toAccountId,
             amount,
             categoryId,
+            transactionDate,
             transactionDate,
             currency,
             rate,
@@ -149,7 +152,7 @@ internal class SchedulerEditorViewModel(
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionSchedulerUseCase.submitTransfer(
             id,
@@ -158,11 +161,22 @@ internal class SchedulerEditorViewModel(
             toAccountId,
             amount,
             transactionDate,
+            transactionDate,
             currency,
             rate,
             selectedPeriod.value,
             tagIds
         )
+    }
+
+    override fun onPeriodSelected(period: SchedulerPeriod, targetField: FEField?) {
+        super.onPeriodSelected(period, targetField)
+        selectedPeriod.value = period
+    }
+
+    override fun allowProceed(): Boolean {
+        return super.allowProceed() &&
+                (viewState.value.fields.firstOrNull { it.id == TRANSACTION_SCHEDULER_PERIOD }?.id?.isNotBlank() ?: false)
     }
 
     override fun getType(): TransactionRecordableType {

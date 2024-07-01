@@ -1,5 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction
 
+import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
+
 internal interface TransactionRecordable {
     suspend fun loadTransaction(id: Long): TransactionEditorDataUI?
     suspend fun submitExpenses(
@@ -11,7 +13,7 @@ internal interface TransactionRecordable {
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
     ): Result<Unit>
     suspend fun submitIncome(
         id: Long?,
@@ -22,7 +24,7 @@ internal interface TransactionRecordable {
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
     ): Result<Unit>
     suspend fun submitTransfer(
         id: Long?,
@@ -33,7 +35,7 @@ internal interface TransactionRecordable {
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
     ): Result<Unit>
     fun getType(): TransactionRecordableType
 }
