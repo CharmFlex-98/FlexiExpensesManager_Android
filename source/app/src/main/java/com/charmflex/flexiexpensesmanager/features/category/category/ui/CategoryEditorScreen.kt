@@ -50,6 +50,7 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 
+
 @Composable
 internal fun CategoryEditorScreen(viewModel: CategoryEditorViewModel) {
     val viewState by viewModel.viewState.collectAsState()

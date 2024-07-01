@@ -46,8 +46,6 @@ import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
-import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
-import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
@@ -71,7 +69,6 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x20
 import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import kotlinx.coroutines.delay
-import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,7 +181,7 @@ internal fun TransactionEditorScreen(
                                     .padding(vertical = grid_x1)
                                     .fillMaxWidth(),
                                 label = stringResource(id = feField.labelId),
-                                value = feField.value.value,
+                                value = feField.valueItem.value,
                                 suggestions = type.options.map { it.title }
                             ) { newValue ->
                                 viewModel.onFieldValueChanged(feField, newValue)
@@ -197,7 +194,7 @@ internal fun TransactionEditorScreen(
                                     .padding(vertical = grid_x1)
                                     .fillMaxWidth(),
                                 label = stringResource(id = feField.labelId),
-                                value = feField.value.value,
+                                value = feField.valueItem.value,
                                 readOnly = true,
                                 onValueChange = {},
                                 onClicked = {
@@ -221,7 +218,7 @@ internal fun TransactionEditorScreen(
                                     .padding(vertical = grid_x1)
                                     .fillMaxWidth(),
                                 label = stringResource(id = feField.labelId),
-                                value = feField.value.value,
+                                value = feField.valueItem.value,
                                 hint = stringResource(feField.hintId),
                                 enable = feField.isEnable,
                                 visualTransformation = if (feField.type is FEField.FieldType.Currency) {
@@ -266,7 +263,7 @@ internal fun TransactionEditorScreen(
             )
             viewModel.onToggleCalendar(null)
         },
-        date = viewState.calendarState?.targetField?.value?.value?.toLocalDate(
+        date = viewState.calendarState?.targetField?.valueItem?.value?.toLocalDate(
             DATE_ONLY_DEFAULT_PATTERN
         ),
         isVisible = showCalendar,

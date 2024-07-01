@@ -32,7 +32,7 @@ internal abstract class TransactionEditorContentProvider {
                     id = TRANSACTION_NAME,
                     labelId = R.string.new_expenses_name,
                     hintId = R.string.new_expenses_name_hint,
-                    value = FEField.Value(),
+                    valueItem = FEField.Value(),
                     type = FEField.FieldType.Text
                 ),
                 FEField(

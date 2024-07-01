@@ -1,6 +1,5 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,9 +11,7 @@ import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountG
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
-import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.ScheduledTransaction
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
-import com.charmflex.flexiexpensesmanager.features.scheduler.domain.repository.TransactionSchedulerRepository
 import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
@@ -179,11 +176,11 @@ internal abstract class TransactionEditorBaseViewModel(
 
 
     fun onTagSelected(tag: Tag, targetField: FEField?) {
-        val initialIds = targetField?.value?.id
+        val initialIds = targetField?.valueItem?.id
         val updatedIds =
             if (initialIds.isNullOrBlank()) tag.id.toString() else initialIds + ", ${tag.id}"
 
-        val tagNames = targetField?.value?.value
+        val tagNames = targetField?.valueItem?.value
         val updatedNames = if (tagNames.isNullOrBlank()) tag.name else tagNames + ", ${tag.name}"
 
         onFieldValueChanged(
@@ -209,12 +206,12 @@ internal abstract class TransactionEditorBaseViewModel(
             val updatedFields = fields.map {
                 if (it.id == TRANSACTION_CURRENCY) {
                     return@map it.copy(
-                        value = FEField.Value(it.value.id, currency?.name ?: "")
+                        valueItem = FEField.Value(it.valueItem.id, currency?.name ?: "")
                     )
                 }
                 if (it.id == TRANSACTION_RATE) {
                     return@map it.copy(
-                        value = FEField.Value(it.value.id, currency?.rate?.toString() ?: "1")
+                        valueItem = FEField.Value(it.valueItem.id, currency?.rate?.toString() ?: "1")
                     )
                 } else it
             }
@@ -236,7 +233,7 @@ internal abstract class TransactionEditorBaseViewModel(
         val updatedFields = _viewState.value.fields.map { item ->
             if (item.id == field.id) {
                 item.copy(
-                    value = FEField.Value(
+                    valueItem = FEField.Value(
                         id = id ?: "",
                         value = newValue
                     )
@@ -376,16 +373,16 @@ internal abstract class TransactionEditorBaseViewModel(
 
     private suspend fun onSubmitExpenses() {
         val fields = _viewState.value.fields
-        val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.value?.value
+        val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.valueItem?.value
         val fromAccountId =
-            fields.firstOrNull { it.id == TRANSACTION_FROM_ACCOUNT }?.value?.id
-        val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.value?.value
+            fields.firstOrNull { it.id == TRANSACTION_FROM_ACCOUNT }?.valueItem?.id
+        val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.valueItem?.value
         val categoryId =
-            fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.value?.id
-        val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value?.value
-        val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.value?.value
-        val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.value?.value?.toFloatOrNull()
-        val tagIds = fields.firstOrNull { it.id == TRANSACTION_TAG }?.value?.id
+            fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.valueItem?.id
+        val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.valueItem?.value
+        val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.valueItem?.value
+        val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.valueItem?.value?.toFloatOrNull()
+        val tagIds = fields.firstOrNull { it.id == TRANSACTION_TAG }?.valueItem?.id
         if (name == null || amount == null || categoryId == null || date == null || fromAccountId == null || currency == null || rate == null) {
             handleFailure(Exception("Something wrong"))
             toggleLoader(false)
@@ -414,16 +411,16 @@ internal abstract class TransactionEditorBaseViewModel(
 
     private suspend fun onSubmitIncome() {
         val fields = _viewState.value.fields
-        val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.value?.value
+        val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.valueItem?.value
         val toAccountId =
-            fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.value?.id
-        val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.value?.value
+            fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.valueItem?.id
+        val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.valueItem?.value
         val categoryId =
-            fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.value?.id
-        val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value?.value
-        val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.value?.value
-        val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.value?.value?.toFloatOrNull()
-        val tagIds = fields.firstOrNull { it.id == TRANSACTION_TAG }?.value?.id
+            fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.valueItem?.id
+        val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.valueItem?.value
+        val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.valueItem?.value
+        val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.valueItem?.value?.toFloatOrNull()
+        val tagIds = fields.firstOrNull { it.id == TRANSACTION_TAG }?.valueItem?.id
         if (name == null || amount == null || categoryId == null || date == null || toAccountId == null || currency == null || rate == null) {
             handleFailure(Exception("Something wrong"))
             toggleLoader(false)
@@ -452,16 +449,16 @@ internal abstract class TransactionEditorBaseViewModel(
 
     private suspend fun onSubmitTransfer() {
         val fields = _viewState.value.fields
-        val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.value?.value
+        val name = fields.firstOrNull { it.id == TRANSACTION_NAME }?.valueItem?.value
         val fromAccountId =
-            fields.firstOrNull { it.id == TRANSACTION_FROM_ACCOUNT }?.value?.id
+            fields.firstOrNull { it.id == TRANSACTION_FROM_ACCOUNT }?.valueItem?.id
         val toAccountId =
-            fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.value?.id
-        val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.value?.value
-        val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.value?.value
-        val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.value?.value
-        val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.value?.value?.toFloatOrNull()
-        val tagIds = fields.firstOrNull { it.id == TRANSACTION_TAG }?.value?.id
+            fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.valueItem?.id
+        val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.valueItem?.value
+        val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.valueItem?.value
+        val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.valueItem?.value
+        val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.valueItem?.value?.toFloatOrNull()
+        val tagIds = fields.firstOrNull { it.id == TRANSACTION_TAG }?.valueItem?.id
         if (name == null || amount == null || fromAccountId == null || date == null || toAccountId == null || currency == null || rate == null) {
             handleFailure(Exception("Something wrong"))
             toggleLoader(false)
@@ -491,7 +488,7 @@ internal abstract class TransactionEditorBaseViewModel(
     open fun allowProceed(): Boolean {
         return _viewState.value.fields
             .filter { it.id != TRANSACTION_TAG }
-            .firstOrNull { it.value.value.isEmpty() } == null && _viewState.value.errors == null
+            .firstOrNull { it.valueItem.value.isEmpty() } == null && _viewState.value.errors == null
     }
 }
 

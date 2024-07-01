@@ -1,13 +1,12 @@
 package com.charmflex.flexiexpensesmanager.core.domain
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 
 internal data class FEField(
     val id: String = "",
     val labelId: Int,
     val hintId: Int,
-    val value: Value = Value(),
+    val valueItem: Value = Value(),
     val type: FieldType,
     val allowClear: Boolean = false
 ) {
