@@ -2,7 +2,6 @@ package com.charmflex.flexiexpensesmanager.features.transactions.provider
 
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
-import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import javax.inject.Inject
 
@@ -15,10 +14,12 @@ internal const val TRANSACTION_TO_ACCOUNT = "TRANSACTION_TO_ACC"
 internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
 internal const val TRANSACTION_CURRENCY = "TRANSACTION_CURRENCY"
 internal const val TRANSACTION_TAG = "TRANSACTION_TAG"
+internal const val TRANSACTION_SCHEDULER_PERIOD = "SCHEDULER_PERIOD"
 
+internal class DefaultTransactionEditorContentProvider @Inject constructor() : TransactionEditorContentProvider()
 
-internal class NewTransactionContentProvider @Inject constructor() {
-    fun getContent(transactionType: TransactionType): List<FEField> {
+internal abstract class TransactionEditorContentProvider {
+    open fun getContent(transactionType: TransactionType): List<FEField> {
         val res = when (transactionType) {
             TransactionType.EXPENSES -> expensesFields()
             TransactionType.INCOME -> incomeFields()

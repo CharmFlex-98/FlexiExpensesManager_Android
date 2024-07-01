@@ -1,11 +1,10 @@
 package com.charmflex.flexiexpensesmanager.features.auth.destination
 
-import android.content.Context
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.charmflex.flexiexpensesmanager.core.di.AppComponent
-import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
+import com.charmflex.flexiexpensesmanager.app.di.AppComponent
+import com.charmflex.flexiexpensesmanager.app.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AuthRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel

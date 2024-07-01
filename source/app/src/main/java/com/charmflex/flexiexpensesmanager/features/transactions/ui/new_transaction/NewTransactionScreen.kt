@@ -39,13 +39,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.text.isDigitsOnly
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyTextFieldOutputFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
-import com.charmflex.flexiexpensesmanager.core.utils.toLocalDateTime
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
@@ -78,7 +76,7 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TransactionEditorScreen(
-    viewModel: TransactionEditorViewModel
+    viewModel: TransactionEditorBaseViewModel
 ) {
     val viewState by viewModel.viewState.collectAsState()
     val currentTransactionType by viewModel.currentTransactionType.collectAsState()
@@ -92,18 +90,25 @@ internal fun TransactionEditorScreen(
         viewModel.currencyVisualTransformationBuilder().create(viewState.currencyCode)
     }
     val outputCurrencyFormatter = remember { CurrencyTextFieldOutputFormatter() }
-    val isNewTransaction = viewModel.isNewTransaction()
-    val title = when {
-        isNewTransaction -> "New Transaction"
-        else -> "Edit Transaction"
+    val type = viewModel.getType()
+    val title = when (type) {
+        TransactionRecordableType.NEW_TRANSACTION -> stringResource(id = R.string.new_transaction_app_bar_title)
+        TransactionRecordableType.EDIT_TRANSACTION -> stringResource(id = R.string.edit_transaction_app_bar_title)
+        TransactionRecordableType.NEW_SCHEDULER -> stringResource(id = R.string.new_scheduler_app_bar_title)
+        TransactionRecordableType.EDIT_SCHEDULER -> stringResource(id = R.string.edit_scheduler_app_bar_title)
     }
-    val actionTitle = when {
-        isNewTransaction -> "Congrats!"
-        else -> "Success!"
+    val actionTitle = when (type) {
+        TransactionRecordableType.NEW_TRANSACTION, TransactionRecordableType.NEW_SCHEDULER -> stringResource(
+            id = R.string.general_congratz
+        )
+
+        else -> stringResource(id = R.string.generic_success)
     }
-    val actionSubtitle = when {
-        isNewTransaction -> "You have created a new transaction!"
-        else -> "You have done updating the transaction!"
+    val actionSubtitle = when (type) {
+        TransactionRecordableType.NEW_TRANSACTION -> stringResource(id = R.string.create_new_transaction_success_dialog_subtitle)
+        TransactionRecordableType.EDIT_TRANSACTION -> stringResource(id = R.string.edit_new_transaction_success_dialog_subtitle)
+        TransactionRecordableType.NEW_SCHEDULER -> stringResource(id = R.string.create_new_scheduler_success_dialog_subtitle)
+        TransactionRecordableType.EDIT_SCHEDULER -> stringResource(id = R.string.edit_new_scheduler_success_dialog_subtitle)
     }
     var initLoader by remember { mutableStateOf(true) }
 
@@ -261,7 +266,9 @@ internal fun TransactionEditorScreen(
             )
             viewModel.onToggleCalendar(null)
         },
-        date = viewState.calendarState?.targetField?.value?.value?.toLocalDate(DATE_ONLY_DEFAULT_PATTERN),
+        date = viewState.calendarState?.targetField?.value?.value?.toLocalDate(
+            DATE_ONLY_DEFAULT_PATTERN
+        ),
         isVisible = showCalendar,
         boundary = LocalDate.now().minusYears(10)..LocalDate.now()
     )
@@ -284,7 +291,7 @@ internal fun TransactionEditorScreen(
             onDismiss = { viewModel.toggleBottomSheet(null) }
         ) {
             when (val bs = viewState.bottomSheetState) {
-                is NewTransactionViewState.CategorySelectionBottomSheetState -> {
+                is TransactionEditorViewState.CategorySelectionBottomSheetState -> {
                     CategorySelectionBottomSheet(
                         onSelected = { id, name ->
                             viewModel.onCategorySelected(id, name, bs.feField)
@@ -294,23 +301,30 @@ internal fun TransactionEditorScreen(
                     )
                 }
 
-                is NewTransactionViewState.AccountSelectionBottomSheetState -> {
+                is TransactionEditorViewState.AccountSelectionBottomSheetState -> {
                     AccountSelectionBottomSheet(accountGroups = viewState.accountGroups) {
                         viewModel.onSelectAccount(it, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
                 }
 
-                is NewTransactionViewState.CurrencySelectionBottomSheetState -> {
-                    CurrencySelectionBottomSheet(currencyList = viewState.currencyList) {
+                is TransactionEditorViewState.CurrencySelectionBottomSheetState -> {
+                    GeneralSelectionBottomSheet(items = viewState.currencyList, name = { it.name }) {
                         viewModel.onCurrencySelected(it, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
                 }
 
-                is NewTransactionViewState.TagSelectionBottomSheetState -> {
-                    TagSelectionBottomSheet(tagList = viewState.tagList) {
+                is TransactionEditorViewState.TagSelectionBottomSheetState -> {
+                    GeneralSelectionBottomSheet(items = viewState.tagList, name = { it.name }) {
                         viewModel.onTagSelected(it, bs.feField)
+                        viewModel.toggleBottomSheet(null)
+                    }
+                }
+
+                is TransactionEditorViewState.PeriodSelectionBottomSheetState -> {
+                    GeneralSelectionBottomSheet(items = viewModel.scheduledPeriodType, name = { it.name }) { res ->
+                        viewModel.onPeriodSelected(res, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
                 }
@@ -455,41 +469,10 @@ private fun AccountSelectionBottomSheet(
 }
 
 @Composable
-private fun CurrencySelectionBottomSheet(
-    currencyList: List<CurrencyRate>,
-    onSelectCurrency: (CurrencyRate) -> Unit
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.Start
-    ) {
-        FEHeading2(text = "Select Currency")
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(state = rememberScrollState())
-        ) {
-            currencyList.forEach {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            onSelectCurrency(it)
-                        }
-                        .padding(grid_x2),
-                    contentAlignment = Alignment.Center
-                ) {
-                    FEBody2(text = it.name)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun TagSelectionBottomSheet(
-    tagList: List<Tag>,
-    onSelectTag: (Tag) -> Unit
+private fun <T> GeneralSelectionBottomSheet(
+    items: List<T>,
+    name: (T) -> String,
+    onSelectItem: (T) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -501,17 +484,17 @@ private fun TagSelectionBottomSheet(
                 .fillMaxWidth()
                 .verticalScroll(state = rememberScrollState())
         ) {
-            tagList.forEach {
+            items.forEach {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            onSelectTag(it)
+                            onSelectItem(it)
                         }
                         .padding(grid_x2),
                     contentAlignment = Alignment.Center
                 ) {
-                    FEBody2(text = it.name)
+                    FEBody2(text = name(it))
                 }
             }
         }

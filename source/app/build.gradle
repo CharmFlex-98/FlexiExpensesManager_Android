@@ -176,4 +176,7 @@ dependencies {
 
     // security
     implementation(libs.androidx.security.crypto)
+
+    // work manager
+    implementation(libs.work.manager)
 }

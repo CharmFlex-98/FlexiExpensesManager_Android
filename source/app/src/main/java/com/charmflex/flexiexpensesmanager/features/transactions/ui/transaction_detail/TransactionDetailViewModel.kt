@@ -11,6 +11,7 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRout
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
+import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
@@ -152,8 +153,8 @@ internal data class TransactionDetailViewState(
     data class Detail(
         val transactionId: Long,
         val transactionName: String,
-        val transactionAccountFrom: Transaction.TransactionAccount?,
-        val transactionAccountTo: Transaction.TransactionAccount?,
+        val transactionAccountFrom: AccountGroup.Account?,
+        val transactionAccountTo: AccountGroup.Account?,
         val transactionTypeCode: String,
         val formattedAmount: String,
         val transactionDate: String,

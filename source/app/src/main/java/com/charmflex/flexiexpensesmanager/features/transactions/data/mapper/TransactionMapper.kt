@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.data.mapper
 
 import com.charmflex.flexiexpensesmanager.core.utils.Mapper
+import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.transactions.data.responses.TransactionResponse
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
@@ -31,13 +32,13 @@ internal class TransactionMapper @Inject constructor() : Mapper<TransactionRespo
         )
     }
 
-    private fun getTransactionAccount(accountId: Int?, accountName: String?): Transaction.TransactionAccount? {
+    private fun getTransactionAccount(accountId: Int?, accountName: String?): AccountGroup.Account? {
         if (accountId == null) return null
         if (accountName == null) return null
 
-        return Transaction.TransactionAccount(
-            id = accountId,
-            name = accountName
+        return AccountGroup.Account(
+            accountId = accountId,
+            accountName = accountName
         )
     }
 

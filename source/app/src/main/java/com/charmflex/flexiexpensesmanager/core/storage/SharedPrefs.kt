@@ -14,6 +14,9 @@ private const val FEM_SHARED_PREFS_FILE_PATH = "FLEXI-EXPENSES-MANAGER-SHARED-PR
 
 
 internal interface SharedPrefs {
+
+    suspend fun setInt(key: String, value: Int)
+    suspend fun getInt(key: String, default: Int): Int
     suspend fun setString(key: String, value: String)
 
     suspend fun getString(key: String, default: String): String
@@ -58,6 +61,18 @@ internal class SharedPrefsImpl @Inject constructor(
     private fun generateMainKeyAlias(): String {
         val keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC
         return MasterKeys.getOrCreate(keyGenParameterSpec)
+    }
+
+    override suspend fun setInt(key: String, value: Int) {
+        withContext(dispatcher) {
+            sharedPrefs.edit().putInt(key, value).apply()
+        }
+    }
+
+    override suspend fun getInt(key: String, default: Int): Int {
+        return withContext(dispatcher) {
+            sharedPrefs.getInt(key, default) ?: default
+        }
     }
 
     override suspend fun setString(key: String, value: String) {

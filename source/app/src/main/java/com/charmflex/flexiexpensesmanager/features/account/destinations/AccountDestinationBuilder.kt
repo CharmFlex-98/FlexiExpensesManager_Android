@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
+import com.charmflex.flexiexpensesmanager.app.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideUp
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes

@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.db
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -12,12 +13,18 @@ import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_3_4
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_4_5
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_5_6
 import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_6_7
+import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_8_9
+import com.charmflex.flexiexpensesmanager.db.migration.MIGRATION_9_10
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountTransactionDao
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountGroupEntity
 import com.charmflex.flexiexpensesmanager.features.currency.data.daos.CurrencyDao
 import com.charmflex.flexiexpensesmanager.features.currency.data.models.UserCurrencyRateEntity
+import com.charmflex.flexiexpensesmanager.features.scheduler.data.daos.ScheduledTransactionDao
+import com.charmflex.flexiexpensesmanager.features.scheduler.data.daos.ScheduledTransactionTagDao
+import com.charmflex.flexiexpensesmanager.features.scheduler.data.entities.ScheduledTransactionEntity
+import com.charmflex.flexiexpensesmanager.features.scheduler.data.entities.ScheduledTransactionTagEntity
 import com.charmflex.flexiexpensesmanager.features.tag.data.daos.TagDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionCategoryDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
@@ -38,8 +45,14 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.Tr
         TransactionTagEntity::class,
         TransactionTypeEntity::class,
         UserCurrencyRateEntity::class,
+        ScheduledTransactionEntity::class,
+        ScheduledTransactionTagEntity::class
     ],
-    version = 7,
+    version = 10,
+    autoMigrations = [
+        AutoMigration(from = 7, to = 8)
+    ],
+    exportSchema = true
 )
 internal abstract class AppDatabase : RoomDatabase() {
     abstract fun getAccountDao(): AccountDao
@@ -49,6 +62,8 @@ internal abstract class AppDatabase : RoomDatabase() {
     abstract fun getTagDao(): TagDao
     abstract fun getTransactionTagDao(): TransactionTagDao
     abstract fun getAccountTransactionDao(): AccountTransactionDao
+    abstract fun getScheduledTransactionDao(): ScheduledTransactionDao
+    abstract fun getScheduledTransactionTagDao(): ScheduledTransactionTagDao
 
     class Builder(
         private val appContext: Context
@@ -81,7 +96,9 @@ private fun migrationList(): List<Migration> {
         MIGRATION_3_4,
         MIGRATION_4_5,
         MIGRATION_5_6,
-        MIGRATION_6_7
+        MIGRATION_6_7,
+        MIGRATION_8_9,
+        MIGRATION_9_10
     )
 }
 

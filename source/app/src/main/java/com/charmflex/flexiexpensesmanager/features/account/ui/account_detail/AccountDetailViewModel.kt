@@ -71,6 +71,8 @@ internal class AccountDetailViewModel @Inject constructor(
         return dbData
     }
 
+    override suspend fun onReceivedFilteredData(data: List<Transaction>, clearOldList: Boolean) {}
+
     override fun refresh() {
         super.refresh()
         loadAccountState()

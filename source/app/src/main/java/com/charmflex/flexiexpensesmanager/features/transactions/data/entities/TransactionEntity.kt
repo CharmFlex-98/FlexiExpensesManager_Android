@@ -5,7 +5,9 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
+import com.charmflex.flexiexpensesmanager.features.scheduler.data.entities.ScheduledTransactionEntity
 
+// TODO: create index on scheduler ID column
 @Entity(
     foreignKeys = [
         ForeignKey(
@@ -31,6 +33,11 @@ import com.charmflex.flexiexpensesmanager.features.account.data.entities.Account
             parentColumns = ["id"],
             childColumns = ["category_id"],
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = ScheduledTransactionEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["scheduler_id"],
         )
     ]
 )
@@ -54,5 +61,7 @@ internal data class TransactionEntity(
     @ColumnInfo("currency")
     val currency: String,
     @ColumnInfo("rate")
-    val rate: Float
+    val rate: Float,
+    @ColumnInfo("scheduler_id")
+    val schedulerId: Long?
 )

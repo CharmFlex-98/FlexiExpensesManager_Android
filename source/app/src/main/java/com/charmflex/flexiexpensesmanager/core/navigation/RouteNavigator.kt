@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.navigateAndPopUpTo
@@ -64,8 +65,9 @@ data class PopWithArguments(
 @Composable
 fun RouteNavigatorListener(
     routeNavigator: RouteNavigator,
-    navController: NavController
+    navController: NavController,
 ) {
+    val localContext = LocalContext.current
     LaunchedEffect(Unit) {
         routeNavigator.navigationEvent.collect {
             when (it) {

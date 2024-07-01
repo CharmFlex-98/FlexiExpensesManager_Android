@@ -1,19 +1,26 @@
 package com.charmflex.flexiexpensesmanager.app
 
 import android.app.Application
-import androidx.room.RoomDatabase
-import com.charmflex.flexiexpensesmanager.core.di.AppComponent
-import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
-import com.charmflex.flexiexpensesmanager.db.AppDatabase
+import androidx.work.Configuration
+import androidx.work.WorkManager
+import com.charmflex.flexiexpensesmanager.app.di.AppComponent
+import com.charmflex.flexiexpensesmanager.app.di.AppComponentProvider
 
 internal class FlexiExpensesManagerApp : Application(), AppComponentProvider {
     private var appComponent: AppComponent? = null
-//    private lateinit var db: AppDatabase
 
     override fun onCreate() {
         super.onCreate()
         AppComponentProvider.instance = this
         appComponent = AppComponent.build(applicationContext)
+//        WorkManager.initialize(
+//            this,
+//            Configuration.Builder().apply {
+//                appComponent?.let {
+//                    setWorkerFactory(it.workerFactory())
+//                }
+//            }.build()
+//        )
     }
 
     override fun getAppComponent(): AppComponent {

@@ -5,8 +5,6 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -16,16 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonElevation
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Tab
@@ -51,33 +42,19 @@ import androidx.compose.ui.window.Dialog
 import com.aay.compose.baseComponents.model.LegendPosition
 import com.aay.compose.donutChart.PieChart
 import com.charmflex.flexiexpensesmanager.R
-import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
-import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
-import com.charmflex.flexiexpensesmanager.core.utils.MONTH_YEAR_PATTERN
-import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.ui_common.DateFilterBar
-import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FECallout3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading4
-import com.charmflex.flexiexpensesmanager.ui_common.FEMetaData2
-import com.charmflex.flexiexpensesmanager.ui_common.SGDatePicker
-import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGMediumPrimaryButton
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x0_25
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x10
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x3
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x47
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x6
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x8
-import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import com.patrykandpatrick.vico.compose.axis.axisLabelComponent
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.column.columnChart
-import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.compose.component.lineComponent
 import com.patrykandpatrick.vico.compose.component.overlayingComponent
 import com.patrykandpatrick.vico.compose.component.shape.roundedCornerShape
@@ -103,12 +80,11 @@ import com.patrykandpatrick.vico.core.context.MeasureContext
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.extension.copyColor
-import java.time.LocalDate
 import kotlin.random.Random
 
 
 @Composable
-internal fun ColumnScope.ExpensesPieChartScreen(
+internal fun ColumnScope.ExpensesChartScreen(
     viewModel: ExpensesChartViewModel
 ) {
     val chartViewState by viewModel.viewState.collectAsState()
@@ -263,11 +239,11 @@ private fun ComposeChart6(
             chartModelProducer = modelProducer,
             startAxis = rememberStartAxis(
                 label = axisLabelComponent(
-                    textSize = 7.sp,
+                    textSize = 9.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 titleComponent = axisLabelComponent(
-                    textSize = 9.sp,
+                    textSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 title = "Amount (${viewState.barChartData.currencyCode})",
@@ -279,20 +255,18 @@ private fun ComposeChart6(
                     )?.first ?: ""
                 },
                 label = axisLabelComponent(
-                    textSize = 7.sp,
+                    textSize = 9.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 titleComponent = axisLabelComponent(
-                    textSize = 9.sp,
+                    textSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 ),
                 title = "Categories"
             ),
             marker = rememberMarker(),
             runInitialAnimation = false,
-        ) {
-            Text(text = "placeholder?")
-        }
+        )
     }
 }
 
@@ -435,7 +409,7 @@ internal fun rememberMarker(): MarkerComponent {
     }
 }
 
-private fun generateRandomColor(): Color {
+fun generateRandomColor(): Color {
     val random = Random.Default
     val red = random.nextInt(256)
     val green = random.nextInt(256)

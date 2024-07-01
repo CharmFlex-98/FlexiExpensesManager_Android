@@ -10,7 +10,7 @@ internal class ExpensesChartDashboardPlugin @Inject constructor(
 ): DashboardPlugin {
     @Composable
     override fun ColumnScope.Render() {
-        ExpensesPieChartScreen(viewModel = viewModel)
+        ExpensesChartScreen(viewModel = viewModel)
     }
 
     override fun refresh() {

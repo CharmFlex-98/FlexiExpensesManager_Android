@@ -6,12 +6,14 @@ import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.UpdateCurrencyRateUseCase
+import com.charmflex.flexiexpensesmanager.features.scheduler.ScheduledTransactionHandler
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 internal class HomeViewModel @Inject constructor(
     private val routeNavigator: RouteNavigator,
-    private val updateCurrencyRateUseCase: UpdateCurrencyRateUseCase
+    private val updateCurrencyRateUseCase: UpdateCurrencyRateUseCase,
+    private val scheduledTransactionHandler: ScheduledTransactionHandler
 ) : ViewModel() {
     private val _homeItemsRefreshable: MutableList<HomeItemRefreshable> = mutableListOf()
 
@@ -23,6 +25,10 @@ internal class HomeViewModel @Inject constructor(
                 onSuccess = {},
                 onFailure = {}
             )
+        }
+
+        viewModelScope.launch {
+            scheduledTransactionHandler.update()
         }
     }
 

@@ -5,12 +5,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
+import com.charmflex.flexiexpensesmanager.app.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalEnterFromEnd
 import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalEnterFromStart
 import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalExitToEnd
-import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalExitToStart
 import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideDown
 import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideUp
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes

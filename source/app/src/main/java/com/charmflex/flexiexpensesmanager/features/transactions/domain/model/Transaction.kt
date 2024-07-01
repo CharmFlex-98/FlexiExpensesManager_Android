@@ -1,12 +1,14 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.domain.model
 
+import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
+import kotlinx.serialization.Serializable
 
 internal data class Transaction(
     val transactionId: Long,
     val transactionName: String,
-    val transactionAccountFrom: TransactionAccount?,
-    val transactionAccountTo: TransactionAccount?,
+    val transactionAccountFrom: AccountGroup.Account?,
+    val transactionAccountTo: AccountGroup.Account?,
     val transactionTypeCode: String,
     val amountInCent: Long,
     val currency: String,
@@ -19,6 +21,8 @@ internal data class Transaction(
         val id: Int,
         val name: String
     )
+
+    @Serializable
     data class TransactionCategory(
         val id: Int,
         val name: String

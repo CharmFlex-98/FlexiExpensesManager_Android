@@ -1,76 +1,43 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories
 
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ImportTransaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionDomainInput
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import kotlinx.coroutines.flow.Flow
 
+// TODO: Consider to migrate to TransactionInput
+
 internal interface TransactionRepository {
-    suspend fun addNewExpenses(
+    suspend fun addTransaction(
         name: String,
-        fromAccountId: Int,
+        fromAccountId: Int?,
+        toAccountId: Int?,
+        categoryId: Int?,
+        transactionType: TransactionType,
         amount: Long,
-        categoryId: Int,
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
+        schedulerId: Int?
     )
 
-    suspend fun editExpenses(
+    suspend fun editTransaction(
         id: Long,
         name: String,
-        fromAccountId: Int,
+        fromAccountId: Int?,
+        toAccountId: Int?,
+        categoryId: Int?,
+        transactionType: TransactionType,
         amount: Long,
-        categoryId: Int,
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
+        schedulerId: Int?
     )
 
-    suspend fun addNewIncome(
-        name: String,
-        toAccountId: Int,
-        amount: Long,
-        categoryId: Int,
-        transactionDate: String,
-        currency: String,
-        rate: Float
-    )
-
-    suspend fun editIncome(
-        id: Long,
-        name: String,
-        toAccountId: Int,
-        amount: Long,
-        categoryId: Int,
-        transactionDate: String,
-        currency: String,
-        rate: Float
-    )
-
-    suspend fun addNewTransfer(
-        name: String,
-        fromAccountId: Int,
-        toAccountId: Int,
-        amount: Long,
-        transactionDate: String,
-        currency: String,
-        rate: Float
-    )
-
-    suspend fun editTransfer(
-        id: Long,
-        name: String,
-        fromAccountId: Int,
-        toAccountId: Int,
-        amount: Long,
-        transactionDate: String,
-        currency: String,
-        rate: Float
-    )
-
-    suspend fun addAllImportTransactions(transactionData: List<ImportTransaction>)
+    suspend fun insertAllTransactions(transactions: List<TransactionDomainInput>)
 
 
     fun getTransactions(

@@ -3,10 +3,8 @@ package com.charmflex.flexiexpensesmanager.features.backup.destination
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.charmflex.flexiexpensesmanager.core.di.AppComponentProvider
+import com.charmflex.flexiexpensesmanager.app.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
-import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalEnterFromEnd
-import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalExitToEnd
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.BackupRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.backup.ui.ImportDataScreen

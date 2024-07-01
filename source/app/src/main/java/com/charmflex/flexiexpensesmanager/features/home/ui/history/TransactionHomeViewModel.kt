@@ -30,4 +30,6 @@ internal class TransactionHomeViewModel @Inject constructor(
     override suspend fun filter(dbData: List<Transaction>): List<Transaction> {
         return dbData
     }
+
+    override suspend fun onReceivedFilteredData(data: List<Transaction>, clearOldList: Boolean) {}
 }

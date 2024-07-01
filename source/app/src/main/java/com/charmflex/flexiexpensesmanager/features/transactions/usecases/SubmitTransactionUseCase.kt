@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.usecases
 
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import javax.inject.Inject
 
@@ -20,27 +21,33 @@ internal class SubmitTransactionUseCase @Inject constructor(
     ): Result<Unit> {
         return resultOf {
             id?.let {
-                transactionRepository.editExpenses(
-                    it,
-                    name,
-                    fromAccountId,
-                    amount,
-                    categoryId,
-                    transactionDate,
-                    currency,
-                    rate,
-                    tagIds
+                transactionRepository.editTransaction(
+                    id = it,
+                    name = name,
+                    fromAccountId = fromAccountId,
+                    toAccountId = null,
+                    transactionType = TransactionType.EXPENSES,
+                    amount = amount,
+                    categoryId = categoryId,
+                    transactionDate = transactionDate,
+                    currency = currency,
+                    rate = rate,
+                    tagIds = tagIds,
+                    schedulerId = null
                 )
             } ?:
-            transactionRepository.addNewExpenses(
-                name,
-                fromAccountId,
-                amount,
-                categoryId,
-                transactionDate,
-                currency,
-                rate,
-                tagIds
+            transactionRepository.addTransaction(
+                name = name,
+                fromAccountId = fromAccountId,
+                toAccountId = null,
+                transactionType = TransactionType.EXPENSES,
+                amount = amount,
+                categoryId = categoryId,
+                transactionDate = transactionDate,
+                currency = currency,
+                rate = rate,
+                tagIds = tagIds,
+                schedulerId = null
             )
         }
     }
@@ -57,24 +64,32 @@ internal class SubmitTransactionUseCase @Inject constructor(
     ): Result<Unit> {
         return resultOf {
             id?.let {
-                transactionRepository.editIncome(
-                    it,
-                    name,
-                    toAccountId,
-                    amount,
-                    categoryId,
-                    transactionDate,
-                    currency,
-                    rate
+                transactionRepository.editTransaction(
+                    id = it,
+                    name = name,
+                    fromAccountId = null,
+                    toAccountId = toAccountId,
+                    transactionType = TransactionType.INCOME,
+                    amount = amount,
+                    categoryId = categoryId,
+                    transactionDate = transactionDate,
+                    currency = currency,
+                    rate = rate,
+                    tagIds = listOf(),
+                    schedulerId = null
                 )
-            } ?: transactionRepository.addNewIncome(
-                name,
-                toAccountId,
-                amount,
-                categoryId,
-                transactionDate,
-                currency,
-                rate
+            } ?: transactionRepository.addTransaction(
+                name = name,
+                fromAccountId = null,
+                toAccountId = toAccountId,
+                transactionType = TransactionType.INCOME,
+                amount = amount,
+                categoryId = categoryId,
+                transactionDate = transactionDate,
+                currency = currency,
+                rate = rate,
+                tagIds = listOf(),
+                schedulerId = null
             )
 
         }
@@ -92,25 +107,33 @@ internal class SubmitTransactionUseCase @Inject constructor(
     ): Result<Unit> {
         return resultOf {
             id?.let {
-                transactionRepository.editTransfer(
-                    it,
-                    name,
-                    fromAccountId,
-                    toAccountId,
-                    amount,
-                    transactionDate,
-                    currency,
-                    rate
+                transactionRepository.editTransaction(
+                    id = it,
+                    name = name,
+                    fromAccountId = fromAccountId,
+                    toAccountId = toAccountId,
+                    transactionType = TransactionType.TRANSFER,
+                    amount = amount,
+                    categoryId = null,
+                    transactionDate = transactionDate,
+                    currency = currency,
+                    rate = rate,
+                    tagIds = listOf(),
+                    schedulerId = null
                 )
             } ?:
-            transactionRepository.addNewTransfer(
-                name,
-                fromAccountId,
-                toAccountId,
-                amount,
-                transactionDate,
-                currency,
-                rate
+            transactionRepository.addTransaction(
+                name= name,
+                fromAccountId = fromAccountId,
+                toAccountId = toAccountId,
+                transactionType = TransactionType.TRANSFER,
+                amount = amount,
+                categoryId = null,
+                transactionDate = transactionDate,
+                currency = currency,
+                rate = rate,
+                tagIds = listOf(),
+                schedulerId = null
             )
         }
     }

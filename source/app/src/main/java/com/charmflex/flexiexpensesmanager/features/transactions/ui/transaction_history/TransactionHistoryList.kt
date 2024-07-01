@@ -90,6 +90,12 @@ internal fun TransactionHistoryList(
     val isScrollingUp = scrollState.isScrollingUp()
     val coroutineScope = rememberCoroutineScope()
 
+    LaunchedEffect(key1 = Unit) {
+        transactionHistoryViewModel.scrollToIndexEvent.collectLatest {
+            scrollState.animateScrollToItem(it)
+        }
+    }
+
     LaunchedEffect(firstVisibleItemIndex, isScrollingUp) {
         transactionHistoryViewModel.onReachHistoryItem(scrollItems.getOrNull(firstVisibleItemIndex))
     }
@@ -203,7 +209,8 @@ private fun ExpensesHistorySectionView(
 }
 
 @Composable
-private fun ExpensesHistoryItem(
+internal fun ExpensesHistoryItem(
+    modifier: Modifier = Modifier,
     id: Long,
     name: String,
     amount: String,
@@ -223,7 +230,7 @@ private fun ExpensesHistoryItem(
         else -> MaterialTheme.colorScheme.tertiary
     }
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable {
                 onClick(id)
@@ -263,7 +270,7 @@ private fun ExpensesHistoryItem(
             )
             Spacer(modifier = Modifier.height(grid_x1))
             Text(
-                text = if (category.isNotEmpty()) category else "TRANSFER",
+                text = category.ifEmpty { if (type == TransactionType.TRANSFER.name) "TRANSFER" else "UNKNOWN"},
                 style = TextStyle(
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,

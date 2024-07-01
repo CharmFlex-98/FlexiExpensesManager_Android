@@ -10,6 +10,9 @@ accompanist_version = "0.34.0"
 # moshi
 moshi_version = "1.15.1"
 
+# workmanager_version
+work_manager_version  = "2.9.0"
+
 # Apache POI
 poi_version = "5.2.3"
 
@@ -105,6 +108,8 @@ airbnb-lottie-compose = { module = 'com.airbnb.android:lottie-compose', version.
 apache-poi = { module = 'org.apache.poi:poi', version.ref = 'poi_version'}
 apache-poi-ooxml = { module = 'org.apache.poi:poi-ooxml', version.ref = 'poi_version'}
 
+# work manager
+work-manager = { module = 'androidx.work:work-runtime-ktx', version.ref = 'work_manager_version'}
 # ballon
 skydoves-balloon = { module = 'com.github.skydoves:balloon-compose', version.ref = "ballon_version"}
 # cloudinary

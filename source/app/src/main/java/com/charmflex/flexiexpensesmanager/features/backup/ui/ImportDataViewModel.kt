@@ -5,18 +5,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
-import com.charmflex.flexiexpensesmanager.core.navigation.popWithHomeRefresh
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
-import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TagRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupManager
 import com.charmflex.flexiexpensesmanager.features.backup.checker.ImportDataChecker
-import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
-import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTagEntity
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ImportTransaction
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionDomainInput
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +20,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.apache.poi.ss.formula.functions.Index
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -135,7 +130,7 @@ internal class ImportDataViewModel @Inject constructor(
                 val tags = it.tags.mapNotNull {
                     (it as? ImportedData.RequiredDataState.Acquired)?.id
                 }
-                ImportTransaction(
+                TransactionDomainInput(
                     transactionName = it.transactionName,
                     transactionAccountFrom = fromAccount,
                     transactionAccountTo = toAccount,
@@ -145,11 +140,12 @@ internal class ImportDataViewModel @Inject constructor(
                     rate = it.currencyRate.toFloat(),
                     transactionDate = it.date,
                     transactionCategoryId = category,
-                    tagIds = tags
+                    tagIds = tags,
+                    schedulerId = null
                 )
             }
             resultOf {
-                transactionTagRepository.addAllImportTransactions(importedTransaction)
+                transactionTagRepository.insertAllTransactions(importedTransaction)
             }.fold(
                 onSuccess = {
                     toggleLoader(false)

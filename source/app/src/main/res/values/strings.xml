@@ -69,4 +69,18 @@
     <string name="category_stat_detail_topbar_title">Category Statistic</string>
     <string name="category_stat_tab_income">INCOME</string>
     <string name="category_stat_tab_expenses">EXPENSES</string>
+    <string name="setting_scheduler_title">Set scheduler</string>
+    <string name="new_transaction_app_bar_title">New Transaction</string>
+    <string name="edit_transaction_app_bar_title">Edit Transaction</string>
+    <string name="new_scheduler_app_bar_title">New Scheduler</string>
+    <string name="edit_scheduler_app_bar_title">Edit Scheduler</string>
+    <string name="general_congratz">Congratz!</string>
+    <string name="create_new_transaction_success_dialog_subtitle">You have created a new transaction!</string>
+    <string name="edit_new_transaction_success_dialog_subtitle">You have done updating the transaction!</string>
+    <string name="create_new_scheduler_success_dialog_subtitle">New scheduler is created!</string>
+    <string name="edit_new_scheduler_success_dialog_subtitle">The scheduler is updated!</string>
+    <string name="generic_transfer_capital">TRANSFER</string>
+    <string name="generic_unknown_capital">UNKNOWN</string>
+    <string name="transaction_scheduler_period">Period</string>
+    <string name="transaction_scheduler_period_hint">Select period/interval of this transaction</string>
 </resources>

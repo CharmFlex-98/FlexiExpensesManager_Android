@@ -115,7 +115,8 @@ internal class AccountRepositoryImpl @Inject constructor(
                 transactionDate = LocalDate.now().toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
                 categoryId = null,
                 currency = currency,
-                rate = rate
+                rate = rate,
+                schedulerId = null
             )
             accountTransactionDao.insertAccountAndAmountTransaction(entity, transactionEntity)
         }

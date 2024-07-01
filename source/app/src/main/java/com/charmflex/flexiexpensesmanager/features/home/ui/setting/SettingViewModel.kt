@@ -12,7 +12,9 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.BackupRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.SchedulerRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TagRoutes
+import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.backup.AppDataClearServiceType
 import com.charmflex.flexiexpensesmanager.features.backup.AppDataService
@@ -30,7 +32,8 @@ import javax.inject.Inject
 internal class SettingViewModel @Inject constructor(
     private val routeNavigator: RouteNavigator,
     private val transactionBackupManager: TransactionBackupManager,
-    private val appDataService: AppDataService
+    private val appDataService: AppDataService,
+    private val resourcesProvider: ResourcesProvider
 ) : ViewModel() {
 
     private val _onDataClearedEvent: MutableSharedFlow<OnDataCleared> =
@@ -118,6 +121,10 @@ internal class SettingViewModel @Inject constructor(
                         )
                     )
                 }
+            }
+
+            SettingAction.SCHEDULER -> {
+                routeNavigator.navigateTo(SchedulerRoutes.SCHEDULER_LIST)
             }
         }
     }
@@ -228,6 +235,10 @@ internal class SettingViewModel @Inject constructor(
             SettingActionable(
                 title = "Reset Data",
                 action = SettingAction.RESET_DATA
+            ),
+            SettingActionable(
+                title = resourcesProvider.getString(R.string.setting_scheduler_title),
+                action = SettingAction.SCHEDULER
             )
         )
     }
@@ -268,5 +279,5 @@ internal data class SettingActionable(
 )
 
 internal enum class SettingAction {
-    EXPENSES_CAT, INCOME_CAT, ACCOUNT, PRIMARY_CURRENCY, SECONDARY_CURRENCY, Tag, Export, Import, RESET_DATA
+    EXPENSES_CAT, INCOME_CAT, ACCOUNT, PRIMARY_CURRENCY, SECONDARY_CURRENCY, Tag, Export, Import, RESET_DATA, SCHEDULER
 }

@@ -20,8 +20,8 @@ internal class TransactionBackupDataMapper @Inject constructor() : Mapper<Pair<L
             }
             TransactionBackupData(
                 transactionName = it.transactionName,
-                accountFrom = it.transactionAccountFrom?.name,
-                accountTo = it.transactionAccountTo?.name,
+                accountFrom = it.transactionAccountFrom?.accountName,
+                accountTo = it.transactionAccountTo?.accountName,
                 transactionType = it.transactionTypeCode,
                 currency = it.currency,
                 currencyRate = it.rate.toDouble(),

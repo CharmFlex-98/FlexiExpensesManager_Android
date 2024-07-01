@@ -12,6 +12,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_history.mapper.TransactionHistoryMapper
+import com.patrykandpatrick.vico.core.marker.Marker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -47,6 +48,9 @@ internal abstract class TransactionHistoryViewModel(
     private val _viewState = MutableStateFlow(TransactionHistoryViewState())
     val viewState = _viewState.asStateFlow()
 
+    private val _scrollToIndexEvent: MutableSharedFlow<Int> = MutableSharedFlow(extraBufferCapacity = 1)
+    val scrollToIndexEvent = _scrollToIndexEvent.asSharedFlow()
+
     private fun toggleLoadMoreLoader(isLoadMore: Boolean) {
         _viewState.update {
             it.copy(
@@ -73,9 +77,14 @@ internal abstract class TransactionHistoryViewModel(
                 .collectLatest { list ->
                     _offset.value = list.size.toLong()
                     val filteredData = filter(list)
+                    onReceivedFilteredData(filteredData, clearOldList = true)
                     updateList(list = filteredData)
                 }
         }
+    }
+
+    fun onChartItemSelected(markerEntryModel: Marker.EntryModel?) {
+//        markerEntryModel?.index?.let { _scrollToIndexEvent.tryEmit(it) }
     }
 
     // This must be called in the init block of children classes.
@@ -87,6 +96,8 @@ internal abstract class TransactionHistoryViewModel(
     abstract fun getDBTransactionListFlow(offset: Long): Flow<List<Transaction>>
 
     abstract suspend fun filter(dbData: List<Transaction>): List<Transaction>
+
+    abstract suspend fun onReceivedFilteredData(data: List<Transaction>, clearOldList: Boolean)
 
     fun getNextTransactions() {
         toggleLoadMoreLoader(true)
@@ -100,6 +111,7 @@ internal abstract class TransactionHistoryViewModel(
                 .firstOrNull()?.let { list ->
                     _offset.value += list.size
                     val filteredData = filter(list)
+                    onReceivedFilteredData(filteredData, clearOldList = false)
                     updateList(list = filteredData, clearOldList = false)
                 }
         }

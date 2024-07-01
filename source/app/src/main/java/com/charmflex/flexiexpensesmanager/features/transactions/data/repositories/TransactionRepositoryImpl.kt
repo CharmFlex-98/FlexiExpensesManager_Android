@@ -4,8 +4,9 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.Transa
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionTagDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.mapper.TransactionMapper
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.ImportTransaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionDomainInput
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -16,157 +17,69 @@ internal class TransactionRepositoryImpl @Inject constructor(
     private val transactionDao: TransactionDao,
     private val transactionTagDao: TransactionTagDao
 ) : TransactionRepository {
-    override suspend fun addNewExpenses(
+    override suspend fun addTransaction(
         name: String,
-        fromAccountId: Int,
+        fromAccountId: Int?,
+        toAccountId: Int?,
+        categoryId: Int?,
+        transactionType: TransactionType,
         amount: Long,
-        categoryId: Int,
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
+        schedulerId: Int?
     ) {
         val transaction = TransactionEntity(
             transactionName = name,
-            accountFromId = fromAccountId,
             amountInCent = amount,
-            categoryId = categoryId,
             transactionDate = transactionDate,
-            transactionTypeCode = "EXPENSES",
-            accountToId = null,
+            transactionTypeCode = transactionType.name,
+            accountToId = toAccountId,
+            accountFromId = fromAccountId,
+            categoryId = categoryId,
             currency = currency,
             rate = rate,
+            schedulerId = schedulerId?.toLong()
         )
         transactionTagDao.insertTransactionAndTransactionTag(transaction, tagIds)
     }
 
-    override suspend fun editExpenses(
+    override suspend fun editTransaction(
         id: Long,
         name: String,
-        fromAccountId: Int,
+        fromAccountId: Int?,
+        toAccountId: Int?,
+        categoryId: Int?,
+        transactionType: TransactionType,
         amount: Long,
-        categoryId: Int,
         transactionDate: String,
         currency: String,
         rate: Float,
-        tagIds: List<Int>
+        tagIds: List<Int>,
+        schedulerId: Int?,
     ) {
         val transaction = TransactionEntity(
             id = id,
             transactionName = name,
-            accountFromId = fromAccountId,
             amountInCent = amount,
-            categoryId = categoryId,
             transactionDate = transactionDate,
-            transactionTypeCode = "EXPENSES",
-            accountToId = null,
+            transactionTypeCode = transactionType.name,
+            accountToId = toAccountId,
+            accountFromId = fromAccountId,
+            categoryId = categoryId,
             currency = currency,
             rate = rate,
+            schedulerId = schedulerId?.toLong()
         )
         transactionTagDao.updateTransactionAndTransactionTags(transaction, tagIds)
     }
 
-    override suspend fun addNewIncome(
-        name: String,
-        toAccountId: Int,
-        amount: Long,
-        categoryId: Int,
-        transactionDate: String,
-        currency: String,
-        rate: Float
-    ) {
-        val transaction = TransactionEntity(
-            transactionName = name,
-            amountInCent = amount,
-            categoryId = categoryId,
-            transactionDate = transactionDate,
-            transactionTypeCode = "INCOME",
-            accountToId = toAccountId,
-            accountFromId = null,
-            currency = currency,
-            rate = rate
-        )
-        transactionDao.insertTransaction(transaction = transaction)
-    }
-
-    override suspend fun editIncome(
-        id: Long,
-        name: String,
-        toAccountId: Int,
-        amount: Long,
-        categoryId: Int,
-        transactionDate: String,
-        currency: String,
-        rate: Float
-    ) {
-        val transaction = TransactionEntity(
-            id = id,
-            transactionName = name,
-            amountInCent = amount,
-            categoryId = categoryId,
-            transactionDate = transactionDate,
-            transactionTypeCode = "INCOME",
-            accountToId = toAccountId,
-            accountFromId = null,
-            currency = currency,
-            rate = rate
-        )
-        transactionTagDao.updateTransaction(transaction)
-    }
-
-    override suspend fun addNewTransfer(
-        name: String,
-        fromAccountId: Int,
-        toAccountId: Int,
-        amount: Long,
-        transactionDate: String,
-        currency: String,
-        rate: Float
-    ) {
-        val transaction = TransactionEntity(
-            transactionName = name,
-            amountInCent = amount,
-            transactionDate = transactionDate,
-            transactionTypeCode = "TRANSFER",
-            accountToId = toAccountId,
-            accountFromId = fromAccountId,
-            categoryId = null,
-            currency = currency,
-            rate = rate
-        )
-        transactionDao.insertTransaction(transaction)
-    }
-
-    override suspend fun editTransfer(
-        id: Long,
-        name: String,
-        fromAccountId: Int,
-        toAccountId: Int,
-        amount: Long,
-        transactionDate: String,
-        currency: String,
-        rate: Float
-    ) {
-        val transaction = TransactionEntity(
-            id = id,
-            transactionName = name,
-            amountInCent = amount,
-            transactionDate = transactionDate,
-            transactionTypeCode = "TRANSFER",
-            accountToId = toAccountId,
-            accountFromId = fromAccountId,
-            categoryId = null,
-            currency = currency,
-            rate = rate
-        )
-        transactionDao.updateTransaction(transaction)
-    }
-
-    override suspend fun addAllImportTransactions(transactionData: List<ImportTransaction>) {
-        val transactionTags = transactionData.map {
+    override suspend fun insertAllTransactions(transactions: List<TransactionDomainInput>) {
+        val transactionTags = transactions.map {
             it.tagIds
         }
-        val transactionEntities = transactionData.map {
+        val transactionEntities = transactions.map {
             TransactionEntity(
                 transactionName = it.transactionName,
                 accountFromId = it.transactionAccountFrom,
@@ -176,7 +89,8 @@ internal class TransactionRepositoryImpl @Inject constructor(
                 transactionDate = it.transactionDate,
                 categoryId = it.transactionCategoryId,
                 currency = it.currency,
-                rate = it.rate
+                rate = it.rate,
+                schedulerId = it.schedulerId?.toLong()
             )
         }
         transactionTagDao.insertAllTransactionsAndTransactionTags(

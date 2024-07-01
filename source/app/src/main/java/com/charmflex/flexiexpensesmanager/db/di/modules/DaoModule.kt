@@ -4,6 +4,8 @@ import com.charmflex.flexiexpensesmanager.db.AppDatabase
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountTransactionDao
 import com.charmflex.flexiexpensesmanager.features.currency.data.daos.CurrencyDao
+import com.charmflex.flexiexpensesmanager.features.scheduler.data.daos.ScheduledTransactionDao
+import com.charmflex.flexiexpensesmanager.features.scheduler.data.daos.ScheduledTransactionTagDao
 import com.charmflex.flexiexpensesmanager.features.tag.data.daos.TagDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionCategoryDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
@@ -48,6 +50,16 @@ internal interface DaoModule {
         @Provides
         fun accountTransactionDao(db: AppDatabase): AccountTransactionDao {
             return db.getAccountTransactionDao()
+        }
+
+        @Provides
+        fun scheduledTransactionDao(db: AppDatabase): ScheduledTransactionDao {
+            return db.getScheduledTransactionDao()
+        }
+
+        @Provides
+        fun scheduledTransactionTagDao(db: AppDatabase): ScheduledTransactionTagDao {
+            return db.getScheduledTransactionTagDao()
         }
     }
 }

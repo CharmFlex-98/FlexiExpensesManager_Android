@@ -5,6 +5,5 @@ import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_d
 
 internal interface TransactionInjector {
     fun transactionEditorViewModelFactory(): TransactionEditorViewModel.Factory
-
     fun transactionDetailViewModelFactory(): TransactionDetailViewModel.Factory
 }

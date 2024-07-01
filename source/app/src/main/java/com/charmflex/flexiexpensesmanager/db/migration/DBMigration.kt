@@ -91,3 +91,54 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
         db.execSQL("COMMIT;");
     }
 }
+
+val MIGRATION_8_9 = object  : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Add column schedulerId for TransactionEntity and create index for it
+        db.execSQL("BEGIN TRANSACTION;")
+
+        db.execSQL("CREATE TABLE IF NOT EXISTS `TransactionEntityNew` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transaction_name` TEXT NOT NULL, `account_from_id` INTEGER, `account_to_id` INTEGER, `transaction_type_code` TEXT NOT NULL, `amount_in_cent` INTEGER NOT NULL, `transaction_date` TEXT NOT NULL, `category_id` INTEGER, `currency` TEXT NOT NULL, `rate` REAL NOT NULL, `scheduler_id` INTEGER, FOREIGN KEY(`account_from_id`) REFERENCES `AccountEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`account_to_id`) REFERENCES `AccountEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`transaction_type_code`) REFERENCES `TransactionTypeEntity`(`code`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`category_id`) REFERENCES `TransactionCategoryEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`scheduler_id`) REFERENCES `ScheduledTransactionEntity`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_TransactionEntityNew_account_from_id` ON `TransactionEntityNew` (`account_from_id`)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_TransactionEntityNew_account_to_id` ON `TransactionEntityNew` (`account_to_id`)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_TransactionEntityNew_transaction_type_code` ON `TransactionEntityNew` (`transaction_type_code`)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_TransactionEntityNew_category_id` ON `TransactionEntityNew` (`category_id`)");
+
+        // Copy from old to new
+        db.execSQL("INSERT INTO TransactionEntityNew(id, transaction_name, account_from_id, account_to_id, transaction_type_code, amount_in_cent, transaction_date, category_id, currency, rate) SELECT * FROM TransactionEntity")
+
+        // Drop old table
+        db.execSQL("DROP TABLE TransactionEntity")
+
+        // Rename new table
+        db.execSQL("ALTER TABLE TransactionEntityNew RENAME TO TransactionEntity")
+
+
+        // Add is_deleted column for ScheduledTransactionEntity table
+        db.execSQL("ALTER TABLE ScheduledTransactionEntity ADD is_deleted INTEGER NOT NULL DEFAULT false")
+
+        // End
+        db.execSQL("COMMIT;");
+    }
+}
+
+
+// To add auto increment in primary key of ScheduledTransactionEntity
+val MIGRATION_9_10 = object  : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("BEGIN TRANSACTION;")
+
+        db.execSQL("CREATE TABLE IF NOT EXISTS `ScheduledTransactionEntityNew` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scheduled_transaction_name` TEXT NOT NULL, `scheduled_account_from_id` INTEGER, `scheduled_account_to_id` INTEGER, `transaction_type_code` TEXT NOT NULL, `amount_in_cent` INTEGER NOT NULL, `transaction_date` TEXT NOT NULL, `category_id` INTEGER, `currency` TEXT NOT NULL, `rate` REAL NOT NULL, `scheduler_period` TEXT NOT NULL, `is_deleted` INTEGER NOT NULL)");
+
+        // Copy from old to new
+        db.execSQL("INSERT INTO ScheduledTransactionEntityNew(id, scheduled_transaction_name, scheduled_account_from_id, scheduled_account_to_id, transaction_type_code, amount_in_cent, transaction_date, category_id, currency, rate, scheduler_period, is_deleted) SELECT * FROM ScheduledTransactionEntity")
+
+        // Drop old table
+        db.execSQL("DROP TABLE ScheduledTransactionEntity")
+
+        // Rename new table
+        db.execSQL("ALTER TABLE ScheduledTransactionEntityNew RENAME TO ScheduledTransactionEntity")
+
+        // End
+        db.execSQL("COMMIT;");
+    }
+}
