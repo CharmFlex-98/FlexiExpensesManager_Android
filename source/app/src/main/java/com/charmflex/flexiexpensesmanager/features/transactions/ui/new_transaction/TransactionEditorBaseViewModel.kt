@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 internal abstract class TransactionEditorBaseViewModel(
     private val contentProvider: TransactionEditorContentProvider,
@@ -356,6 +357,8 @@ internal abstract class TransactionEditorBaseViewModel(
     open fun onPeriodSelected(period: SchedulerPeriod, targetField: FEField?) {
         onFieldValueChanged(targetField, period.name, period.name)
     }
+
+    abstract fun calendarSelectionRange(): ClosedRange<LocalDate>
 
     private fun handleFailure(throwable: Throwable) {
         toggleLoader(false)

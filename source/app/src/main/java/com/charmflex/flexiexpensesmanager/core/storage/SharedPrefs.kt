@@ -42,14 +42,11 @@ internal class SharedPrefsImpl @Inject constructor(
     private val dispatcher: CoroutineDispatcher
 ) : SharedPrefs {
 
-    private lateinit var sharedPrefs: SharedPreferences
+    private val sharedPrefs: SharedPreferences by lazy { initSharedPreferences() }
 
-    init {
-        initSharedPreferences()
-    }
-
-    private fun initSharedPreferences() {
-        sharedPrefs = EncryptedSharedPreferences.create(
+    @Synchronized
+    private fun initSharedPreferences(): SharedPreferences {
+        return EncryptedSharedPreferences.create(
             FEM_SHARED_PREFS_FILE_PATH,
             generateMainKeyAlias(),
             appContext,

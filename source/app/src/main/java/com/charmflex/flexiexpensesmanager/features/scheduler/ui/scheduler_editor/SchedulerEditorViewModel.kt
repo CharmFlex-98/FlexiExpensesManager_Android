@@ -17,6 +17,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transacti
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction.TransactionEditorDataUI
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction.TransactionRecordableType
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.time.LocalDate
 import javax.inject.Inject
 
 internal class SchedulerEditorViewModel(
@@ -172,6 +173,10 @@ internal class SchedulerEditorViewModel(
     override fun onPeriodSelected(period: SchedulerPeriod, targetField: FEField?) {
         super.onPeriodSelected(period, targetField)
         selectedPeriod.value = period
+    }
+
+    override fun calendarSelectionRange(): ClosedRange<LocalDate> {
+        return LocalDate.now().minusYears(10)..LocalDate.now().plusMonths(3)
     }
 
     override fun allowProceed(): Boolean {

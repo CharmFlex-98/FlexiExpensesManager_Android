@@ -66,7 +66,7 @@ retrofit_version = "2.9.0"
 okhttp_bom_version = "4.11.0"
 
 # androidx security
-androidx_security_crypto_version = "1.0.0"
+androidx_security_crypto_version = "1.1.0-alpha06"
 androidx_security_identity_version = "1.0.0-alpha03"
 androidx_security_app_authenticator_version = "1.0.0-alpha02"
 

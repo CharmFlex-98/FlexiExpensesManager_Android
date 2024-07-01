@@ -270,7 +270,7 @@ internal fun TransactionEditorScreen(
             DATE_ONLY_DEFAULT_PATTERN
         ),
         isVisible = showCalendar,
-        boundary = LocalDate.now().minusYears(10)..LocalDate.now()
+        boundary = viewModel.calendarSelectionRange()
     )
 
     if (viewState.success) {

@@ -12,6 +12,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositor
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TransactionEditorContentProvider
 import com.charmflex.flexiexpensesmanager.features.transactions.usecases.SubmitTransactionUseCase
 import kotlinx.coroutines.flow.firstOrNull
+import java.time.LocalDate
 import javax.inject.Inject
 
 internal class TransactionEditorViewModel @Inject constructor(
@@ -65,6 +66,10 @@ internal class TransactionEditorViewModel @Inject constructor(
 
     init {
         initialise()
+    }
+
+    override fun calendarSelectionRange(): ClosedRange<LocalDate> {
+        return LocalDate.now().minusYears(10)..LocalDate.now()
     }
 
     override suspend fun loadTransaction(id: Long): TransactionEditorDataUI? {

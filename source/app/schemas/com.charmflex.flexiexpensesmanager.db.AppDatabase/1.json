@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c1a75d526b5b2b07e785d521a8019d3a",
+    "identityHash": "6d548698ba169f2e1ffa1438ceb469db",
     "entities": [
       {
         "tableName": "AccountEntity",
@@ -101,7 +101,17 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_AccountGroupEntity_name",
+            "unique": true,
+            "columnNames": [
+              "name"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_AccountGroupEntity_name` ON `${TABLE_NAME}` (`name`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -697,7 +707,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1a75d526b5b2b07e785d521a8019d3a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6d548698ba169f2e1ffa1438ceb469db')"
     ]
   }
 }
