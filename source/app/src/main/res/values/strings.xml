@@ -88,4 +88,6 @@
     <string name="tag_setting_tag_name">Tag Name</string>
     <string name="tag_setting_tag_name_hint">Insert tag name</string>
     <string name="tag_setting_editor_app_bar_title_add_new">New Tag</string>
+    <string name="generic_delete_tag_warning_subtitle">You are going to delete this tag \'%s\', continue?</string>
+    <string name="generic_delete">Delete</string>
 </resources>

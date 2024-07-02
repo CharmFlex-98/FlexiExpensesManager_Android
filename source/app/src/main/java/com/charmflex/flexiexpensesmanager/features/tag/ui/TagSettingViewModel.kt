@@ -1,6 +1,5 @@
 package com.charmflex.flexiexpensesmanager.features.tag.ui
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.R
@@ -12,12 +11,10 @@ import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
-import com.charmflex.flexiexpensesmanager.ui_common.features.SETTING_EDITOR_ACCOUNT_NAME
 import com.charmflex.flexiexpensesmanager.ui_common.features.SETTING_EDITOR_TAG
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,6 +31,9 @@ internal class TagSettingViewModel @Inject constructor(
 
     private val _snackBarState: MutableStateFlow<SnackBarState> = MutableStateFlow(SnackBarState.None)
     val snackBarState = _snackBarState.asStateFlow()
+
+    private val _bsState = MutableStateFlow<TagSettingViewState.TagSettingDialogState?>(null)
+    val bsState = _bsState.asStateFlow()
 
     init {
         observeTags()
@@ -119,6 +119,33 @@ internal class TagSettingViewModel @Inject constructor(
         }
     }
 
+    fun onDeleteIconTap(tag: Tag) {
+        _viewState.update {
+            it.copy(
+                dialogState = TagSettingViewState.TagSettingDialogState.DeleteWarning(tag)
+            )
+        }
+    }
+
+    fun onConfirmDelete(tag: Tag) {
+        viewModelScope.launch {
+            tagRepository.deleteTag(tagId = tag.id)
+            _viewState.update {
+                it.copy(
+                    dialogState = null
+                )
+            }
+        }
+    }
+
+    fun onCloseDialog() {
+        _viewState.update {
+            it.copy(
+                dialogState = null
+            )
+        }
+    }
+
     fun onToggleEditor(selectedTag: Tag?) {
         _viewState.update {
             it.copy(
@@ -136,7 +163,8 @@ internal class TagSettingViewModel @Inject constructor(
 internal data class TagSettingViewState(
     val selectedTag: Tag? = null,
     val tags: List<Tag> = emptyList(),
-    val tagEditorState: TagEditorState? = null
+    val tagEditorState: TagEditorState? = null,
+    val dialogState: TagSettingDialogState? = null
 ) {
     val isEditorMode: Boolean get() = tagEditorState != null
 
@@ -144,6 +172,13 @@ internal data class TagSettingViewState(
         val fields: List<FEField> = tagFieldsProvider(),
         val tagForEdit: Tag?
     )
+
+    internal sealed interface TagSettingDialogState {
+        data object None: TagSettingDialogState
+        data class DeleteWarning(
+            val tag: Tag,
+        ) : TagSettingDialogState
+    }
 }
 
 private sealed class TagErrorState(

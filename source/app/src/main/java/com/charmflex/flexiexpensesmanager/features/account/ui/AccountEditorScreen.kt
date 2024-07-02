@@ -187,15 +187,17 @@ internal fun AccountEditorScreen(
         }
     }
 
-    if (viewState.deleteDialogState != null) SGActionDialog(
-        title = "Warning",
-        text = "You are going to delete this!",
-        onDismissRequest = viewModel::closeDialog,
-        primaryButtonText = "Confirm",
-        secondaryButtonText = "Cancel"
-    ) {
-        viewModel.deleteItem()
-        viewModel.closeDialog()
+    viewState.deleteDialogState?.let {
+        SGActionDialog(
+            title = "Warning",
+            text = "You are going to delete this!",
+            onDismissRequest = viewModel::closeDialog,
+            primaryButtonText = "Confirm",
+            secondaryButtonText = "Cancel"
+        ) {
+            viewModel.deleteItem(it.id, it.type)
+            viewModel.closeDialog()
+        }
     }
 
     SGSnackBar(

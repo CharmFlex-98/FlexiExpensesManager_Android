@@ -1,19 +1,13 @@
 package com.charmflex.flexiexpensesmanager.features.tag.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,16 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.charmflex.flexiexpensesmanager.R
-import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideUp
 import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FeColumnContainer
+import com.charmflex.flexiexpensesmanager.ui_common.SGActionDialog
 import com.charmflex.flexiexpensesmanager.ui_common.SGAnimatedTransition
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
-import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.features.SettingEditorScreen
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 
 @Composable
@@ -40,9 +34,7 @@ internal fun TagSettingScreen(
 
     val viewState by viewModel.viewState.collectAsState()
 
-    TagListScreen(tags = viewState.tags) {
-        viewModel.onToggleEditor(it)
-    }
+    TagListScreen(viewModel, viewState.tags, viewState.dialogState)
 
     SGAnimatedTransition(
         isVisible = viewState.isEditorMode,
@@ -67,9 +59,11 @@ internal fun TagSettingScreen(
 
 @Composable
 private fun TagListScreen(
+    viewModel: TagSettingViewModel,
     tags: List<Tag>,
-    navigateTagEditor: (selectedTag: Tag?) -> Unit,
+    dialogState: TagSettingViewState.TagSettingDialogState?
 ) {
+
     SGScaffold(
         modifier = Modifier
             .fillMaxWidth()
@@ -77,7 +71,7 @@ private fun TagListScreen(
         topBar = {
             BasicTopBar(title = stringResource(id = R.string.tag_setting_app_bar_title),
                 actions = {
-                    IconButton(onClick =  { navigateTagEditor(null) }) {
+                    IconButton(onClick =  { viewModel.onToggleEditor(null) }) {
                         SGIcons.Add()
                     }
                 }
@@ -85,14 +79,36 @@ private fun TagListScreen(
         }
     ) {
         FeColumnContainer {
-            tags.forEach {
-                Box(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = grid_x2),
-                    contentAlignment = Alignment.CenterStart
+            tags.forEachIndexed { index, it ->
+                if (index != 0) HorizontalDivider()
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = grid_x1),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    FEBody2(text = it.name)
+                    FEBody2(modifier = Modifier.weight(1f), text = it.name)
+                    IconButton(onClick = { viewModel.onDeleteIconTap(it) }) {
+                        SGIcons.Delete()
+                    }
                 }
             }
+        }
+    }
+
+    dialogState?.let {
+        when (it) {
+            is TagSettingViewState.TagSettingDialogState.DeleteWarning -> {
+                SGActionDialog(
+                    title = stringResource(id = R.string.generic_warning),
+                    text = stringResource(id = R.string.generic_delete_tag_warning_subtitle, it.tag.name),
+                    onDismissRequest = { viewModel.onCloseDialog() },
+                    primaryButtonText = stringResource(id = R.string.generic_delete)
+                ) {
+                    viewModel.onConfirmDelete(tag = it.tag)
+                }
+            }
+            else -> {}
         }
     }
 }

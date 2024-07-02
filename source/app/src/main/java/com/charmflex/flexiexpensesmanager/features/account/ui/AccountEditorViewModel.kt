@@ -96,13 +96,10 @@ internal class AccountEditorViewModel @Inject constructor(
         }
     }
 
-    fun deleteItem() {
-        val id = _viewState.value.deleteDialogState?.id ?: return
-        val type = _viewState.value.deleteDialogState?.type ?: return
-
+    fun deleteItem(itemId: Int, type: AccountEditorViewState.Type) {
         when (type) {
-            AccountEditorViewState.Type.ACCOUNT -> deleteAccount(id)
-            AccountEditorViewState.Type.ACCOUNT_GROUP -> deleteAccountGroup(id)
+            AccountEditorViewState.Type.ACCOUNT -> deleteAccount(itemId)
+            AccountEditorViewState.Type.ACCOUNT_GROUP -> deleteAccountGroup(itemId)
         }
     }
 
