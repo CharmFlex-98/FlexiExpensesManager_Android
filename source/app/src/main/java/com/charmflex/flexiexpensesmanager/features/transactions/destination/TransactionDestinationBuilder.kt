@@ -2,17 +2,22 @@ package com.charmflex.flexiexpensesmanager.features.transactions.destination
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.app.di.AppComponentProvider
+import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.FEHorizontalEnterFromEnd
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction.TransactionEditorScreen
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_detail.TransactionDetailScreen
+import com.charmflex.flexiexpensesmanager.ui_common.features.SettingEditorScreen
 
 internal class TransactionDestinationBuilder : DestinationBuilder {
     private val appComponent by lazy { AppComponentProvider.instance.getAppComponent() }
@@ -43,7 +48,19 @@ internal class TransactionDestinationBuilder : DestinationBuilder {
             val viewModel = getViewModel {
                 appComponent.transactionEditorViewModelFactory().create(null)
             }
-            TransactionEditorScreen(viewModel = viewModel)
+//            TransactionEditorScreen(viewModel = viewModel)
+            val f = FEField("", R.string.generic_cancel, R.string.generic_confirm, type = FEField.FieldType.Text)
+            val field = remember { mutableStateOf(f) }
+            SettingEditorScreen(
+                fields = listOf(field.value),
+                appBarTitle = { "Testing" },
+                onTextFieldChanged = { newValue, fe ->
+                    val newValue = FEField.Value("", newValue)
+                    field.value = field.value.copy(valueItem = newValue)
+                },
+                onBack = { /*TODO*/ }) {
+                viewModel.currentTransactionType
+            }
         }
     }
 
