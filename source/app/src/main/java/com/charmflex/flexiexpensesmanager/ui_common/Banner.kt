@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 
-
+// TODO: Evaluate before using this
 @Composable
 fun rememberTopBanner(
     title: String,
@@ -38,13 +38,13 @@ fun rememberTopBanner(
         exit = slideOutVertically(targetOffsetY = { -it }) +
                 shrinkVertically(shrinkTowards = Alignment.Top),
         isVisible = showBanner,
-        fromVisible = !showBanner
     ) {
         SGBanner(title = title, subtitle = subtitle, primaryButtonText = buttonText) {
             showBanner = false
         }
     }
 }
+
 @Composable
 private fun SGBanner(
     title: String,

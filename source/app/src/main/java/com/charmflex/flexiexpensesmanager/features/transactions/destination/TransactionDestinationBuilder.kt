@@ -48,19 +48,7 @@ internal class TransactionDestinationBuilder : DestinationBuilder {
             val viewModel = getViewModel {
                 appComponent.transactionEditorViewModelFactory().create(null)
             }
-//            TransactionEditorScreen(viewModel = viewModel)
-            val f = FEField("", R.string.generic_cancel, R.string.generic_confirm, type = FEField.FieldType.Text)
-            val field = remember { mutableStateOf(f) }
-            SettingEditorScreen(
-                fields = listOf(field.value),
-                appBarTitle = { "Testing" },
-                onTextFieldChanged = { newValue, fe ->
-                    val newValue = FEField.Value("", newValue)
-                    field.value = field.value.copy(valueItem = newValue)
-                },
-                onBack = { /*TODO*/ }) {
-                viewModel.currentTransactionType
-            }
+            TransactionEditorScreen(viewModel = viewModel)
         }
     }
 

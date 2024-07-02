@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-parcelize'
+    id 'com.google.devtools.ksp'
 
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.google.services)
@@ -117,7 +118,7 @@ dependencies {
 
     implementation(libs.kotlin.serialization)
     implementation(libs.squareup.moshi)
-    kapt(libs.moshi.kotlin.codegen)
+    ksp(libs.moshi.kotlin.codegen)
 
     // Compose Navigation
     implementation(libs.compose.navigation)
@@ -143,7 +144,7 @@ dependencies {
 
     // Room
     implementation(libs.android.room)
-    kapt(libs.android.room.compiler)
+    ksp(libs.android.room.compiler)
     implementation(libs.android.room.ktx)
 
     // Network

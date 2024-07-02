@@ -1,5 +1,9 @@
 package com.charmflex.flexiexpensesmanager.ui_common.features
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,44 +25,47 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 
 internal const val SETTING_EDITOR_ACCOUNT_NAME = "SETTING_EDITOR_ACCOUNT_NAME"
 internal const val SETTING_EDITOR_ACCOUNT_INITIAL_AMOUNT = "SETTING_EDITOR_ACCOUNT_INITIAL_AMOUNT"
+internal const val SETTING_EDITOR_TAG = "SETTING_EDITOR_TAG"
 
 @Composable
 internal fun SettingEditorScreen(
     fields: List<FEField>,
-    appBarTitle: () -> String,
+    appBarTitle: String,
     onTextFieldChanged: (String, FEField) -> Unit,
     onBack: () -> Unit,
     onConfirm: () -> Unit,
 ) {
+    BackHandler {
+        onBack()
+    }
+
     SGScaffold(
         modifier = Modifier
             .fillMaxSize()
             .padding(grid_x2),
         topBar = {
-            BasicTopBar(title = appBarTitle())
+            BasicTopBar(title = appBarTitle)
         }
     ) {
-        fields.forEach {
-            SGTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(grid_x1),
-                label = stringResource(id = it.labelId),
-                value = it.valueItem.value
-            ) { newValue ->
-                onTextFieldChanged(newValue, it)
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Top) {
+            fields.forEach {
+                SGTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(grid_x1),
+                    label = stringResource(id = it.labelId),
+                    value = it.valueItem.value
+                ) { newValue ->
+                    onTextFieldChanged(newValue, it)
+                }
             }
         }
 
-        Spacer(modifier = Modifier
-            .fillMaxSize()
-            .weight(1f))
-
         SGButtonGroupVertical {
-            SGLargePrimaryButton(text = stringResource(id = R.string.generic_confirm)) {
+            SGLargePrimaryButton(modifier = Modifier.fillMaxWidth(), text = stringResource(id = R.string.generic_confirm)) {
                 onConfirm()
             }
-            SGLargeSecondaryButton(text = stringResource(id = R.string.generic_cancel)) {
+            SGLargeSecondaryButton(modifier = Modifier.fillMaxWidth(), text = stringResource(id = R.string.generic_cancel)) {
                 onBack()
             }
         }

@@ -73,7 +73,7 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                         row.safeGetCell(9).stringCellValue,
                         row.safeGetCell(10).stringCellValue
                     )
-                    val tags = row.safeGetCell(11).stringCellValue.split(",")
+                    val tags = row.safeGetCell(11).stringCellValue.split(", ")
                     data.add(
                         TransactionBackupData(
                             transactionName = transactionName,

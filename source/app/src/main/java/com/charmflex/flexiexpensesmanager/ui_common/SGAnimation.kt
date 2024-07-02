@@ -178,22 +178,12 @@ fun SGAnimatedTransition(
     modifier: Modifier = Modifier,
     enter: EnterTransition = fadeIn(),
     exit: ExitTransition = fadeOut(),
-    onTransitionFinished: () -> Unit = {},
     isVisible: Boolean = true,
-    fromVisible: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val visibleState = remember(isVisible, fromVisible) {
-        MutableTransitionState(fromVisible).apply {
-            targetState = isVisible
-        }
-    }
-    LaunchedEffect(visibleState.isIdle) {
-        if (visibleState.isIdle) onTransitionFinished()
-    }
     AnimatedVisibility(
         modifier = modifier,
-        visibleState = visibleState,
+        visible = isVisible,
         enter = enter,
         exit = exit
     ) {
