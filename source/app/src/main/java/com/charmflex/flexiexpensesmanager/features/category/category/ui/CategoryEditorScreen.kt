@@ -54,11 +54,12 @@ import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 @Composable
 internal fun CategoryEditorScreen(viewModel: CategoryEditorViewModel) {
     val viewState by viewModel.viewState.collectAsState()
-    val title = when (val n = viewState.currentNode) {
+    val currentNode = viewState.currentNode
+    val title = when (val n = currentNode) {
         null -> "Category"
         else -> "Add Subcategory for ${n.categoryName}"
     }
-    val items = when (val n = viewState.currentNode) {
+    val items = when (val n = currentNode) {
         null -> viewState.categoryChain.categoryTree.items
         else -> n.childNodes
     }

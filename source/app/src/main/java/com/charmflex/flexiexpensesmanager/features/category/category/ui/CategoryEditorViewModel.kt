@@ -51,23 +51,53 @@ internal class CategoryEditorViewModel @Inject constructor(
         viewModelScope.launch {
             categoryRepository.getCategories(editorTypeCode.name).collectLatest {
                 toggleLoading(true)
-                _viewState.value = _viewState.value.copy(
-                    categoryChain = _viewState.value.categoryChain.copy(
-                        version = _viewState.value.categoryChain.version + 1,
-                        categoryTree = it
-                    ),
-                    currentNode = _viewState.value.currentNode?.let { currentNode ->
-                        for (item in it.items) {
-                            val res = getNode(currentNode.categoryId, item)
-                            if (res != null) return@let res
-                        }
-                        return@let null
-                    }
-                )
-
+                updateCategoryChain(it)
                 toggleLoading(false)
             }
         }
+    }
+
+    private fun updateCategoryChain(it: TransactionCategories) {
+        val categoryChain = _viewState.value.categoryChain.copy(
+            version = _viewState.value.categoryChain.version + 1,
+            categoryTree = it
+        )
+        _viewState.update { vs ->
+            vs.copy(
+                categoryChain = categoryChain,
+                historyStack = run {
+                    val historyStack = _viewState.value.historyStack
+                    if (historyStack.isNotEmpty()) {
+                        val firstOldNode = historyStack[0]
+                        val firstNewNode =
+                            it.items.firstOrNull { it.categoryId == firstOldNode.categoryId }
+                        firstNewNode?.let {
+                            val arrayDeque = listOf(it)
+                            invalidateHistoryStack(0, arrayDeque)
+                        } ?: historyStack
+                    } else historyStack
+                }
+            )
+        }
+
+    }
+
+    private fun invalidateHistoryStack(
+        stackIndex: Int,
+        result: List<TransactionCategories.Node>
+    ): List<TransactionCategories.Node> {
+        val historyStack = _viewState.value.historyStack
+        // If reach the end, return
+        if (stackIndex >= historyStack.size - 1) return result
+
+        // Get current referencing node
+        val oldNextNode = historyStack[stackIndex + 1]
+        val newCurrentNode = result.last()
+        val newNextNode =
+            newCurrentNode.childNodes.firstOrNull { it.categoryId == oldNextNode.categoryId }
+        if (newNextNode == null) return result// This should not happen..., but will return anyway
+
+        return invalidateHistoryStack(stackIndex + 1, result + newNextNode)
     }
 
     private fun autoAddCategoryForImport(categoryChain: List<String>) {
@@ -77,13 +107,14 @@ internal class CategoryEditorViewModel @Inject constructor(
                 val rootCategoryName = categoryChain[0]
                 val rootNode = it.items.firstOrNull { it.categoryName == rootCategoryName }
                 if (rootNode != null) {
-                    val state = getImportCategoryState(categoryChain, 0, rootNode)
+                    val arrayDeque = ArrayDeque<TransactionCategories.Node>()
+                    arrayDeque.addLast(rootNode)
+                    val state = getImportCategoryState(categoryChain, 0, arrayDeque)
                     _viewState.value = _viewState.value.copy(
                         categoryChain = _viewState.value.categoryChain.copy(
                             version = _viewState.value.categoryChain.version + 1,
                             categoryTree = it
                         ),
-                        currentNode = state.node,
                         editorState = state.editorState
                     )
                 } else {
@@ -92,8 +123,10 @@ internal class CategoryEditorViewModel @Inject constructor(
                             version = _viewState.value.categoryChain.version + 1,
                             categoryTree = it
                         ),
-                        currentNode = null,
-                        editorState = CategoryEditorViewState.EditorState(isOpened = true, value = rootCategoryName)
+                        editorState = CategoryEditorViewState.EditorState(
+                            isOpened = true,
+                            value = rootCategoryName
+                        )
                     )
                 }
 
@@ -108,50 +141,43 @@ internal class CategoryEditorViewModel @Inject constructor(
             return
         }
 
-        val currentNode = _viewState.value.currentNode
-        if (currentNode == null) routeNavigator.pop()
+        if (viewState.value.currentNode == null) routeNavigator.pop()
         else {
-            _viewState.update {
-                it.copy(
-                    currentNode = currentNode.parentNode
-                )
-            }
+            _viewState.value = _viewState.value.copy(
+                historyStack = _viewState.value.historyStack.dropLast(1)
+            )
         }
     }
 
-    private fun getNode(
-        categoryId: Int,
-        currentNode: TransactionCategories.Node
-    ): TransactionCategories.Node? {
-        if (currentNode.categoryId == categoryId) return currentNode
-        else {
-            for (item in currentNode.childNodes) {
-                Log.d("test", currentNode.categoryId.toString())
-                val res = getNode(categoryId, item)
-                if (res != null) return res
-            }
-
-            return null
-        }
-    }
 
     private fun getImportCategoryState(
         chain: List<String>,
         index: Int,
-        currentNode: TransactionCategories.Node
+        nodeStack: ArrayDeque<TransactionCategories.Node>,
     ): ImportCategoryState {
         // If already reach the end of the chain but still able to get to here, something is wrong..
         if (index >= chain.size - 1) {
-            return ImportCategoryState(node = null, errorMessage = "Cannot find the category path...")
+            return ImportCategoryState(
+                node = null,
+                errorMessage = "Cannot find the category path..."
+            )
         }
 
+        val currentNode = nodeStack.last()
         val nextCategoryName = chain[index + 1]
         val nextNode = currentNode.childNodes.firstOrNull { it.categoryName == nextCategoryName }
 
         return if (nextNode == null) {
-            ImportCategoryState(node = currentNode, editorState = CategoryEditorViewState.EditorState(isOpened = true, value = nextCategoryName))
+            ImportCategoryState(
+                node = currentNode,
+                editorState = CategoryEditorViewState.EditorState(
+                    isOpened = true,
+                    value = nextCategoryName
+                )
+            )
         } else {
-            getImportCategoryState(chain, index + 1, nextNode)
+            nodeStack.addLast(nextNode)
+            getImportCategoryState(chain, index + 1, nodeStack)
         }
     }
 
@@ -190,12 +216,16 @@ internal class CategoryEditorViewModel @Inject constructor(
     }
 
     fun onClickItem(node: TransactionCategories.Node) {
-        _viewState.update {
-            it.copy(
-                currentNode = node
-            )
+        if (_viewState.value.historyStack.size < categoryLevelCount() - 1) {
+            _viewState.update {
+                it.copy(
+                    historyStack = _viewState.value.historyStack + node
+                )
+            }
         }
     }
+
+    private fun categoryLevelCount(): Int = 3
 
     fun openEditor() {
         _viewState.update {
@@ -277,15 +307,18 @@ internal class CategoryEditorViewModel @Inject constructor(
 
 internal data class CategoryEditorViewState(
     val categoryChain: CategoryChainUI = CategoryChainUI(),
-    val currentNode: TransactionCategories.Node? = null,
+    val historyStack: List<TransactionCategories.Node> = emptyList(),
     val isLoading: Boolean = false,
     val editorState: EditorState = EditorState(),
     val dialogState: DeleteDialogState? = null
 ) {
+    val currentNode get() = historyStack.lastOrNull()
+
     data class CategoryChainUI(
         val version: Int = 1,
         val categoryTree: TransactionCategories = TransactionCategories(items = listOf())
     )
+
     data class EditorState(
         val isOpened: Boolean = false,
         val value: String = ""

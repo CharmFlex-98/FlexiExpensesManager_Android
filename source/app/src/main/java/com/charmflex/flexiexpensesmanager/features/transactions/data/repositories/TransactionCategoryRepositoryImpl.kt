@@ -35,7 +35,7 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
             emit(it to it.filter { entity -> entity.parentId == 0 })
         }.map { (res, rootItems) ->
             TransactionCategories(
-                items = rootItems.map { buildNode(1, res, it, null) }
+                items = rootItems.map { buildNode(1, res, it) }
             )
         }
     }
@@ -47,7 +47,7 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
             emit(it to it.filter { entity -> entity.parentId == 0 })
         }.map { (res, rootItems) ->
             TransactionCategories(
-                items = rootItems.map { buildNode(1, res, it, null) }
+                items = rootItems.map { buildNode(1, res, it) }
             )
         }
     }
@@ -77,13 +77,11 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
         level: Int,
         items: List<TransactionCategoryEntity>,
         entity: TransactionCategoryEntity,
-        parentNode: TransactionCategories.Node?
     ): TransactionCategories.Node {
         return TransactionCategories.Node(
             level = level,
             categoryId = entity.id,
             categoryName = entity.name,
-            parentNode = parentNode
         ).also { node ->
             node.addChildren(
                 items
@@ -93,7 +91,6 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
                         level = level + 1,
                         items = items,
                         entity = it,
-                        parentNode = node
                     )
                 }
             )

@@ -11,7 +11,6 @@ internal data class TransactionCategories(
         val categoryId: Int,
         val categoryName: String,
         val level: Int,
-        val parentNode: Node?,
     ) {
         private val _childNodes: MutableList<Node> = mutableListOf()
         val childNodes get() = _childNodes.toList()
