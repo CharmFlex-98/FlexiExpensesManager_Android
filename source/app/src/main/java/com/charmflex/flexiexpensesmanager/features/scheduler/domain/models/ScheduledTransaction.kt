@@ -28,7 +28,7 @@ internal data class ScheduledTransaction(
             transactionName = this.transactionName,
             transactionAccountFrom = this.accountFrom?.accountId,
             transactionAccountTo = this.accountTo?.accountId,
-            transactionTypeCode = TransactionType.INCOME.name,
+            transactionTypeCode = transactionType.name,
             amountInCent = amountInCent,
             transactionCategoryId = category?.id,
             transactionDate = transactionDate,

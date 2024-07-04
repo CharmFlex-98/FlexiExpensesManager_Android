@@ -70,7 +70,7 @@ internal class ScheduledTransactionHandlerImpl @Inject constructor(
         scheduledTransaction: ScheduledTransaction,
     ) : ScheduleTransactionUpdateState {
         val toInsert = mutableListOf<TransactionDomainInput>()
-        val startDate = scheduledTransaction.startUpdateDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)!!
+        val startDate = scheduledTransaction.nextUpdateDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)!!
         var nextDate = startDate
         while (nextDate <= LocalDate.now()) {
             toInsert.add(
