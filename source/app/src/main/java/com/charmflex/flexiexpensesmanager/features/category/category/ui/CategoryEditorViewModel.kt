@@ -1,6 +1,5 @@
 package com.charmflex.flexiexpensesmanager.features.category.category.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
@@ -107,15 +106,15 @@ internal class CategoryEditorViewModel @Inject constructor(
                 val rootCategoryName = categoryChain[0]
                 val rootNode = it.items.firstOrNull { it.categoryName == rootCategoryName }
                 if (rootNode != null) {
-                    val arrayDeque = ArrayDeque<TransactionCategories.Node>()
-                    arrayDeque.addLast(rootNode)
+                    val arrayDeque = listOf(rootNode)
                     val state = getImportCategoryState(categoryChain, 0, arrayDeque)
                     _viewState.value = _viewState.value.copy(
                         categoryChain = _viewState.value.categoryChain.copy(
                             version = _viewState.value.categoryChain.version + 1,
                             categoryTree = it
                         ),
-                        editorState = state.editorState
+                        editorState = state.editorState,
+                        historyStack = state.historyStack
                     )
                 } else {
                     _viewState.value = _viewState.value.copy(
@@ -126,7 +125,8 @@ internal class CategoryEditorViewModel @Inject constructor(
                         editorState = CategoryEditorViewState.EditorState(
                             isOpened = true,
                             value = rootCategoryName
-                        )
+                        ),
+                        historyStack = listOf()
                     )
                 }
 
@@ -136,16 +136,14 @@ internal class CategoryEditorViewModel @Inject constructor(
     }
 
     fun back() {
-        if (_viewState.value.editorState.isOpened) {
-            closeEditor()
-            return
-        }
-
-        if (viewState.value.currentNode == null) routeNavigator.pop()
-        else {
-            _viewState.value = _viewState.value.copy(
-                historyStack = _viewState.value.historyStack.dropLast(1)
-            )
+        when {
+            isImportFixFlow || viewState.value.currentNode == null -> routeNavigator.pop()
+            _viewState.value.editorState.isOpened -> closeEditor()
+            else -> {
+                _viewState.value = _viewState.value.copy(
+                    historyStack = _viewState.value.historyStack.dropLast(1)
+                )
+            }
         }
     }
 
@@ -153,12 +151,12 @@ internal class CategoryEditorViewModel @Inject constructor(
     private fun getImportCategoryState(
         chain: List<String>,
         index: Int,
-        nodeStack: ArrayDeque<TransactionCategories.Node>,
+        nodeStack: List<TransactionCategories.Node>,
     ): ImportCategoryState {
         // If already reach the end of the chain but still able to get to here, something is wrong..
         if (index >= chain.size - 1) {
             return ImportCategoryState(
-                node = null,
+                historyStack = listOf(),
                 errorMessage = "Cannot find the category path..."
             )
         }
@@ -169,15 +167,14 @@ internal class CategoryEditorViewModel @Inject constructor(
 
         return if (nextNode == null) {
             ImportCategoryState(
-                node = currentNode,
+                historyStack = nodeStack,
                 editorState = CategoryEditorViewState.EditorState(
                     isOpened = true,
                     value = nextCategoryName
                 )
             )
         } else {
-            nodeStack.addLast(nextNode)
-            getImportCategoryState(chain, index + 1, nodeStack)
+            getImportCategoryState(chain, index + 1, nodeStack + nextNode)
         }
     }
 
@@ -331,6 +328,6 @@ internal data class CategoryEditorViewState(
 
 internal data class ImportCategoryState(
     val editorState: CategoryEditorViewState.EditorState = CategoryEditorViewState.EditorState(),
-    val node: TransactionCategories.Node?,
+    val historyStack: List<TransactionCategories.Node>,
     val errorMessage: String = ""
 )

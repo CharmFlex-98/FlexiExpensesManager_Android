@@ -33,12 +33,12 @@ internal class ImportDataChecker @Inject constructor(
             accountRepository.getAllAccounts().firstOrNull()?.map { it.accounts }?.flatten()
         val tags = tagRepository.getAllTags().firstOrNull()
         val incomeCategories =
-            categoryRepository.getCategoriesIncludeDeleted(TransactionType.INCOME.name)
+            categoryRepository.getCategories(TransactionType.INCOME.name)
                 .firstOrNull()?.let {
                 generateCategoriesMap(it)
             }
         val expensesCategories =
-            categoryRepository.getCategoriesIncludeDeleted(TransactionType.EXPENSES.name)
+            categoryRepository.getCategories(TransactionType.EXPENSES.name)
                 .firstOrNull()?.let {
                 generateCategoriesMap(it)
             }
@@ -131,12 +131,12 @@ internal class ImportDataChecker @Inject constructor(
                 it.accountName
             }
             val expensesCategories =
-                categoryRepository.getCategoriesIncludeDeleted(TransactionType.EXPENSES.name)
+                categoryRepository.getCategories(TransactionType.EXPENSES.name)
                     .firstOrNull()?.let {
                         generateCategoriesMap(it)
                     }
             val incomeCategories =
-                categoryRepository.getCategoriesIncludeDeleted(TransactionType.INCOME.name)
+                categoryRepository.getCategories(TransactionType.INCOME.name)
                     .firstOrNull()?.let {
                         generateCategoriesMap(it)
                     }
