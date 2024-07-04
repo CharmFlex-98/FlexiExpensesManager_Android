@@ -36,9 +36,13 @@ internal class CategoryDestinationBuilder(
             enterTransition = FEVerticalSlideUp,
             exitTransition = FEVerticalSlideDown
         ) {
-            val importFixCatName = it.arguments?.getString(CategoryRoutes.Args.IMPORT_FIX_CATEGORY_NAME)
+            val importFixCatName =
+                it.arguments?.getString(CategoryRoutes.Args.IMPORT_FIX_CATEGORY_NAME)
             val type = it.arguments?.getString(CategoryRoutes.Args.TRANSACTION_TYPE).orEmpty()
-            val viewModel = getViewModel { appComponent.categoryEditorViewModel().apply { setType(type = type, importFixCatName) } }
+            val viewModel = getViewModel {
+                appComponent.categoryEditorViewModel()
+                    .apply { setType(type = type, importFixCatName) }
+            }
 
             CategoryEditorScreen(viewModel = viewModel)
         }
@@ -51,7 +55,14 @@ internal class CategoryDestinationBuilder(
             popExitTransition = FEHorizontalExitToEnd,
             popEnterTransition = FEHorizontalEnterFromStart,
         ) {
-            val viewModel = getViewModel { appComponent.categoryStatViewModel() }
+            val dateFilter =
+                navController.previousBackStackEntry?.savedStateHandle?.remove<DateFilter>(
+                    CategoryRoutes.Args.CATEGORY_DATE_FILTER
+                )
+            val viewModel = getViewModel {
+                appComponent.categoryStatViewModel()
+                    .apply { dateFilter?.let { onDateFilterChanged(dateFilter) } }
+            }
             CategoryStatScreen(viewModel = viewModel)
         }
     }
@@ -77,11 +88,18 @@ internal class CategoryDestinationBuilder(
                 }
             )
         ) {
-            val dateFilter = navController.previousBackStackEntry?.savedStateHandle?.remove<DateFilter>(CategoryRoutes.Args.CATEGORY_DETAIL_DATE_FILTER)
+            val dateFilter =
+                navController.previousBackStackEntry?.savedStateHandle?.remove<DateFilter>(
+                    CategoryRoutes.Args.CATEGORY_DATE_FILTER
+                )
             val categoryId = it.arguments?.getInt(CategoryRoutes.Args.CATEGORY_ID) ?: -1
             val categoryName = it.arguments?.getString(CategoryRoutes.Args.CATEGORY_NAME) ?: ""
-            val transactionType = it.arguments?.getString(CategoryRoutes.Args.TRANSACTION_TYPE) ?: ""
-            val viewModel = getViewModel { appComponent.categoryDetailViewModelFactory().create(categoryId, categoryName, transactionType, dateFilter) }
+            val transactionType =
+                it.arguments?.getString(CategoryRoutes.Args.TRANSACTION_TYPE) ?: ""
+            val viewModel = getViewModel {
+                appComponent.categoryDetailViewModelFactory()
+                    .create(categoryId, categoryName, transactionType, dateFilter)
+            }
             CategoryDetailScreen(viewModel = viewModel)
         }
     }

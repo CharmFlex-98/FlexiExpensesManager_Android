@@ -90,4 +90,13 @@
     <string name="tag_setting_editor_app_bar_title_add_new">New Tag</string>
     <string name="generic_delete_tag_warning_subtitle">You are going to delete this tag \'%s\', continue?</string>
     <string name="generic_delete">Delete</string>
+    <string name="setting_editor_budget_category_label">Category</string>
+    <string name="setting_editor_budget_category_hint">Select category</string>
+    <string name="setting_editor_budget_amount_label">Amount</string>
+    <string name="setting_editor_budget_amount_hint">Budget amount</string>
+    <string name="budget_setting_add_new_budget_app_title">Create new budget</string>
+    <string name="setting_budget_title">Set budget</string>
+    <string name="budget_setting_app_bar_title">Budget Setting</string>
+    <string name="budget_detail_home_button">Budget detail</string>
+    <string name="budget_detail_app_bar_title">Budget Detail</string>
 </resources>

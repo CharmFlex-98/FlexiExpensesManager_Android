@@ -103,15 +103,20 @@ internal fun ColumnScope.ExpensesChartScreen(
             }
         )
         Row(modifier = Modifier.padding(vertical = grid_x1)) {
-//            TextButton(onClick = { viewModel.onToggleTagDialog(true) }) {
-//                S(text = stringResource(id = R.string.expenses_chart_select_tag_label))
-//            }
+            TextButton(
+                onClick = { viewModel.onNavigateBudgetDetail() },
+                border = BorderStroke(width = 1.dp, MaterialTheme.colorScheme.tertiary)
+            ) {
+                FECallout3(text = stringResource(id = R.string.budget_detail_home_button))
+            }
             Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = { viewModel.onNavigateExpensesDetailPage() }, border = BorderStroke(width = 1.dp, MaterialTheme.colorScheme.tertiary)) {
+            TextButton(
+                onClick = { viewModel.onNavigateExpensesDetailPage() },
+                border = BorderStroke(width = 1.dp, MaterialTheme.colorScheme.tertiary)
+            ) {
                 FECallout3(text = stringResource(id = R.string.expenses_chart_detail_button))
             }
         }
-
 
         TabRow(selectedTabIndex = chartType.index) {
             getTabs().forEachIndexed { index, chartType ->
@@ -280,6 +285,7 @@ internal sealed class FilterMenuDropDownItem(
         titleResId = R.string.date_filter_all,
         filterMenuItemType = FilterMenuItemType.ALL
     )
+
     object Monthly : FilterMenuDropDownItem(
         titleResId = R.string.date_filter_monthly,
         filterMenuItemType = FilterMenuItemType.MONTHLY

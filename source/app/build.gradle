@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.google.firebase.crashlytics.plugin)
     alias(libs.plugins.kotlin.serialization.plugin)
+    alias(libs.plugins.room.gradle.plugin)
 }
 
 android {
@@ -24,12 +25,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
-        }
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
-            }
         }
     }
 
@@ -93,6 +88,9 @@ android {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
+    }
+    room {
+        schemaDirectory "$projectDir/schemas"
     }
 }
 

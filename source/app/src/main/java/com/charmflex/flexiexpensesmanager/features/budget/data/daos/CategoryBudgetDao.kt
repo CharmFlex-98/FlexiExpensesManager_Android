@@ -1,0 +1,48 @@
+package com.charmflex.flexiexpensesmanager.features.budget.data.daos
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
+import com.charmflex.flexiexpensesmanager.features.budget.data.entities.CategoryBudgetEntity
+import com.charmflex.flexiexpensesmanager.features.budget.data.responses.CategoryBudgetResponse
+import com.charmflex.flexiexpensesmanager.features.budget.data.responses.MonthCategoryBudgetInfoResponse
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+internal interface CategoryBudgetDao {
+
+    @Insert
+    suspend fun addCategoryBudget(input: CategoryBudgetEntity): Long
+
+    @Query(
+        "SELECT cb.id, " +
+                "tc.id as category_id, " +
+                "tc.name as category_name, " +
+                "cb.default_budget_in_cent FROM CategoryBudgetEntity cb " +
+                "INNER JOIN TransactionCategoryEntity tc ON cb.category_id = tc.id"
+    )
+    fun getAllCategoryBudgets(): Flow<List<CategoryBudgetResponse>>
+
+    @Update
+    suspend fun updateCategoryBudget(input: CategoryBudgetEntity)
+
+    @Query(
+        "DELETE FROM CategoryBudgetEntity WHERE id = :id"
+    )
+    suspend fun deleteCategoryBudget(id: Int)
+
+    @Query(
+        "SELECT tc.id as category_id," +
+                "tc.name as category_name," +
+                "tc.parent_id as category_parent_id, " +
+                "cb.id as category_budget_id," +
+                "cb.default_budget_in_cent, " +
+                "mcb.budget_month_year," +
+                "mcb.custom_budget_in_cent FROM TransactionCategoryEntity tc " +
+                "LEFT JOIN CategoryBudgetEntity cb ON cb.category_id = tc.id " +
+                "LEFT JOIN MonthlyCategoryBudgetEntity mcb ON cb.id = mcb.category_budget_id " +
+                "WHERE tc.transaction_type_code = 'EXPENSES'"
+    )
+    fun getCategoryBudgetByMonth(): Flow<List<MonthCategoryBudgetInfoResponse>>
+}

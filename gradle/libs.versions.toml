@@ -201,3 +201,4 @@ org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.re
 google-services = { id = "com.google.gms.google-services", version.ref = "google_services_version" }
 google-firebase-crashlytics-plugin = { id = "com.google.firebase.crashlytics", version.ref = "firebase_crashlytics_plugin_version"}
 kotlin-serialization-plugin = { id = 'org.jetbrains.kotlin.plugin.serialization', version.ref = 'kotlin_seriallization_plugin_version' }
+room-gradle-plugin = { id = 'androidx.room', version.ref = 'room_version'}

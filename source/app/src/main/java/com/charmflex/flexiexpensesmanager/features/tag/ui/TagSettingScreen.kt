@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
+import com.charmflex.flexiexpensesmanager.ui_common.BasicColumnContainerItemList
 import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FeColumnContainer
@@ -78,22 +79,17 @@ private fun TagListScreen(
             )
         }
     ) {
-        FeColumnContainer {
-            tags.forEachIndexed { index, it ->
-                if (index != 0) HorizontalDivider()
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = grid_x1),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    FEBody2(modifier = Modifier.weight(1f), text = it.name)
-                    IconButton(onClick = { viewModel.onDeleteIconTap(it) }) {
-                        SGIcons.Delete()
-                    }
+        BasicColumnContainerItemList(
+            items = tags,
+            itemContent = {
+                FEBody2(modifier = Modifier.weight(1f), text = it.name)
+            },
+            actionItems = {
+                IconButton(onClick = { viewModel.onDeleteIconTap(it) }) {
+                    SGIcons.Delete()
                 }
             }
-        }
+        )
     }
 
     dialogState?.let {

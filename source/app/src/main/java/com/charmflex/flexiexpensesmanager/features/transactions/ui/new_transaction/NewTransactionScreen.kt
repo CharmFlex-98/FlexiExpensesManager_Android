@@ -306,7 +306,9 @@ internal fun TransactionEditorScreen(
                 }
 
                 is TransactionEditorViewState.CurrencySelectionBottomSheetState -> {
-                    GeneralSelectionBottomSheet(items = viewState.currencyList, name = { it.name }) {
+                    GeneralSelectionBottomSheet(
+                        items = viewState.currencyList,
+                        name = { it.name }) {
                         viewModel.onCurrencySelected(it, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
@@ -320,7 +322,9 @@ internal fun TransactionEditorScreen(
                 }
 
                 is TransactionEditorViewState.PeriodSelectionBottomSheetState -> {
-                    GeneralSelectionBottomSheet(items = viewModel.scheduledPeriodType, name = { it.name }) { res ->
+                    GeneralSelectionBottomSheet(
+                        items = viewModel.scheduledPeriodType,
+                        name = { it.name }) { res ->
                         viewModel.onPeriodSelected(res, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
@@ -334,7 +338,7 @@ internal fun TransactionEditorScreen(
 }
 
 @Composable
-private fun CategorySelectionBottomSheet(
+internal fun CategorySelectionBottomSheet(
     onSelected: (String, String) -> Unit,
     transactionCategories: TransactionCategories?
 ) {

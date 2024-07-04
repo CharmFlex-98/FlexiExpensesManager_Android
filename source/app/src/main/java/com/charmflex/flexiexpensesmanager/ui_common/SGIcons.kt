@@ -16,6 +16,20 @@ object SGIcons {
     }
 
     @Composable
+    fun Collapse(
+        modifier: Modifier = Modifier
+    ) {
+        Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_up), contentDescription = "")
+    }
+
+    @Composable
+    fun Expand(
+        modifier: Modifier = Modifier
+    ) {
+        Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_icon_down), contentDescription = "")
+    }
+
+    @Composable
     fun Add(
         modifier: Modifier = Modifier
     ) {

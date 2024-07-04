@@ -10,6 +10,8 @@ import com.charmflex.flexiexpensesmanager.features.account.di.modules.AccountMod
 import com.charmflex.flexiexpensesmanager.features.auth.di.AuthInjector
 import com.charmflex.flexiexpensesmanager.features.backup.di.BackupInjector
 import com.charmflex.flexiexpensesmanager.features.backup.di.BackupModule
+import com.charmflex.flexiexpensesmanager.features.budget.di.BudgetInjector
+import com.charmflex.flexiexpensesmanager.features.budget.di.modules.BudgetModules
 import com.charmflex.flexiexpensesmanager.features.category.category.di.CategoryInjector
 import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyInjector
 import com.charmflex.flexiexpensesmanager.features.currency.di.CurrencyModule
@@ -34,13 +36,14 @@ import javax.inject.Singleton
         MainModule::class,
         CurrencyModule::class,
         BackupModule::class,
-        TransactionSchedulerModule::class
+        TransactionSchedulerModule::class,
+        BudgetModules::class
     ]
 )
 @Singleton
 internal interface AppComponent : MainInjector, AuthInjector, TransactionInjector, HomeInjector,
     CategoryInjector, AccountInjector, CurrencyInjector, TagInjector, BackupInjector,
-    SchedulerInjector, SessionInjector {
+    SchedulerInjector, SessionInjector, BudgetInjector {
 
     @Component.Factory
     interface Factory {

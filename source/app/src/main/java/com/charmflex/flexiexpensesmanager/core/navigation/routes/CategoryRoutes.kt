@@ -10,7 +10,7 @@ internal object CategoryRoutes {
         const val IMPORT_FIX_CATEGORY_NAME = "import_fix_cat_name"
         const val CATEGORY_ID = "category_id"
         const val CATEGORY_NAME = "category_name"
-        const val CATEGORY_DETAIL_DATE_FILTER = "CATEGORY_DETAIL_DATE_FILTER"
+        const val CATEGORY_DATE_FILTER = "CATEGORY_DATE_FILTER"
     }
 
     val EDITOR = buildRoute("$ROOT/editor") {

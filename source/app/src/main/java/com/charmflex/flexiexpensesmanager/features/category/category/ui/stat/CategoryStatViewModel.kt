@@ -46,7 +46,7 @@ internal class CategoryStatViewModel @Inject constructor(
         categoryName: String,
         type: TransactionType
     ) {
-        val args = mapOf(CategoryRoutes.Args.CATEGORY_DETAIL_DATE_FILTER to _dateFilter.value)
+        val args = mapOf(CategoryRoutes.Args.CATEGORY_DATE_FILTER to _dateFilter.value)
         routeNavigator.navigateTo(
             CategoryRoutes.categoryTransactionDetail(
                 categoryId,

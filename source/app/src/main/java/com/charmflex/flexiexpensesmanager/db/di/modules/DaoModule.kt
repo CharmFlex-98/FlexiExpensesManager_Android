@@ -3,6 +3,7 @@ package com.charmflex.flexiexpensesmanager.db.di.modules
 import com.charmflex.flexiexpensesmanager.db.AppDatabase
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountTransactionDao
+import com.charmflex.flexiexpensesmanager.features.budget.data.daos.CategoryBudgetDao
 import com.charmflex.flexiexpensesmanager.features.currency.data.daos.CurrencyDao
 import com.charmflex.flexiexpensesmanager.features.scheduler.data.daos.ScheduledTransactionDao
 import com.charmflex.flexiexpensesmanager.features.scheduler.data.daos.ScheduledTransactionTagDao
@@ -60,6 +61,11 @@ internal interface DaoModule {
         @Provides
         fun scheduledTransactionTagDao(db: AppDatabase): ScheduledTransactionTagDao {
             return db.getScheduledTransactionTagDao()
+        }
+
+        @Provides
+        fun categoryBudgetDao(db: AppDatabase): CategoryBudgetDao {
+            return db.getCategoryBudgetDao()
         }
     }
 }

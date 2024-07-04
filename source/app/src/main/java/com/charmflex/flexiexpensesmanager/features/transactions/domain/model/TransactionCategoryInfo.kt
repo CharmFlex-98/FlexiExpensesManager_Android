@@ -19,8 +19,6 @@ internal data class TransactionCategories(
             _childNodes.addAll(nodes)
         }
 
-        val parentNodeId get() = parentNode?.categoryId
-
         val isLeaf get() = childNodes.isEmpty()
 
         val allowSubCategory get() = level < 3

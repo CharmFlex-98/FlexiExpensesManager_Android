@@ -20,13 +20,13 @@ internal data class FEField(
         }
 
     sealed interface FieldType {
-        object Text : FieldType
+        data object Text : FieldType
 
-        object Number : FieldType
-        object Currency : FieldType
+        data object Number : FieldType
+        data object Currency : FieldType
 
         sealed interface Selection : FieldType
-        object Callback : Selection
+        data object Callback : Selection
 
         data class SingleItemSelection(
             val options: List<Option>

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aay.compose.donutChart.model.PieChartData
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.BudgetRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
@@ -78,7 +79,8 @@ internal class ExpensesChartViewModel @Inject constructor(
     }
 
     fun onNavigateExpensesDetailPage() {
-        routeNavigator.navigateTo(CategoryRoutes.STAT)
+        val args = mapOf(CategoryRoutes.Args.CATEGORY_DATE_FILTER to _dateFilter.value)
+        routeNavigator.navigateTo(CategoryRoutes.STAT, args)
     }
 
     private fun observeTagFilterChanged() {
@@ -107,6 +109,10 @@ internal class ExpensesChartViewModel @Inject constructor(
                 showTagFilterDialog = isVisible
             )
         }
+    }
+
+    fun onNavigateBudgetDetail() {
+        routeNavigator.navigateTo(BudgetRoutes.budgetDetailRoute)
     }
 
     fun toggleChartType(chartType: ExpensesPieChartViewState.ChartType) {

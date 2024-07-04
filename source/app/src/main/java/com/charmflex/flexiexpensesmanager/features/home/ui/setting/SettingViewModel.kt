@@ -10,6 +10,7 @@ import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupManag
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.BackupRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.BudgetRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.SchedulerRoutes
@@ -126,6 +127,10 @@ internal class SettingViewModel @Inject constructor(
             SettingAction.SCHEDULER -> {
                 routeNavigator.navigateTo(SchedulerRoutes.SCHEDULER_LIST)
             }
+
+            SettingAction.BUDGET -> {
+                routeNavigator.navigateTo(BudgetRoutes.budgetSettingRoute)
+            }
         }
     }
 
@@ -239,6 +244,10 @@ internal class SettingViewModel @Inject constructor(
             SettingActionable(
                 title = resourcesProvider.getString(R.string.setting_scheduler_title),
                 action = SettingAction.SCHEDULER
+            ),
+            SettingActionable(
+                title = resourcesProvider.getString(R.string.setting_budget_title),
+                action = SettingAction.BUDGET
             )
         )
     }
@@ -279,5 +288,5 @@ internal data class SettingActionable(
 )
 
 internal enum class SettingAction {
-    EXPENSES_CAT, INCOME_CAT, ACCOUNT, PRIMARY_CURRENCY, SECONDARY_CURRENCY, Tag, Export, Import, RESET_DATA, SCHEDULER
+    EXPENSES_CAT, INCOME_CAT, ACCOUNT, PRIMARY_CURRENCY, SECONDARY_CURRENCY, Tag, Export, Import, RESET_DATA, SCHEDULER, BUDGET
 }

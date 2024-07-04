@@ -39,7 +39,7 @@ internal class AccountHomeViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(AccountHomeViewState())
     val viewState = _viewState.asStateFlow()
 
-    private val _dateFilter = MutableStateFlow<DateFilter>(DateFilter.Monthly(0))
+    private val _dateFilter = MutableStateFlow<DateFilter>(DateFilter.All)
     val dateFilter = _dateFilter.asStateFlow()
 
     init {
