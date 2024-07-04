@@ -1,9 +1,5 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.domain.model
 
-import androidx.room.ColumnInfo
-import androidx.room.PrimaryKey
-import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionCategoryEntity
-
 internal data class TransactionCategories(
     val items: List<Node>
 ) {

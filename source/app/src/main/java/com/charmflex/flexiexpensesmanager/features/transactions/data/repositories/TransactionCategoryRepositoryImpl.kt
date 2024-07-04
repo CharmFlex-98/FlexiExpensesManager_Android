@@ -31,24 +31,34 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getCategories(transactionTypeCode: String): Flow<TransactionCategories> {
         val res = transactionCategoryDao.getCategories(transactionTypeCode)
-        return res.transformLatest {
-            emit(it to it.filter { entity -> entity.parentId == 0 })
-        }.map { (res, rootItems) ->
-            TransactionCategories(
-                items = rootItems.map { buildNode(1, res, it) }
-            )
+        return res.transformLatest { list ->
+            val map = list.groupBy { it.parentId }
+            val items = list.filter { it.parentId == 0 }
+                .map {
+                    buildNode(
+                        1,
+                        map,
+                        it
+                    )
+                }
+            emit(TransactionCategories(items = items))
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun getCategoriesIncludeDeleted(transactionTypeCode: String): Flow<TransactionCategories> {
         val res = transactionCategoryDao.getCategoriesIncludeDeleted(transactionTypeCode)
-        return res.transformLatest {
-            emit(it to it.filter { entity -> entity.parentId == 0 })
-        }.map { (res, rootItems) ->
-            TransactionCategories(
-                items = rootItems.map { buildNode(1, res, it) }
-            )
+        return res.transformLatest { list ->
+            val map = list.groupBy { it.parentId }
+            val items = list.filter { it.parentId == 0 }
+                .map {
+                    buildNode(
+                        1,
+                        map,
+                        it
+                    )
+                }
+            emit(TransactionCategories(items = items))
         }
     }
 
@@ -75,7 +85,7 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
 
     private fun buildNode(
         level: Int,
-        items: List<TransactionCategoryEntity>,
+        parentChildrenMap: Map<Int, List<TransactionCategoryEntity>>,
         entity: TransactionCategoryEntity,
     ): TransactionCategories.Node {
         return TransactionCategories.Node(
@@ -83,17 +93,17 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
             categoryId = entity.id,
             categoryName = entity.name,
         ).also { node ->
-            node.addChildren(
-                items
-                    .filter { it.parentId == entity.id }
-                    .map {
-                    buildNode(
-                        level = level + 1,
-                        items = items,
-                        entity = it,
-                    )
-                }
-            )
+            parentChildrenMap[entity.id]?.let { children ->
+                node.addChildren(
+                    children.map {
+                        buildNode(
+                            level = level + 1,
+                            parentChildrenMap = parentChildrenMap,
+                            entity = it,
+                        )
+                    }
+                )
+            }
         }
     }
 }
