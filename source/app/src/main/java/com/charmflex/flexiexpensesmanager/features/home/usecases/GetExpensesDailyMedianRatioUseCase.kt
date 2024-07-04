@@ -15,14 +15,13 @@ internal class GetExpensesDailyMedianRatioUseCase @Inject constructor(
     operator fun invoke(): Flow<List<DailyTransaction>> {
         return transactionRepository.getTransactions().map { transactions ->
             transactions
-                .filter { it.transactionTypeCode != TransactionType.UPDATE_ACCOUNT.name }
+                .filter { it.transactionTypeCode == TransactionType.EXPENSES.name }
                 .groupBy {
-                    it.transactionDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)
+                    it.transactionDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)!!
                 }
-                .filter { it.key != null }
                 .map {
                     DailyTransaction(
-                        it.key!!,
+                        it.key,
                         it.value.map { transaction ->
                             transaction.amountInCent
                         }.reduce { acc, i ->

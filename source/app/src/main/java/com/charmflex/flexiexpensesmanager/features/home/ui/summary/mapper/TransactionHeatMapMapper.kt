@@ -33,18 +33,14 @@ internal class TransactionHeatMapMapper(
         val median = if (size % 2 == 0) {
             val left = dailyTransactions[size/2 - 1]
             val right = dailyTransactions[size/2]
-            left.amountInCent + right.amountInCent
+            (left.amountInCent + right.amountInCent)/2
         } else {
-            val middle = from[size/2]
+            val middle = dailyTransactions[size/2]
             middle.amountInCent
         }
 
         dailyTransactions.forEach { dailyTransaction ->
-            val color = when {
-                dailyTransaction.amountInCent < median * lowerBoundThreshold -> Level.One.color
-                dailyTransaction.amountInCent > median * higherBoundThreshold -> Level.Four.color
-                else -> getColor(dailyTransaction.amountInCent/median.toFloat())
-            }
+            val color = getColor(dailyTransaction.amountInCent/median.toFloat())
             res[dailyTransaction.date] = color
         }
 

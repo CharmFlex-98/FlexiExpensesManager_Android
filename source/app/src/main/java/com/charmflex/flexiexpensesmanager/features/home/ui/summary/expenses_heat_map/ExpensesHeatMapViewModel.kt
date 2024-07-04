@@ -16,7 +16,7 @@ internal class ExpensesHeatMapViewModel @Inject constructor(
     private val mapperFactory: TransactionHeatMapMapper.Factory
 ) : ViewModel() {
     private val lowerBoundary: Float = 0.5f
-    private val higherBoundary: Float = 3f
+    private val higherBoundary: Float = 2f
     var heatMapState = mutableStateOf<Map<LocalDate, Color>>(mapOf())
         private set
 
