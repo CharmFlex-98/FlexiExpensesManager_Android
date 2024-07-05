@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -50,6 +51,7 @@ import com.charmflex.flexiexpensesmanager.features.category.category.domain.mode
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading2
+import com.charmflex.flexiexpensesmanager.ui_common.FEMetaData1
 import com.charmflex.flexiexpensesmanager.ui_common.SGActionDialog
 import com.charmflex.flexiexpensesmanager.ui_common.SGAutoCompleteTextField
 import com.charmflex.flexiexpensesmanager.ui_common.SGButtonGroupVertical
@@ -367,12 +369,13 @@ internal fun CategorySelectionBottomSheet(
                 CategoryList(
                     categoryList = it ?: listOf(),
                     onCategorySelected = {
-                        val children = it.children
-                        if (children.isEmpty()) onSelected(
+                        onSelected(
                             it.categoryId.toString(),
                             it.categoryName
                         )
-                        else {
+                    },
+                    onToggleChildren = {
+                        if (it.children.isEmpty().not()) {
                             if (it.level < list.size) {
                                 list.removeRange(it.level, list.size)
                             }
@@ -389,6 +392,7 @@ internal fun CategorySelectionBottomSheet(
 private fun CategoryList(
     categoryList: List<TransactionCategories.BasicCategoryNode>,
     onCategorySelected: (TransactionCategories.BasicCategoryNode) -> Unit,
+    onToggleChildren: (TransactionCategories.BasicCategoryNode) -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.Start,
@@ -403,12 +407,18 @@ private fun CategoryList(
                     }
                     .padding(grid_x2)
             ) {
-                Row {
-                    FEBody2(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    FEMetaData1(
                         modifier = Modifier.weight(1f),
                         text = it.categoryName
                     )
-                    if (!it.isLeaf) SGIcons.NextArrow()
+                    if (!it.isLeaf) {
+                        IconButton(modifier = Modifier.size(grid_x2), onClick = { onToggleChildren(it) }) {
+                            SGIcons.NextArrow()
+                        }
+                    }
                 }
             }
         }
