@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.account.destinations
 
+import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -9,6 +10,7 @@ import com.charmflex.flexiexpensesmanager.app.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.FEVerticalSlideUp
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.core.utils.getViewModel
 import com.charmflex.flexiexpensesmanager.features.account.ui.AccountEditorScreen
@@ -59,7 +61,9 @@ internal class AccountDestinationBuilder(
             )
         ) {
             val accountId = it.arguments?.getInt(AccountRoutes.Args.ACCOUNT_ID) ?: -1
-            val filterFromPreviousScreen = navController.previousBackStackEntry?.savedStateHandle?.remove<DateFilter>(AccountRoutes.Args.ACCOUNT_DETAIL_DATE_FILTER)
+            val filterFromPreviousScreen = remember {
+                navController.previousBackStackEntry?.savedStateHandle?.remove<DateFilter>(AccountRoutes.Args.ACCOUNT_DETAIL_DATE_FILTER)
+            }
             val accountDetailViewModel = getViewModel {
                 appComponent.accountDetailViewModelFactory().create(accountId = accountId, filterFromPreviousScreen)
             }

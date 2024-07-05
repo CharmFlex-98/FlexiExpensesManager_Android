@@ -1,5 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.category.category.destinations
 
+import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -55,10 +56,12 @@ internal class CategoryDestinationBuilder(
             popExitTransition = FEHorizontalExitToEnd,
             popEnterTransition = FEHorizontalEnterFromStart,
         ) {
-            val dateFilter =
+            val dateFilter = remember {
                 navController.previousBackStackEntry?.savedStateHandle?.remove<DateFilter>(
                     CategoryRoutes.Args.CATEGORY_DATE_FILTER
                 )
+            }
+
             val viewModel = getViewModel {
                 appComponent.categoryStatViewModel()
                     .apply { dateFilter?.let { onDateFilterChanged(dateFilter) } }
@@ -88,10 +91,12 @@ internal class CategoryDestinationBuilder(
                 }
             )
         ) {
-            val dateFilter =
+            val dateFilter = remember {
                 navController.previousBackStackEntry?.savedStateHandle?.remove<DateFilter>(
                     CategoryRoutes.Args.CATEGORY_DATE_FILTER
                 )
+            }
+
             val categoryId = it.arguments?.getInt(CategoryRoutes.Args.CATEGORY_ID) ?: -1
             val categoryName = it.arguments?.getString(CategoryRoutes.Args.CATEGORY_NAME) ?: ""
             val transactionType =

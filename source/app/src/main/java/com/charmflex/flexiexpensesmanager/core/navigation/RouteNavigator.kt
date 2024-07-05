@@ -67,7 +67,6 @@ fun RouteNavigatorListener(
     routeNavigator: RouteNavigator,
     navController: NavController,
 ) {
-    val localContext = LocalContext.current
     LaunchedEffect(Unit) {
         routeNavigator.navigationEvent.collect {
             when (it) {

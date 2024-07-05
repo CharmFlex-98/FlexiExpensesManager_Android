@@ -22,7 +22,9 @@ internal class GetEachRootCategoryAmountUseCase @Inject constructor(
         return categoryRepository.getAllCategoryTransactionAmount(startDate, endDate, transactionType.name).transformLatest { nodeList ->
             val res: MutableMap<CategoryHolder, Long> = mutableMapOf()
             nodeList.forEach {
-                res[CategoryHolder(it.categoryId, it.categoryName)] = it.adjustedExpensesAmountInCent
+                if (it.adjustedExpensesAmountInCent != 0L) {
+                    res[CategoryHolder(it.categoryId, it.categoryName)] = it.adjustedExpensesAmountInCent
+                }
             }
             emit(res)
         }

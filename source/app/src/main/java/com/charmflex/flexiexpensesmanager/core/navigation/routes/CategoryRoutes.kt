@@ -11,6 +11,7 @@ internal object CategoryRoutes {
         const val CATEGORY_ID = "category_id"
         const val CATEGORY_NAME = "category_name"
         const val CATEGORY_DATE_FILTER = "CATEGORY_DATE_FILTER"
+        const val CATEGORY_DATE_FILTER_2 = "CATEGORY_DATE_FILTER_2"
     }
 
     val EDITOR = buildRoute("$ROOT/editor") {
@@ -38,7 +39,6 @@ internal object CategoryRoutes {
             withArg(Args.CATEGORY_ID, categoryId.toString())
             withArg(Args.TRANSACTION_TYPE, transactionType.name)
             withArg(Args.CATEGORY_NAME, categoryName)
-
         }
     }
 }

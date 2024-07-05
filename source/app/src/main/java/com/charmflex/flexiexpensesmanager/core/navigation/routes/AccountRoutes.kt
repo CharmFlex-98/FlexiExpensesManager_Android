@@ -7,7 +7,7 @@ object AccountRoutes {
     object Args {
         const val IMPORT_FIX_ACCOUNT_NAME = "import_fix_account_name"
         const val ACCOUNT_ID = "account_id"
-        const val ACCOUNT_DETAIL_DATE_FILTER = "account_detail__date_filter"
+        const val ACCOUNT_DETAIL_DATE_FILTER = "account_detail_date_filter"
     }
 
     val EDITOR = buildRoute("$ROOT/editor") {
