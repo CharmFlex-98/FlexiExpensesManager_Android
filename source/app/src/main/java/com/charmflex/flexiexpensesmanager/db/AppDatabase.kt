@@ -22,11 +22,11 @@ import com.charmflex.flexiexpensesmanager.features.scheduler.data.daos.Scheduled
 import com.charmflex.flexiexpensesmanager.features.scheduler.data.entities.ScheduledTransactionEntity
 import com.charmflex.flexiexpensesmanager.features.scheduler.data.entities.ScheduledTransactionTagEntity
 import com.charmflex.flexiexpensesmanager.features.tag.data.daos.TagDao
-import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionCategoryDao
+import com.charmflex.flexiexpensesmanager.features.category.category.data.daos.TransactionCategoryDao
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionDao
 import com.charmflex.flexiexpensesmanager.features.tag.data.entities.TagEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionTagDao
-import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionCategoryEntity
+import com.charmflex.flexiexpensesmanager.features.category.category.data.entities.TransactionCategoryEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTagEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTypeEntity

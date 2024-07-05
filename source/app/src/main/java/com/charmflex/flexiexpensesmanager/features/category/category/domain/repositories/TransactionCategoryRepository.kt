@@ -1,11 +1,16 @@
-package com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories
+package com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories
 
+import com.charmflex.flexiexpensesmanager.features.category.category.data.repositories.CategoryAmountNode
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategory
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.models.TransactionCategories
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.models.TransactionCategory
 import kotlinx.coroutines.flow.Flow
 
 internal interface TransactionCategoryRepository {
+    fun getAllExpensesCategoryTransactionAmount(
+        startDate: String?,
+        endDate: String?
+    ): Flow<List<CategoryAmountNode>>
 
     suspend fun getAllCategoriesIncludedDeleted(): List<TransactionCategory>
 

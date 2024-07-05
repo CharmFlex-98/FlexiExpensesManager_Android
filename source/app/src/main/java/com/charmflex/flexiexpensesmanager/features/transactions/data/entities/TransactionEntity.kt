@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
+import com.charmflex.flexiexpensesmanager.features.category.category.data.entities.TransactionCategoryEntity
 import com.charmflex.flexiexpensesmanager.features.scheduler.data.entities.ScheduledTransactionEntity
 
 @Entity(

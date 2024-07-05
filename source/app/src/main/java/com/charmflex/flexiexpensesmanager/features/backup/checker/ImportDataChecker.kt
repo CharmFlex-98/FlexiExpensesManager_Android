@@ -7,12 +7,11 @@ import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.A
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupData
 import com.charmflex.flexiexpensesmanager.features.backup.ui.ImportedData
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.models.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -292,17 +291,17 @@ internal class ImportDataChecker @Inject constructor(
     }
 
     private fun appendCategoryChain(
-        node: TransactionCategories.Node,
+        basicCategoryNode: TransactionCategories.BasicCategoryNode,
         visitedChain: List<String>,
         map: MutableMap<String, Int>
     ) {
-        val updatedChain = visitedChain.toMutableList().apply { add(node.categoryName) }
-        map[updatedChain.joinToString("-->")] = node.categoryId
-        if (node.childNodes.isEmpty()) {
+        val updatedChain = visitedChain.toMutableList().apply { add(basicCategoryNode.categoryName) }
+        map[updatedChain.joinToString("-->")] = basicCategoryNode.categoryId
+        if (basicCategoryNode.children.isEmpty()) {
             return
         }
 
-        node.childNodes.forEach {
+        basicCategoryNode.children.forEach {
             appendCategoryChain(it, updatedChain, map)
         }
     }

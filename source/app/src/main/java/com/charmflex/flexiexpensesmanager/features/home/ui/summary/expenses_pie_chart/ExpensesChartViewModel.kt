@@ -10,7 +10,7 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.BudgetRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRoute
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
-import com.charmflex.flexiexpensesmanager.features.category.category.usecases.GetEachRootCategoryAmountUseCase
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.usecases.GetEachRootCategoryAmountUseCase
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType

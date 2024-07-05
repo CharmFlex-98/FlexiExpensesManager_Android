@@ -6,7 +6,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.charmflex.flexiexpensesmanager.features.budget.data.entities.CategoryBudgetEntity
 import com.charmflex.flexiexpensesmanager.features.budget.data.responses.CategoryBudgetResponse
-import com.charmflex.flexiexpensesmanager.features.budget.data.responses.MonthCategoryBudgetInfoResponse
+import com.charmflex.flexiexpensesmanager.features.budget.data.responses.MonthlyCategoryBudgetInfoResponse
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -33,16 +33,24 @@ internal interface CategoryBudgetDao {
     suspend fun deleteCategoryBudget(id: Int)
 
     @Query(
-        "SELECT tc.id as category_id," +
-                "tc.name as category_name," +
-                "tc.parent_id as category_parent_id, " +
-                "cb.id as category_budget_id," +
-                "cb.default_budget_in_cent, " +
+        "SELECT subtable.category_id," +
+                "subtable.category_name," +
+                "subtable.category_parent_id, " +
+                "subtable.expenses_amount_in_cent, " +
+                "subtable.category_budget_id," +
+                "subtable.default_budget_in_cent, " +
                 "mcb.budget_month_year," +
-                "mcb.custom_budget_in_cent FROM TransactionCategoryEntity tc " +
+                "mcb.custom_budget_in_cent FROM " +
+                "(SELECT tc.id as category_id, tc.name as category_name, tc.parent_id as category_parent_id, COALESCE(SUM(t.amount_in_cent), 0) as expenses_amount_in_cent, cb.id as category_budget_id, cb.default_budget_in_cent " +
+                "FROM TransactionCategoryEntity tc " +
                 "LEFT JOIN CategoryBudgetEntity cb ON cb.category_id = tc.id " +
-                "LEFT JOIN MonthlyCategoryBudgetEntity mcb ON cb.id = mcb.category_budget_id " +
-                "WHERE tc.transaction_type_code = 'EXPENSES'"
+                "LEFT JOIN (SELECT * FROM TransactionEntity WHERE transaction_type_code = 'EXPENSES' " +
+                " AND (:startDate IS NULL OR date(transaction_date) >= date(:startDate))" +
+                " AND (:endDate IS NULL OR date(transaction_date) <= date(:endDate))) t ON t.category_id = tc.id GROUP BY tc.id) subtable " +
+                "LEFT JOIN MonthlyCategoryBudgetEntity mcb ON subtable.category_budget_id = mcb.category_budget_id"
     )
-    fun getCategoryBudgetByMonth(): Flow<List<MonthCategoryBudgetInfoResponse>>
+    fun getMonthlyCategoryBudget(
+        startDate: String,
+        endDate: String
+    ): Flow<List<MonthlyCategoryBudgetInfoResponse>>
 }

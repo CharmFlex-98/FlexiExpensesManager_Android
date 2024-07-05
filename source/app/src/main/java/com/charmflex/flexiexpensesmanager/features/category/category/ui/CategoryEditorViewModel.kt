@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.BackupRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.models.TransactionCategories
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -83,8 +83,8 @@ internal class CategoryEditorViewModel @Inject constructor(
 
     private fun invalidateHistoryStack(
         stackIndex: Int,
-        result: List<TransactionCategories.Node>
-    ): List<TransactionCategories.Node> {
+        result: List<TransactionCategories.BasicCategoryNode>
+    ): List<TransactionCategories.BasicCategoryNode> {
         val historyStack = _viewState.value.historyStack
         // If reach the end, return
         if (stackIndex >= historyStack.size - 1) return result
@@ -93,7 +93,7 @@ internal class CategoryEditorViewModel @Inject constructor(
         val oldNextNode = historyStack[stackIndex + 1]
         val newCurrentNode = result.last()
         val newNextNode =
-            newCurrentNode.childNodes.firstOrNull { it.categoryId == oldNextNode.categoryId }
+            newCurrentNode.children.firstOrNull { it.categoryId == oldNextNode.categoryId }
         if (newNextNode == null) return result// This should not happen..., but will return anyway
 
         return invalidateHistoryStack(stackIndex + 1, result + newNextNode)
@@ -151,7 +151,7 @@ internal class CategoryEditorViewModel @Inject constructor(
     private fun getImportCategoryState(
         chain: List<String>,
         index: Int,
-        nodeStack: List<TransactionCategories.Node>,
+        basicCategoryNodeStack: List<TransactionCategories.BasicCategoryNode>,
     ): ImportCategoryState {
         // If already reach the end of the chain but still able to get to here, something is wrong..
         if (index >= chain.size - 1) {
@@ -161,20 +161,20 @@ internal class CategoryEditorViewModel @Inject constructor(
             )
         }
 
-        val currentNode = nodeStack.last()
+        val currentNode = basicCategoryNodeStack.last()
         val nextCategoryName = chain[index + 1]
-        val nextNode = currentNode.childNodes.firstOrNull { it.categoryName == nextCategoryName }
+        val nextNode = currentNode.children.firstOrNull { it.categoryName == nextCategoryName }
 
         return if (nextNode == null) {
             ImportCategoryState(
-                historyStack = nodeStack,
+                historyStack = basicCategoryNodeStack,
                 editorState = CategoryEditorViewState.EditorState(
                     isOpened = true,
                     value = nextCategoryName
                 )
             )
         } else {
-            getImportCategoryState(chain, index + 1, nodeStack + nextNode)
+            getImportCategoryState(chain, index + 1, basicCategoryNodeStack + nextNode)
         }
     }
 
@@ -212,11 +212,11 @@ internal class CategoryEditorViewModel @Inject constructor(
         )
     }
 
-    fun onClickItem(node: TransactionCategories.Node) {
+    fun onClickItem(basicCategoryNode: TransactionCategories.BasicCategoryNode) {
         if (_viewState.value.historyStack.size < categoryLevelCount() - 1) {
             _viewState.update {
                 it.copy(
-                    historyStack = _viewState.value.historyStack + node
+                    historyStack = _viewState.value.historyStack + basicCategoryNode
                 )
             }
         }
@@ -304,7 +304,7 @@ internal class CategoryEditorViewModel @Inject constructor(
 
 internal data class CategoryEditorViewState(
     val categoryChain: CategoryChainUI = CategoryChainUI(),
-    val historyStack: List<TransactionCategories.Node> = emptyList(),
+    val historyStack: List<TransactionCategories.BasicCategoryNode> = emptyList(),
     val isLoading: Boolean = false,
     val editorState: EditorState = EditorState(),
     val dialogState: DeleteDialogState? = null
@@ -328,6 +328,6 @@ internal data class CategoryEditorViewState(
 
 internal data class ImportCategoryState(
     val editorState: CategoryEditorViewState.EditorState = CategoryEditorViewState.EditorState(),
-    val historyStack: List<TransactionCategories.Node>,
+    val historyStack: List<TransactionCategories.BasicCategoryNode>,
     val errorMessage: String = ""
 )

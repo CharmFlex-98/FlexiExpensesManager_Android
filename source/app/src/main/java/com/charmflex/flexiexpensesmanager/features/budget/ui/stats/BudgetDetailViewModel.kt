@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.features.budget.ui.stats
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.features.budget.domain.usecases.GetAdjustedCategoryBudgetInfoUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +18,7 @@ internal class BudgetDetailViewModel @Inject constructor(
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(BudgetStatViewState())
     val viewState = _viewState.asStateFlow()
+    private val dateFilter = DateFilter.Monthly(0)
 
     init {
         observeBudgetStat()
@@ -24,7 +26,7 @@ internal class BudgetDetailViewModel @Inject constructor(
 
     private fun observeBudgetStat() {
         viewModelScope.launch {
-            getAdjustedCategoryBudgetInfoUseCase(LocalDate.now()).collectLatest { res ->
+            getAdjustedCategoryBudgetInfoUseCase(dateFilter).collectLatest { res ->
                 _viewState.update {
                     it.copy(
                         budgets = mapper.map(res)
@@ -74,6 +76,7 @@ internal data class BudgetStatViewState(
         val categoryName: String,
         val parentCategoryId: Int,
         val budget: String,
+        val expensesAmount: String,
         val level: Level,
         val expandable: Boolean
     ) {

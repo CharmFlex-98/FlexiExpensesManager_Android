@@ -36,8 +36,8 @@ internal class CategoryBudgetExpandableSectionMapper @Inject constructor(
         if (node.adjustedBudgetInCent == 0L) return section
 
         val item = BudgetStatViewState.CategoryBudgetItem(
-            categoryId = node.category.id,
-            categoryName = node.category.name,
+            categoryId = node.categoryId,
+            categoryName = node.categoryName,
             parentCategoryId = node.parentCategoryId,
             budget = currencyFormatter.format(
                 node.adjustedBudgetInCent,
@@ -48,6 +48,10 @@ internal class CategoryBudgetExpandableSectionMapper @Inject constructor(
                 2 -> BudgetStatViewState.CategoryBudgetItem.Level.SECOND
                 else -> BudgetStatViewState.CategoryBudgetItem.Level.THIRD
             },
+            expensesAmount = currencyFormatter.format(
+                node.adjustedExpensesInCent,
+                currencyCode ?: userCurrencyRepository.getPrimaryCurrency().also { currencyCode = it }
+            ),
             expandable = node.children.isNotEmpty()
         )
 

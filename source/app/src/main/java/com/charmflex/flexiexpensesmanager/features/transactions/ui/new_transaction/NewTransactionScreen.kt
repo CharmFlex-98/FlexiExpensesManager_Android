@@ -46,7 +46,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionCategories
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.models.TransactionCategories
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading2
@@ -367,7 +367,7 @@ internal fun CategorySelectionBottomSheet(
                 CategoryList(
                     categoryList = it ?: listOf(),
                     onCategorySelected = {
-                        val children = it.childNodes
+                        val children = it.children
                         if (children.isEmpty()) onSelected(
                             it.categoryId.toString(),
                             it.categoryName
@@ -376,7 +376,7 @@ internal fun CategorySelectionBottomSheet(
                             if (it.level < list.size) {
                                 list.removeRange(it.level, list.size)
                             }
-                            list.add(it.childNodes)
+                            list.add(it.children)
                         }
                     }
                 )
@@ -387,8 +387,8 @@ internal fun CategorySelectionBottomSheet(
 
 @Composable
 private fun CategoryList(
-    categoryList: List<TransactionCategories.Node>,
-    onCategorySelected: (TransactionCategories.Node) -> Unit,
+    categoryList: List<TransactionCategories.BasicCategoryNode>,
+    onCategorySelected: (TransactionCategories.BasicCategoryNode) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.Start,

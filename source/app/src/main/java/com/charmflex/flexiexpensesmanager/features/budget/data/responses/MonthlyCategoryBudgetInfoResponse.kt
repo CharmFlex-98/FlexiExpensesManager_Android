@@ -3,13 +3,15 @@ package com.charmflex.flexiexpensesmanager.features.budget.data.responses
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 
-internal data class MonthCategoryBudgetInfoResponse(
+internal data class MonthlyCategoryBudgetInfoResponse(
     @ColumnInfo("category_id")
     val categoryId: Int,
     @ColumnInfo("category_name")
     val categoryName: String,
     @ColumnInfo("category_parent_id")
     val categoryParentId: Int,
+    @ColumnInfo("expenses_amount_in_cent")
+    val expensesAmountInCent: Long,
     @Embedded
     val budget: Budget?,
 ) {

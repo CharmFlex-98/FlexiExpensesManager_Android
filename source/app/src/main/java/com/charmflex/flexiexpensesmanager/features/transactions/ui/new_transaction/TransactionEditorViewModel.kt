@@ -5,8 +5,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformatio
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.scheduler.di.modules.TransactionEditorProvider
-import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TransactionEditorContentProvider

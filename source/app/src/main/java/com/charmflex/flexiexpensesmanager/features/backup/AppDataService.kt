@@ -1,18 +1,10 @@
 package com.charmflex.flexiexpensesmanager.features.backup
 
 import android.content.Context
-import android.util.Log
 import com.charmflex.flexiexpensesmanager.core.storage.SharedPrefs
 import com.charmflex.flexiexpensesmanager.db.AppDatabase
-import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
-import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.CurrencyRepository
-import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
-import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
-import java.io.File
 import javax.inject.Inject
-import javax.inject.Singleton
 
 internal interface AppDataService {
     suspend fun clearAppData(appDataClearServiceType: AppDataClearServiceType)

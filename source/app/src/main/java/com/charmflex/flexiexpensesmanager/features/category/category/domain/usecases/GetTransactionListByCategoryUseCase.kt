@@ -1,15 +1,9 @@
-package com.charmflex.flexiexpensesmanager.features.category.category.usecases
+package com.charmflex.flexiexpensesmanager.features.category.category.domain.usecases
 
-import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
-import com.charmflex.flexiexpensesmanager.core.utils.getEndDate
-import com.charmflex.flexiexpensesmanager.core.utils.getStartDate
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
-import kotlinx.coroutines.flow.Flow
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 internal class GetTransactionListByCategoryUseCase @Inject constructor(
@@ -27,7 +21,7 @@ internal class GetTransactionListByCategoryUseCase @Inject constructor(
                 val categoryToRootMap = mutableMapOf<CategoryHolder, CategoryHolder>()
                 rootCategories.forEach { root ->
                     buildCategoryToRootMapping(
-                        rootNode = root,
+                        rootBasicCategoryNode = root,
                         category = root,
                         categoryToRootMap
                     )

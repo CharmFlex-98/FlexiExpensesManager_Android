@@ -8,7 +8,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.features.backup.data.mapper.TransactionBackupDataMapper
 import com.charmflex.flexiexpensesmanager.features.backup.elements.Sheet
 import com.charmflex.flexiexpensesmanager.features.backup.elements.workbook
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow

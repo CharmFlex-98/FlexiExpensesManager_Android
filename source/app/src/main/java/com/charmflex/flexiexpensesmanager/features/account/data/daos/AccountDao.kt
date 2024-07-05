@@ -31,7 +31,7 @@ internal interface AccountDao {
         "SELECT ag.id as account_group_id," +
                 "a.id as account_id," +
                 "ag.name as account_group_name," +
-                "a. name as account_name," +
+                "a.name as account_name," +
                 "COALESCE(out_amount, 0) as out_amount," +
                 "COALESCE(in_amount, 0) as in_amount FROM (SELECT * FROM AccountGroupEntity WHERE is_deleted = 0) ag" +
                 " LEFT JOIN AccountEntity a on a.account_group_id = ag.id" +

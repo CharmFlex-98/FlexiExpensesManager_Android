@@ -3,8 +3,10 @@ package com.charmflex.flexiexpensesmanager.features.budget.data.repositories
 import com.charmflex.flexiexpensesmanager.features.budget.data.daos.CategoryBudgetDao
 import com.charmflex.flexiexpensesmanager.features.budget.data.entities.CategoryBudgetEntity
 import com.charmflex.flexiexpensesmanager.features.budget.data.responses.CategoryBudgetResponse
-import com.charmflex.flexiexpensesmanager.features.budget.domain.models.CategoryBudgetFullInfo
+import com.charmflex.flexiexpensesmanager.features.budget.domain.models.AdjustedCategoryBudgetNode
 import com.charmflex.flexiexpensesmanager.features.budget.domain.repositories.CategoryBudgetRepository
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.buildCategoryTree
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transformLatest
@@ -26,40 +28,30 @@ internal class CategoryBudgetRepositoryImpl @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getMonthlyCategoryBudgetInfo(monthYear: String): Flow<List<CategoryBudgetFullInfo>> {
-        val res = categoryBudgetDao.getCategoryBudgetByMonth()
-        return res.transformLatest { responses ->
-            val item = responses.groupBy {
-                CategoryBudgetFullInfo(
-                    it.categoryId,
-                    it.categoryName,
-                    it.categoryParentId,
-                    it.budget?.let {
-                        CategoryBudgetFullInfo.BudgetDomainModel(
-                            it.categoryBudgetId,
-                            it.defaultBudgetInCent
-                        )
-                    }
-                )
-            }
-                .map { (model, monthlyBudgetResponses) ->
-                    CategoryBudgetFullInfo(
-                        categoryId = model.categoryId,
-                        categoryName = model.categoryName,
-                        categoryParentId = model.categoryParentId,
-                        budget = model.budget?.copy(
-                            customMonthlyBudgets = monthlyBudgetResponses.mapNotNull {
-                                it.budget?.customMonthlyBudget?.let {
-                                    CategoryBudgetFullInfo.CustomMonthlyBudgetDomainModel(
-                                        it.budgetMonthYear,
-                                        it.customBudgetInCent
-                                    )
-                                }
-                            }
-                        )
+    override fun getMonthlyCategoryBudgetInfo(startDate: String, endDate: String): Flow<List<AdjustedCategoryBudgetNode>> {
+        val res = categoryBudgetDao.getMonthlyCategoryBudget(startDate, endDate)
+        return res.transformLatest { list ->
+            val map = list.groupBy { it.categoryParentId }
+            val nodes = list.filter {
+                it.categoryParentId == 0
+            }.map {
+                buildCategoryTree(
+                    retrievalKey = {
+                        it.categoryId
+                    },
+                    parentCatIDChildrenMap = map,
+                    responseEntity = it,
+                ) { level, entity ->
+                    AdjustedCategoryBudgetNode(
+                        categoryId = entity.categoryId,
+                        categoryName = entity.categoryName,
+                        parentCategoryId = entity.categoryParentId,
+                        defaultBudgetInCent = entity.budget?.defaultBudgetInCent ?: 0,
+                        expensesInCent = entity.expensesAmountInCent
                     )
                 }
-            emit(item)
+            }
+            emit(nodes)
         }
     }
 
@@ -67,11 +59,3 @@ internal class CategoryBudgetRepositoryImpl @Inject constructor(
         categoryBudgetDao.deleteCategoryBudget(budgetId)
     }
 }
-
-private data class MonthlyBudgetIntermediateData(
-    val categoryId: Int,
-    val categoryName: String,
-    val categoryParentId: Int,
-    val categoryBudgetId: Int?,
-    val defaultBudgetInCent: Long?
-)

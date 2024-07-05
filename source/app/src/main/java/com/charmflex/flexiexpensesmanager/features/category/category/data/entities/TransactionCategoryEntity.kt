@@ -1,10 +1,11 @@
-package com.charmflex.flexiexpensesmanager.features.transactions.data.entities
+package com.charmflex.flexiexpensesmanager.features.category.category.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTypeEntity
 
 // Delete category should not real delete it. Because transaction need a reference to it
 @Entity(

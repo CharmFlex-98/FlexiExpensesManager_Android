@@ -1,13 +1,22 @@
 package com.charmflex.flexiexpensesmanager.features.budget.domain.models
 
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
+import com.charmflex.flexiexpensesmanager.features.category.category.domain.CategoryNode
 
 
 internal data class AdjustedCategoryBudgetNode(
-    val category: Transaction.TransactionCategory,
-    val parentCategoryId: Int,
+    override val categoryId: Int,
+    override val categoryName: String,
+    override val parentCategoryId: Int,
+    private val expensesInCent: Long,
     private val defaultBudgetInCent: Long
-) {
+) : CategoryNode<AdjustedCategoryBudgetNode> {
+    val adjustedExpensesInCent: Long
+        get() {
+            return expensesInCent + (children.map {
+                it.adjustedExpensesInCent
+            }.reduceOrNull { acc, l -> acc + l } ?: 0)
+        }
+
     val adjustedBudgetInCent: Long
         get() {
             return if (defaultBudgetInCent != 0L) defaultBudgetInCent
@@ -19,9 +28,9 @@ internal data class AdjustedCategoryBudgetNode(
         }
 
     private val _children: MutableList<AdjustedCategoryBudgetNode> = mutableListOf()
-    val children get() = _children.toList()
+    override val children get() = _children.toList()
 
-    fun appendChildren(adjustedCategoryBudgetNode: AdjustedCategoryBudgetNode) {
-        _children.add(adjustedCategoryBudgetNode)
+    override fun addChildren(children: List<AdjustedCategoryBudgetNode>) {
+        _children.addAll(children)
     }
 }

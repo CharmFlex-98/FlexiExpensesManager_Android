@@ -6,6 +6,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -74,7 +75,10 @@ internal fun BudgetDetailScreen(
                         }
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    FEBody2(text = it.budget)
+                    Column {
+                        FEBody2(text = it.budget)
+                        FEBody2(text = it.expensesAmount)
+                    }
                 }, 
                 actionItems = {
                     Box(
