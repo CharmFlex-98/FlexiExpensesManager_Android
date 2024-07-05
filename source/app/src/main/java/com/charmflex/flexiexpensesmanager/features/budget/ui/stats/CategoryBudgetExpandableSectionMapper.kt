@@ -35,12 +35,15 @@ internal class CategoryBudgetExpandableSectionMapper @Inject constructor(
         // If amount is 0, we don't want to show it and it's children
         if (node.adjustedBudgetInCent == 0L) return section
 
+        val adjustedBudgetInCent = node.adjustedBudgetInCent
+        val adjustedExpensesInCent = node.adjustedExpensesInCent
+
         val item = BudgetStatViewState.CategoryBudgetItem(
             categoryId = node.categoryId,
             categoryName = node.categoryName,
             parentCategoryId = node.parentCategoryId,
             budget = currencyFormatter.format(
-                node.adjustedBudgetInCent,
+                adjustedBudgetInCent,
                 currencyCode ?: userCurrencyRepository.getPrimaryCurrency().also { currencyCode = it }
             ),
             level = when (level) {
@@ -49,9 +52,10 @@ internal class CategoryBudgetExpandableSectionMapper @Inject constructor(
                 else -> BudgetStatViewState.CategoryBudgetItem.Level.THIRD
             },
             expensesAmount = currencyFormatter.format(
-                node.adjustedExpensesInCent,
+                adjustedExpensesInCent,
                 currencyCode ?: userCurrencyRepository.getPrimaryCurrency().also { currencyCode = it }
             ),
+            expensesBudgetRatio = adjustedExpensesInCent/adjustedBudgetInCent.toFloat(),
             expandable = node.children.isNotEmpty()
         )
 

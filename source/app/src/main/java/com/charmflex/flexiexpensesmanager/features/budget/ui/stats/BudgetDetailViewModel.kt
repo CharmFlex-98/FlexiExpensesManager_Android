@@ -77,6 +77,7 @@ internal data class BudgetStatViewState(
         val parentCategoryId: Int,
         val budget: String,
         val expensesAmount: String,
+        val expensesBudgetRatio: Float,
         val level: Level,
         val expandable: Boolean
     ) {

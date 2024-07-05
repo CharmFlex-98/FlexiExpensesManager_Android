@@ -99,4 +99,6 @@
     <string name="budget_setting_app_bar_title">Budget Setting</string>
     <string name="budget_detail_home_button">Budget detail</string>
     <string name="budget_detail_app_bar_title">Budget Detail</string>
+    <string name="generic_budget">Budget</string>
+    <string name="generic_spend">Spent</string>
 </resources>
