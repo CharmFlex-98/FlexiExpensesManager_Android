@@ -33,16 +33,18 @@ internal interface TransactionCategoryDao {
         "SELECT tc.id as category_id, " +
                 "tc.name as category_name, " +
                 "tc.parent_id as parent_category_id, " +
-                "COALESCE(SUM(t.amount_in_cent), 0) as expenses_amount_in_cent FROM (SELECT * FROM TransactionEntity" +
-                " WHERE transaction_type_code = 'EXPENSES'" +
-                " AND (:startDate IS NULL OR date(transaction_date) >= date(:startDate))" +
+                "COALESCE(SUM(t.amount_in_cent), 0) as expenses_amount_in_cent FROM " +
+                " (SELECT * FROM TransactionCategoryEntity WHERE is_deleted = 0 AND transaction_type_code = :transactionTypeCode) tc " +
+                "LEFT JOIN (SELECT * FROM TransactionEntity " +
+                " WHERE (:startDate IS NULL OR date(transaction_date) >= date(:startDate))" +
                 " AND (:endDate IS NULL OR date(transaction_date) <= date(:endDate))) t" +
-                " INNER JOIN (SELECT * FROM TransactionCategoryEntity WHERE is_deleted = 0) tc ON tc.id = t.category_id" +
+                " ON tc.id = category_id" +
                 " GROUP BY tc.id"
     )
-    fun getExpensesCategoryTransactionAmount(
+    fun getAllCategoryTransactionAmount(
         startDate: String?,
-        endDate: String?
+        endDate: String?,
+        transactionTypeCode: String
     ): Flow<List<CategoryTransactionAmountResponse>>
 
     @Query(

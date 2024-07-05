@@ -2,7 +2,6 @@ package com.charmflex.flexiexpensesmanager.features.category.category.data.repos
 
 import com.charmflex.flexiexpensesmanager.features.category.category.data.daos.TransactionCategoryDao
 import com.charmflex.flexiexpensesmanager.features.category.category.data.entities.TransactionCategoryEntity
-import com.charmflex.flexiexpensesmanager.features.category.category.data.responses.CategoryTransactionAmountResponse
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.CategoryNode
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.buildCategoryTree
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
@@ -19,11 +18,12 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
     private val transactionCategoryDao: TransactionCategoryDao
 ) : TransactionCategoryRepository {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getAllExpensesCategoryTransactionAmount(
+    override fun getAllCategoryTransactionAmount(
         startDate: String?,
-        endDate: String?
+        endDate: String?,
+        transactionTypeCode: String
     ): Flow<List<CategoryAmountNode>> {
-        return transactionCategoryDao.getExpensesCategoryTransactionAmount(startDate, endDate)
+        return transactionCategoryDao.getAllCategoryTransactionAmount(startDate, endDate, transactionTypeCode)
             .transformLatest { list ->
                 val map = list.groupBy { it.parentCategoryId }
                 val items = list.filter { it.parentCategoryId == 0 }

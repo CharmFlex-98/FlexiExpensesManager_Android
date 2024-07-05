@@ -19,7 +19,7 @@ internal class GetEachRootCategoryAmountUseCase @Inject constructor(
         val startDate = dateFilter.getStartDate()
         val endDate = dateFilter.getEndDate()
 
-        return categoryRepository.getAllExpensesCategoryTransactionAmount(startDate, endDate).transformLatest { nodeList ->
+        return categoryRepository.getAllCategoryTransactionAmount(startDate, endDate, transactionType.name).transformLatest { nodeList ->
             val res: MutableMap<CategoryHolder, Long> = mutableMapOf()
             nodeList.forEach {
                 res[CategoryHolder(it.categoryId, it.categoryName)] = it.adjustedExpensesAmountInCent

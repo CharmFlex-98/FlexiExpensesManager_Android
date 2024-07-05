@@ -7,9 +7,10 @@ import com.charmflex.flexiexpensesmanager.features.category.category.domain.mode
 import kotlinx.coroutines.flow.Flow
 
 internal interface TransactionCategoryRepository {
-    fun getAllExpensesCategoryTransactionAmount(
+    fun getAllCategoryTransactionAmount(
         startDate: String?,
-        endDate: String?
+        endDate: String?,
+        transactionTypeCode: String
     ): Flow<List<CategoryAmountNode>>
 
     suspend fun getAllCategoriesIncludedDeleted(): List<TransactionCategory>
