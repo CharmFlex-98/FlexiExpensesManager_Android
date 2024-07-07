@@ -42,7 +42,6 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x3
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x4
-import com.charmflex.flexiexpensesmanager.ui_common.grid_x6
 
 @Composable
 internal fun BudgetDetailScreen(

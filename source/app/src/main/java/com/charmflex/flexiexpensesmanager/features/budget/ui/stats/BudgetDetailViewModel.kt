@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 internal class BudgetDetailViewModel @Inject constructor(
@@ -59,7 +58,9 @@ internal data class BudgetStatViewState(
         get() {
             return budgets.map {
                 it.copy(
-                    contents = it.contents.filter { expandedCategoryIds.contains(it.parentCategoryId)  }
+                    contents = it.contents.filter {
+                        expandedCategoryIds.containsAll(it.parentCategoryIds)
+                    }
                 )
             }
         }
@@ -74,7 +75,7 @@ internal data class BudgetStatViewState(
     data class CategoryBudgetItem(
         val categoryId: Int,
         val categoryName: String,
-        val parentCategoryId: Int,
+        val parentCategoryIds: Set<Int>,
         val budget: String,
         val expensesAmount: String,
         val expensesBudgetRatio: Float,

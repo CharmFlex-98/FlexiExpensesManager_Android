@@ -6,7 +6,6 @@ import com.charmflex.flexiexpensesmanager.features.budget.data.responses.Categor
 import com.charmflex.flexiexpensesmanager.features.budget.domain.models.AdjustedCategoryBudgetNode
 import com.charmflex.flexiexpensesmanager.features.budget.domain.repositories.CategoryBudgetRepository
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.buildCategoryTree
-import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.transformLatest
@@ -40,6 +39,10 @@ internal class CategoryBudgetRepositoryImpl @Inject constructor(
                         it.categoryId
                     },
                     parentCatIDChildrenMap = map,
+                    allowAddChild = {
+                        // Do not add the child node if no budget is set
+                        it.adjustedBudgetInCent != 0L
+                    },
                     responseEntity = it,
                 ) { level, entity ->
                     AdjustedCategoryBudgetNode(

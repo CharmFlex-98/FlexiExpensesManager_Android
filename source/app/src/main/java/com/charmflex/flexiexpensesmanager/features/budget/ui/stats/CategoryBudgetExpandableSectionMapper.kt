@@ -20,6 +20,7 @@ internal class CategoryBudgetExpandableSectionMapper @Inject constructor(
                     contents = listOf()
                 ),
                 1,
+                setOf(),
                 it
             )
         }.filter { // Filter section with empty content
@@ -30,6 +31,7 @@ internal class CategoryBudgetExpandableSectionMapper @Inject constructor(
     private suspend fun buildContent(
         section: BudgetStatViewState.CategoryBudgetExpandableSection,
         level: Int,
+        parentIds: Set<Int>,
         node: AdjustedCategoryBudgetNode
     ): BudgetStatViewState.CategoryBudgetExpandableSection {
         // If amount is 0, we don't want to show it and it's children
@@ -41,7 +43,7 @@ internal class CategoryBudgetExpandableSectionMapper @Inject constructor(
         val item = BudgetStatViewState.CategoryBudgetItem(
             categoryId = node.categoryId,
             categoryName = node.categoryName,
-            parentCategoryId = node.parentCategoryId,
+            parentCategoryIds = parentIds + node.parentCategoryId,
             budget = currencyFormatter.format(
                 adjustedBudgetInCent,
                 currencyCode ?: userCurrencyRepository.getPrimaryCurrency().also { currencyCode = it }
@@ -63,6 +65,7 @@ internal class CategoryBudgetExpandableSectionMapper @Inject constructor(
             buildContent(
                 updatedSection,
                 level + 1,
+                item.parentCategoryIds,
                 n
             )
         }
