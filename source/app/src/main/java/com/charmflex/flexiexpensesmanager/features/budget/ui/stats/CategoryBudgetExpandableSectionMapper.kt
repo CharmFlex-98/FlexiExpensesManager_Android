@@ -58,7 +58,10 @@ internal class CategoryBudgetExpandableSectionMapper @Inject constructor(
                 currencyCode ?: userCurrencyRepository.getPrimaryCurrency().also { currencyCode = it }
             ),
             expensesBudgetRatio = adjustedExpensesInCent/adjustedBudgetInCent.toFloat(),
-            expandable = node.children.isNotEmpty()
+            expandable = run {
+                val childrenTotalBudget = node.children.map { it.adjustedBudgetInCent }.reduceOrNull { acc, l -> acc + l }
+                childrenTotalBudget != null && childrenTotalBudget > 0L
+            }
         )
 
         return node.children.fold(section.copy(contents = section.contents + item)) { updatedSection, n ->

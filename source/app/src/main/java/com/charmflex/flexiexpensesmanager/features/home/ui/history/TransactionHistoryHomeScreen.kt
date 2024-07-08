@@ -18,9 +18,7 @@ internal fun TransactionHistoryHomeScreen(
 ) {
     val viewState by transactionHomeViewModel.viewState.collectAsState()
     TransactionHistoryList(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(grid_x2),
+        modifier = Modifier.padding(horizontal = grid_x2),
         transactionHistoryViewModel = transactionHomeViewModel
     )
     if (viewState.isLoading) {

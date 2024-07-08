@@ -35,9 +35,6 @@ internal fun AccountDetailScreen(
                 accountDetailViewModel.onDateFilterChanged(it)
             }
         )
-        Box {
-            TransactionHistoryList(modifier = Modifier.fillMaxSize(), transactionHistoryViewModel = accountDetailViewModel)
-        }
-
+        TransactionHistoryList(modifier = Modifier.fillMaxSize(), transactionHistoryViewModel = accountDetailViewModel)
     }
 }

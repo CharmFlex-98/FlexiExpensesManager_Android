@@ -60,8 +60,12 @@ import com.charmflex.flexiexpensesmanager.ui_common.SGAnimatedTransition
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x0_5
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x3
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x4
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x6
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x7
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x8
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x9
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -76,14 +80,15 @@ internal fun TransactionHistoryList(
     val scrollState = rememberLazyListState()
     val tabScrollState = rememberScrollState()
     val tabState by transactionHistoryViewModel.tabState.collectAsState()
-    val tabHeight = with(LocalDensity.current) { grid_x8.roundToPx().toFloat() }
+    val tabHeight = with(LocalDensity.current) { grid_x7.roundToPx().toFloat() }
     val showMonthTab by remember {
         derivedStateOf { scrollState.firstVisibleItemIndex > 2 }
     }
+    val diff = with(LocalDensity.current) { grid_x2.roundToPx().toFloat() }
     val firstVisibleItemIndex by remember {
         derivedStateOf {
             scrollState.layoutInfo.visibleItemsInfo.lastOrNull {
-                it.offset < tabHeight
+                it.offset < (tabHeight)
             }?.index ?: 0
         }
     }
@@ -106,53 +111,57 @@ internal fun TransactionHistoryList(
         }
     }
 
-    ListTable(
-        modifier = modifier,
-        items = scrollItems,
-        scrollState = scrollState,
-        onLoadMore = { transactionHistoryViewModel.getNextTransactions() },
-        isLoadMore = viewState.isLoadMore,
-    ) { index, item ->
-        when (item) {
-            is TransactionHistoryHeader -> {
-                Spacer(modifier = Modifier.height(grid_x2))
-                ExpensesHistoryDateHeaderView(month = item.title, date = item.subtitle)
-            }
+    Box {
+        ListTable(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(vertical = grid_x2),
+            items = scrollItems,
+            scrollState = scrollState,
+            onLoadMore = { transactionHistoryViewModel.getNextTransactions() },
+            isLoadMore = viewState.isLoadMore,
+        ) { index, item ->
+            when (item) {
+                is TransactionHistoryHeader -> {
+                    Spacer(modifier = Modifier.height(grid_x2))
+                    ExpensesHistoryDateHeaderView(month = item.title, date = item.subtitle)
+                }
 
-            is TransactionHistorySection -> ExpensesHistorySectionView(items = item.items) { id ->
-                transactionHistoryViewModel.onNavigateTransactionDetail(id)
+                is TransactionHistorySection -> ExpensesHistorySectionView(items = item.items) { id ->
+                    transactionHistoryViewModel.onNavigateTransactionDetail(id)
+                }
             }
         }
-    }
 
-    if (showMonthTab) {
-        SGAnimatedTransition(
-            enter = slideInVertically(initialOffsetY = { -it }) +
-                    expandVertically(expandFrom = Alignment.Top),
-            exit = slideOutVertically(targetOffsetY = { -it }) +
-                    shrinkVertically(shrinkTowards = Alignment.Top),
-        ) {
-            SecondaryScrollableTabRow(
-                selectedTabIndex = tabState.selectedTabIndex,
-                scrollState = tabScrollState,
+        if (showMonthTab) {
+            SGAnimatedTransition(
+                enter = slideInVertically(initialOffsetY = { -it }) +
+                        expandVertically(expandFrom = Alignment.Top),
+                exit = slideOutVertically(targetOffsetY = { -it }) +
+                        shrinkVertically(shrinkTowards = Alignment.Top),
             ) {
-                tabState.tabs.forEachIndexed { index, item ->
-                    Tab(
-                        modifier = Modifier
-                            .height(grid_x8)
-                            .padding(grid_x1),
-                        selected = index == tabState.selectedTabIndex,
-                        onClick = {
-                            coroutineScope.launch {
-                                val scrollToIndex =
-                                    transactionHistoryViewModel.findFirstItemIndexByTab(item)
-                                scrollState.scrollToItem(scrollToIndex)
-                                scrollState.scrollBy(-tabHeight)
+                SecondaryScrollableTabRow(
+                    selectedTabIndex = tabState.selectedTabIndex,
+                    scrollState = tabScrollState,
+                ) {
+                    tabState.tabs.forEachIndexed { index, item ->
+                        Tab(
+                            modifier = Modifier
+                                .height(grid_x8)
+                                .padding(grid_x1),
+                            selected = index == tabState.selectedTabIndex,
+                            onClick = {
+                                coroutineScope.launch {
+                                    val scrollToIndex =
+                                        transactionHistoryViewModel.findFirstItemIndexByTab(item)
+                                    scrollState.scrollToItem(scrollToIndex)
+                                    scrollState.scrollBy(-tabHeight + diff)
+                                }
                             }
+                        ) {
+                            FEBody3(text = item.year)
+                            FEBody2(text = item.month)
                         }
-                    ) {
-                        FEBody3(text = item.year)
-                        FEBody2(text = item.month)
                     }
                 }
             }

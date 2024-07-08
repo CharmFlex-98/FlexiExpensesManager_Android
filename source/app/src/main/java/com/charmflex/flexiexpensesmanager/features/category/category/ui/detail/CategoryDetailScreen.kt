@@ -53,8 +53,7 @@ internal fun CategoryDetailScreen(
     }}
     SGScaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(grid_x2),
+            .fillMaxSize().padding(grid_x2),
         topBar = {
             BasicTopBar(
                 title = viewState.categoryName
@@ -117,12 +116,12 @@ internal fun CategoryDetailScreen(
             )
         }
         DateFilterBar(
-            modifier = Modifier.padding(vertical = grid_x1),
             currentDateFilter = dateFilter,
-            onDateFilterChanged = { viewModel.onDateChanged(it) })
-        Box {
-            TransactionHistoryList(transactionHistoryViewModel = viewModel)
-        }
+            onDateFilterChanged = { viewModel.onDateChanged(it) }
+        )
+        TransactionHistoryList(
+            transactionHistoryViewModel = viewModel
+        )
     }
 }
 

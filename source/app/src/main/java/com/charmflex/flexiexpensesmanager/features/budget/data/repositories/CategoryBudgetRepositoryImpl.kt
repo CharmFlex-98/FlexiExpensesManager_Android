@@ -39,10 +39,6 @@ internal class CategoryBudgetRepositoryImpl @Inject constructor(
                         it.categoryId
                     },
                     parentCatIDChildrenMap = map,
-                    allowAddChild = {
-                        // Do not add the child node if no budget is set
-                        it.adjustedBudgetInCent != 0L
-                    },
                     responseEntity = it,
                 ) { level, entity ->
                     AdjustedCategoryBudgetNode(
