@@ -251,8 +251,9 @@ internal class ImportDataChecker @Inject constructor(
     ): ImportedData.RequiredDataState? {
         val isExpenses = row.transactionType == TransactionType.EXPENSES.name
         val isTransfer = row.transactionType == TransactionType.TRANSFER.name
+        val isUpdate = row.transactionType == TransactionType.UPDATE_ACCOUNT.name
 
-        if (isTransfer) return null
+        if (isTransfer || isUpdate) return null
 
         val categoryColumnsToString = row.categoryColumns.joinToString("-->")
         val catID = if (isExpenses) {

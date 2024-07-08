@@ -16,10 +16,17 @@ object SGIcons {
     }
 
     @Composable
-    fun HideToggle(
+    fun VisibilityOn(
         modifier: Modifier = Modifier
     ) {
         Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_hide), contentDescription = "")
+    }
+
+    @Composable
+    fun VisibilityOff(
+        modifier: Modifier = Modifier
+    ) {
+        Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_visibility_off), contentDescription = "")
     }
 
     @Composable

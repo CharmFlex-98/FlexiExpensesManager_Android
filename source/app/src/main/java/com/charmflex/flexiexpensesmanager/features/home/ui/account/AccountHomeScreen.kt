@@ -2,7 +2,6 @@ package com.charmflex.flexiexpensesmanager.features.home.ui.account
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,9 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.charmflex.flexiexpensesmanager.R
-import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
-import com.charmflex.flexiexpensesmanager.core.utils.MONTH_YEAR_PATTERN
-import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.ui_common.DateFilterBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
@@ -63,7 +59,7 @@ internal fun AccountHomeScreen(viewModel: AccountHomeViewModel) {
             IconButton(
                 modifier = Modifier.padding(horizontal = grid_x1),
                 onClick = { viewModel.toggleHideInfo() }) {
-                SGIcons.HideToggle()
+                if (viewState.hideInfo) SGIcons.VisibilityOff() else SGIcons.VisibilityOn()
             }
         }
         viewState.accountsSummary.forEach {
