@@ -48,6 +48,7 @@ import kotlin.math.round
 internal fun ImportDataScreen(importDataViewModel: ImportDataViewModel) {
 
     val viewState by importDataViewModel.viewState.collectAsState()
+    val tabIndex by importDataViewModel.tabIndex.collectAsState()
 
     SGScaffold(
         modifier = Modifier.padding(grid_x2)
@@ -58,6 +59,8 @@ internal fun ImportDataScreen(importDataViewModel: ImportDataViewModel) {
             }
         } else {
             LoadedScreen(
+                tabIndex = tabIndex,
+                importDataViewModel::updateTabIndex,
                 viewState = viewState,
                 onFixError = {
                     importDataViewModel.onFixError(it)
@@ -132,20 +135,23 @@ private fun ColumnScope.PreLoadScreen(
 
 @Composable
 private fun ColumnScope.LoadedScreen(
+    tabIndex: Int,
+    onUpdateTabIndex: (Int) -> Unit,
     viewState: ImportDataViewState,
     onFixError: (ImportedData.MissingData) -> Unit,
     onSave: () -> Unit
 ) {
-    val tabs = listOf("All Data", "Error")
-    var tabIndex by remember {
-        mutableStateOf(0)
-    }
+    val tabs = listOf(
+        stringResource(id = R.string.error_fix_tab_label_all_data),
+        stringResource(id = R.string.error_fix_tab_label_errors)
+    )
+
     TabRow(selectedTabIndex = tabIndex) {
         tabs.forEachIndexed { index, tabName ->
-            Tab(modifier = Modifier.padding(grid_x2), selected = index == tabIndex,
-                onClick = { tabIndex = index }
+            Tab(selected = index == tabIndex,
+                onClick = { onUpdateTabIndex(index) }
             ) {
-                FEHeading4(text = tabName)
+                FEHeading4(modifier = Modifier.padding(grid_x2), text = tabName)
             }
         }
     }
@@ -246,7 +252,9 @@ private fun ColumnScope.LoadedScreen(
             ) {
                 FECallout3(text = stringResource(id = R.string.error_fix_progress_bar_label))
                 LinearProgressIndicator(
-                    modifier = Modifier.weight(1f).padding(horizontal = grid_x1),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = grid_x1),
                     progress = { viewState.importFixPercentage }
                 )
                 FECallout3(text = toPercentageString(viewState.importFixPercentage))

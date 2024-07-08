@@ -115,4 +115,6 @@
     <string name="update_account_type_selection_bottomsheet_title">Select update type</string>
     <string name="generix_total_asset">Total Assets</string>
     <string name="error_fix_progress_bar_label">Error fixed</string>
+    <string name="error_fix_tab_label_all_data">All Data</string>
+    <string name="error_fix_tab_label_errors">Errors</string>
 </resources>

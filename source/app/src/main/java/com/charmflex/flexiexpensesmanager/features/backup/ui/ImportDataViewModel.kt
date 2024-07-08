@@ -33,6 +33,9 @@ internal class ImportDataViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(ImportDataViewState())
     val viewState = _viewState.asStateFlow()
 
+    private val _tabIndex: MutableStateFlow<Int> = MutableStateFlow(0)
+    val tabIndex = _tabIndex.asStateFlow()
+
     private var awaitingMissingData: ImportedData.MissingData? = null
 
     init {
@@ -45,6 +48,10 @@ internal class ImportDataViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun updateTabIndex(tabIndex: Int) {
+        _tabIndex.value = tabIndex
     }
 
     fun updateImportedData() {
