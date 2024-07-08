@@ -63,6 +63,7 @@ internal class AccountHomeViewModel @Inject constructor(
     }
 
     private fun load() {
+        job.cancel()
         toggleLoading(true)
         val startDate = _dateFilter.value.getStartDate()
         val endDate = _dateFilter.value.getEndDate()
