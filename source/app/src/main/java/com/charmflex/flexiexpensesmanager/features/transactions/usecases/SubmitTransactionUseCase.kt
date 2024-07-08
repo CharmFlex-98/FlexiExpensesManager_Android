@@ -1,12 +1,14 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.usecases
 
+import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import javax.inject.Inject
 
 internal class SubmitTransactionUseCase @Inject constructor(
-    private val transactionRepository: TransactionRepository
+    private val transactionRepository: TransactionRepository,
+    private val resourcesProvider: ResourcesProvider
 ) {
     suspend fun submitExpenses(
         id: Long?,
@@ -35,8 +37,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
                     tagIds = tagIds,
                     schedulerId = null
                 )
-            } ?:
-            transactionRepository.addTransaction(
+            } ?: transactionRepository.addTransaction(
                 name = name,
                 fromAccountId = fromAccountId,
                 toAccountId = null,
@@ -121,12 +122,53 @@ internal class SubmitTransactionUseCase @Inject constructor(
                     tagIds = listOf(),
                     schedulerId = null
                 )
-            } ?:
-            transactionRepository.addTransaction(
-                name= name,
+            } ?: transactionRepository.addTransaction(
+                name = name,
                 fromAccountId = fromAccountId,
                 toAccountId = toAccountId,
                 transactionType = TransactionType.TRANSFER,
+                amount = amount,
+                categoryId = null,
+                transactionDate = transactionDate,
+                currency = currency,
+                rate = rate,
+                tagIds = listOf(),
+                schedulerId = null
+            )
+        }
+    }
+
+    suspend fun submitUpdateAccount(
+        id: Long?,
+        name: String,
+        accountId: Int,
+        isIncrement: Boolean,
+        amount: Long,
+        transactionDate: String,
+        currency: String,
+        rate: Float
+    ): Result<Unit> {
+        return resultOf {
+            id?.let {
+                transactionRepository.editTransaction(
+                    id = it,
+                    name = name,
+                    fromAccountId = if (isIncrement) null else accountId,
+                    toAccountId = if (isIncrement) accountId else null,
+                    transactionType = TransactionType.UPDATE_ACCOUNT,
+                    amount = amount,
+                    categoryId = null,
+                    transactionDate = transactionDate,
+                    currency = currency,
+                    rate = rate,
+                    tagIds = listOf(),
+                    schedulerId = null
+                )
+            } ?: transactionRepository.addTransaction(
+                name = name,
+                fromAccountId = if (isIncrement) null else accountId,
+                toAccountId = if (isIncrement) accountId else null,
+                transactionType = TransactionType.UPDATE_ACCOUNT,
                 amount = amount,
                 categoryId = null,
                 transactionDate = transactionDate,

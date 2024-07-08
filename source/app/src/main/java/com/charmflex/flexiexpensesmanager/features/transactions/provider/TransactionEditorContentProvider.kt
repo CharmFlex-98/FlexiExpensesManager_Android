@@ -15,6 +15,8 @@ internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
 internal const val TRANSACTION_CURRENCY = "TRANSACTION_CURRENCY"
 internal const val TRANSACTION_TAG = "TRANSACTION_TAG"
 internal const val TRANSACTION_SCHEDULER_PERIOD = "SCHEDULER_PERIOD"
+internal const val TRANSACTION_UPDATE_ACCOUNT = "TRANSACTION_UPDATE_ACCOUNT"
+internal const val TRANSACTION_UPDATE_ACCOUNT_TYPE = "TRANSACTION_UPDATE_ACCOUNT_TYPE"
 
 internal class DefaultTransactionEditorContentProvider @Inject constructor() : TransactionEditorContentProvider()
 
@@ -24,43 +26,46 @@ internal abstract class TransactionEditorContentProvider {
             TransactionType.EXPENSES -> expensesFields()
             TransactionType.INCOME -> incomeFields()
             TransactionType.TRANSFER -> transferFields()
+            TransactionType.UPDATE_ACCOUNT -> updateFields()
             else -> listOf()
         }.toMutableList()
-        res.addAll(
-            listOf(
-                FEField(
-                    id = TRANSACTION_NAME,
-                    labelId = R.string.new_expenses_name,
-                    hintId = R.string.new_expenses_name_hint,
-                    valueItem = FEField.Value(),
-                    type = FEField.FieldType.Text
-                ),
-                FEField(
-                    id = TRANSACTION_CURRENCY,
-                    labelId = R.string.new_transaction_currency_label,
-                    hintId = R.string.new_transaction_currency_hint,
-                    type = FEField.FieldType.Callback
-                ),
-                FEField(
-                    id = TRANSACTION_RATE,
-                    labelId = R.string.new_transaction_currency_rate_label,
-                    hintId = R.string.new_transaction_currency_rate_hint,
-                    type = FEField.FieldType.Number
-                ),
-                FEField(
-                    id = TRANSACTION_AMOUNT,
-                    labelId = R.string.new_expenses_amount,
-                    hintId = R.string.new_expenses_name_amount_hint,
-                    type = FEField.FieldType.Currency
-                ),
-                FEField(
-                    id = TRANSACTION_DATE,
-                    labelId = R.string.new_expenses_date,
-                    hintId = R.string.new_expenses_date_hint,
-                    type = FEField.FieldType.Callback
+        if (transactionType != TransactionType.UPDATE_ACCOUNT) {
+            res.addAll(
+                listOf(
+                    FEField(
+                        id = TRANSACTION_NAME,
+                        labelId = R.string.new_expenses_name,
+                        hintId = R.string.new_expenses_name_hint,
+                        valueItem = FEField.Value(),
+                        type = FEField.FieldType.Text
+                    ),
+                    FEField(
+                        id = TRANSACTION_CURRENCY,
+                        labelId = R.string.new_transaction_currency_label,
+                        hintId = R.string.new_transaction_currency_hint,
+                        type = FEField.FieldType.Callback
+                    ),
+                    FEField(
+                        id = TRANSACTION_RATE,
+                        labelId = R.string.new_transaction_currency_rate_label,
+                        hintId = R.string.new_transaction_currency_rate_hint,
+                        type = FEField.FieldType.Number
+                    ),
+                    FEField(
+                        id = TRANSACTION_AMOUNT,
+                        labelId = R.string.new_expenses_amount,
+                        hintId = R.string.new_expenses_name_amount_hint,
+                        type = FEField.FieldType.Currency
+                    ),
+                    FEField(
+                        id = TRANSACTION_DATE,
+                        labelId = R.string.new_expenses_date,
+                        hintId = R.string.new_expenses_date_hint,
+                        type = FEField.FieldType.Callback
+                    )
                 )
             )
-        )
+        }
         return res
     }
 
@@ -119,6 +124,41 @@ internal abstract class TransactionEditorContentProvider {
                 hintId = R.string.new_transaction_to_account_hint,
                 type = FEField.FieldType.Callback
             )
+        )
+    }
+
+    private fun updateFields(): List<FEField> {
+        return listOf(
+            FEField(
+                id = TRANSACTION_UPDATE_ACCOUNT,
+                labelId = R.string.new_transaction_update_account_label,
+                hintId = R.string.new_transaction_update_account_hint,
+                type = FEField.FieldType.Callback
+            ),
+            FEField(
+                id = TRANSACTION_UPDATE_ACCOUNT_TYPE,
+                labelId = R.string.new_transaction_update_account_type_label,
+                hintId = R.string.new_transaction_update_account_type_hint,
+                type = FEField.FieldType.Callback
+            ),
+            FEField(
+                id = TRANSACTION_CURRENCY,
+                labelId = R.string.new_transaction_currency_label,
+                hintId = R.string.new_transaction_currency_hint,
+                type = FEField.FieldType.Callback
+            ),
+            FEField(
+                id = TRANSACTION_RATE,
+                labelId = R.string.new_transaction_currency_rate_label,
+                hintId = R.string.new_transaction_currency_rate_hint,
+                type = FEField.FieldType.Number
+            ),
+            FEField(
+                id = TRANSACTION_AMOUNT,
+                labelId = R.string.new_expenses_amount,
+                hintId = R.string.new_expenses_name_amount_hint,
+                type = FEField.FieldType.Currency
+            ),
         )
     }
 }

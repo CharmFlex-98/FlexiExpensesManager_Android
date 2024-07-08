@@ -7,6 +7,8 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -72,7 +74,7 @@ import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 internal fun TransactionEditorScreen(
     viewModel: TransactionEditorBaseViewModel
@@ -154,9 +156,9 @@ internal fun TransactionEditorScreen(
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
             ) {
-                Row(
+                FlowRow(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalArrangement = Arrangement.Center,
                     horizontalArrangement = Arrangement.Center
                 ) {
                     viewModel.transactionType.forEach {
@@ -309,6 +311,7 @@ internal fun TransactionEditorScreen(
 
                 is TransactionEditorViewState.CurrencySelectionBottomSheetState -> {
                     GeneralSelectionBottomSheet(
+                        title = stringResource(id = R.string.currency_selection_bottomsheet_title),
                         items = viewState.currencyList,
                         name = { it.name }) {
                         viewModel.onCurrencySelected(it, bs.feField)
@@ -317,7 +320,10 @@ internal fun TransactionEditorScreen(
                 }
 
                 is TransactionEditorViewState.TagSelectionBottomSheetState -> {
-                    GeneralSelectionBottomSheet(items = viewState.tagList, name = { it.name }) {
+                    GeneralSelectionBottomSheet(
+                        title = stringResource(id = R.string.tag_selection_bottomsheet_title),
+                        items = viewState.tagList,
+                        name = { it.name }) {
                         viewModel.onTagSelected(it, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
@@ -325,9 +331,20 @@ internal fun TransactionEditorScreen(
 
                 is TransactionEditorViewState.PeriodSelectionBottomSheetState -> {
                     GeneralSelectionBottomSheet(
+                        title = stringResource(id = R.string.scheduler_period_selection_bottomsheet_title),
                         items = viewModel.scheduledPeriodType,
                         name = { it.name }) { res ->
                         viewModel.onPeriodSelected(res, bs.feField)
+                        viewModel.toggleBottomSheet(null)
+                    }
+                }
+
+                is TransactionEditorViewState.UpdateTypeSelectionBottomSheetState -> {
+                    GeneralSelectionBottomSheet(
+                        title = stringResource(id = R.string.update_account_type_selection_bottomsheet_title),
+                        items = viewModel.updateAccountType,
+                        name = { it.name }) { selected ->
+                        viewModel.onFieldValueChanged(bs.feField, selected.name)
                         viewModel.toggleBottomSheet(null)
                     }
                 }
@@ -415,7 +432,9 @@ private fun CategoryList(
                         text = it.categoryName
                     )
                     if (!it.isLeaf) {
-                        IconButton(modifier = Modifier.size(grid_x2), onClick = { onToggleChildren(it) }) {
+                        IconButton(
+                            modifier = Modifier.size(grid_x2),
+                            onClick = { onToggleChildren(it) }) {
                             SGIcons.NextArrow()
                         }
                     }
@@ -481,6 +500,7 @@ private fun AccountSelectionBottomSheet(
 
 @Composable
 private fun <T> GeneralSelectionBottomSheet(
+    title: String,
     items: List<T>,
     name: (T) -> String,
     onSelectItem: (T) -> Unit
@@ -489,7 +509,7 @@ private fun <T> GeneralSelectionBottomSheet(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ) {
-        FEHeading2(text = "Select Tag")
+        FEHeading2(text = title)
         Column(
             modifier = Modifier
                 .fillMaxWidth()

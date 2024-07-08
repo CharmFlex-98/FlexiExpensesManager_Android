@@ -16,6 +16,13 @@ object SGIcons {
     }
 
     @Composable
+    fun HideToggle(
+        modifier: Modifier = Modifier
+    ) {
+        Icon(modifier = modifier, painter = painterResource(id = R.drawable.ic_hide), contentDescription = "")
+    }
+
+    @Composable
     fun Collapse(
         modifier: Modifier = Modifier
     ) {

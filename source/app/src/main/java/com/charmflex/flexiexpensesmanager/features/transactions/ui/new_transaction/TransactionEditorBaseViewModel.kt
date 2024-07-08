@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
+import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
@@ -29,6 +31,8 @@ import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSAC
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_SCHEDULER_PERIOD
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_TAG
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_TO_ACCOUNT
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_UPDATE_ACCOUNT
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_UPDATE_ACCOUNT_TYPE
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
@@ -38,6 +42,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.apache.poi.hssf.record.common.FeatFormulaErr2
 import java.time.LocalDate
 
 internal abstract class TransactionEditorBaseViewModel(
@@ -52,14 +57,14 @@ internal abstract class TransactionEditorBaseViewModel(
 ) : ViewModel(), TransactionRecordable {
     private val _viewState = MutableStateFlow(TransactionEditorViewState())
     val viewState = _viewState.asStateFlow()
-    var transactionType =
-        TransactionType.values().filter { it.name != TransactionType.UPDATE_ACCOUNT.name }
-        private set
+    open val transactionType =
+        TransactionType.entries.toList()
     private val _currentTransactionType = MutableStateFlow(TransactionType.EXPENSES)
     val currentTransactionType = _currentTransactionType.asStateFlow()
     val snackBarState = mutableStateOf<SnackBarState>(SnackBarState.None)
 
-    val scheduledPeriodType = SchedulerPeriod.values().toList().filter { it != SchedulerPeriod.UNKNOWN }
+    val scheduledPeriodType = SchedulerPeriod.entries.filter { it != SchedulerPeriod.UNKNOWN }
+    val updateAccountType = UpdateAccountType.entries
 
 
     // Must be called by child
@@ -120,7 +125,7 @@ internal abstract class TransactionEditorBaseViewModel(
                 TransactionType.EXPENSES -> onSubmitExpenses()
                 TransactionType.INCOME -> onSubmitIncome()
                 TransactionType.TRANSFER -> onSubmitTransfer()
-                else -> {}
+                TransactionType.UPDATE_ACCOUNT -> onSubmitUpdateAccount()
             }
         }
     }
@@ -129,8 +134,10 @@ internal abstract class TransactionEditorBaseViewModel(
         viewModelScope.launch {
             toggleLoader(true)
             val transaction = loadTransaction(id) ?: return@launch
+            val type = TransactionType.fromString(transaction.transactionTypeCode) ?: return@launch
+
             val job =
-                onTransactionTypeChanged(TransactionType.fromString(transaction.transactionTypeCode))
+                onTransactionTypeChanged(type)
 
             job.join()
 
@@ -198,7 +205,7 @@ internal abstract class TransactionEditorBaseViewModel(
         )
     }
 
-    fun onTransactionTypeChanged(transactionType: TransactionType = TransactionType.EXPENSES): Job {
+    fun onTransactionTypeChanged(transactionType: TransactionType): Job {
         _currentTransactionType.update { transactionType }
         return viewModelScope.launch {
             val fields = contentProvider.getContent(transactionType)
@@ -316,6 +323,14 @@ internal abstract class TransactionEditorBaseViewModel(
 
             TRANSACTION_SCHEDULER_PERIOD -> toggleBottomSheet(
                 TransactionEditorViewState.PeriodSelectionBottomSheetState(field),
+            )
+
+            TRANSACTION_UPDATE_ACCOUNT_TYPE -> toggleBottomSheet(
+                TransactionEditorViewState.UpdateTypeSelectionBottomSheetState(field)
+            )
+
+            TRANSACTION_UPDATE_ACCOUNT -> toggleBottomSheet(
+                TransactionEditorViewState.AccountSelectionBottomSheetState(field)
             )
         }
     }
@@ -485,6 +500,39 @@ internal abstract class TransactionEditorBaseViewModel(
         )
     }
 
+    private suspend fun onSubmitUpdateAccount() {
+        val fields = _viewState.value.fields
+        val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.valueItem?.value
+        val rate = fields.firstOrNull { it.id == TRANSACTION_RATE }?.valueItem?.value?.toFloatOrNull()
+        val updateType = fields.firstOrNull { it.id == TRANSACTION_UPDATE_ACCOUNT_TYPE }?.valueItem?.value?.let {
+            UpdateAccountType.fromString(it)
+        }
+        val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.valueItem?.value
+
+        if (amount == null || currency == null || rate == null || updateType == null) return
+
+        val accountId =
+            fields.firstOrNull { it.id == TRANSACTION_UPDATE_ACCOUNT }?.valueItem?.id
+        if (accountId == null) return
+
+        submitUpdate(
+            dataId,
+            accountId.toInt(),
+            updateType == UpdateAccountType.INCREMENT,
+            transactionDate = LocalDate.now().toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
+            currency = currency,
+            rate = rate.toFloat(),
+            amount = amount.toLong()
+        ).fold(
+            onSuccess = {
+                handleSuccess()
+            },
+            onFailure = {
+                handleFailure(it)
+            }
+        )
+    }
+
     open fun allowProceed(): Boolean {
         return _viewState.value.fields
             .filter { it.id != TRANSACTION_TAG }
@@ -548,4 +596,23 @@ internal data class TransactionEditorViewState(
     data class PeriodSelectionBottomSheetState(
         override val feField: FEField
     ) : BottomSheetState
+
+    data class UpdateTypeSelectionBottomSheetState(
+        override val feField: FEField
+    ) : BottomSheetState
+}
+
+// TODO: Need to handle Locale
+internal enum class UpdateAccountType {
+    INCREMENT, DEDUCTION;
+
+    companion object {
+        fun fromString(type: String): UpdateAccountType? {
+            return when (type) {
+                INCREMENT.name -> INCREMENT
+                DEDUCTION.name -> DEDUCTION
+                else -> null
+            }
+        }
+    }
 }

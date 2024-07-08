@@ -101,4 +101,17 @@
     <string name="budget_detail_app_bar_title">Budget Detail</string>
     <string name="generic_budget">Budget</string>
     <string name="generic_spend">Spent</string>
+    <string name="generic_expenses">Expenses</string>
+    <string name="generic_income">Income</string>
+    <string name="generic_transfer">Transfer</string>
+    <string name="generic_update_account">Update Account</string>
+    <string name="new_transaction_update_account_label">Account</string>
+    <string name="new_transaction_update_account_hint">Account to update</string>
+    <string name="new_transaction_update_account_type_label">Type</string>
+    <string name="new_transaction_update_account_type_hint">Update type</string>
+    <string name="currency_selection_bottomsheet_title">Select currency</string>
+    <string name="tag_selection_bottomsheet_title">Select tag</string>
+    <string name="scheduler_period_selection_bottomsheet_title">Select Period</string>
+    <string name="update_account_type_selection_bottomsheet_title">Select update type</string>
+    <string name="generix_total_asset">Total Assets</string>
 </resources>

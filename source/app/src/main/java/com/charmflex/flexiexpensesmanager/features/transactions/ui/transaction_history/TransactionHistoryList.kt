@@ -270,7 +270,7 @@ internal fun ExpensesHistoryItem(
             )
             Spacer(modifier = Modifier.height(grid_x1))
             Text(
-                text = category.ifEmpty { if (type == TransactionType.TRANSFER.name) "TRANSFER" else "UNKNOWN"},
+                text = category.ifEmpty { if (type == TransactionType.TRANSFER.name) "TRANSFER" else if (type == TransactionType.UPDATE_ACCOUNT.name) "UPDATE ACCOUNT" else "UNKNOWN" },
                 style = TextStyle(
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,

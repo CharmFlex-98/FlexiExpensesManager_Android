@@ -9,6 +9,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.core.utils.getEndDate
 import com.charmflex.flexiexpensesmanager.core.utils.getStartDate
+import com.charmflex.flexiexpensesmanager.features.account.AccountHiderService
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.home.ui.HomeItemRefreshable
@@ -29,7 +30,8 @@ internal class AccountHomeViewModel @Inject constructor(
     private val accountHomeUIMapper: AccountHomeUIMapper,
     private val currencyFormatter: CurrencyFormatter,
     private val userCurrencyRepository: UserCurrencyRepository,
-    private val routeNavigator: RouteNavigator
+    private val routeNavigator: RouteNavigator,
+    private val accountHiderService: AccountHiderService
 ) : ViewModel(), HomeItemRefreshable {
     private var job: Job = SupervisorJob()
         get() {
@@ -72,7 +74,8 @@ internal class AccountHomeViewModel @Inject constructor(
                     val totalAsset = summary.map { it.balanceInCent }.reduceOrNull { acc, l -> acc + l }
                     it.copy(
                         accountsSummary = summary,
-                        totalAsset = currencyFormatter.format(totalAsset ?: 0, userCurrencyRepository.getPrimaryCurrency())
+                        totalAsset = currencyFormatter.format(totalAsset ?: 0, userCurrencyRepository.getPrimaryCurrency()),
+                        hideInfo = accountHiderService.isAccountHidden()
                     )
                 }
                 toggleLoading(false)
@@ -89,6 +92,19 @@ internal class AccountHomeViewModel @Inject constructor(
         routeNavigator.navigateTo(AccountRoutes.accountDetailDestination(accountSummaryUI.accountId), args)
     }
 
+    fun toggleHideInfo() {
+        val shouldHide = !_viewState.value.hideInfo
+        viewModelScope.launch {
+            accountHiderService.toggleHideAccount(shouldHide)
+            _viewState.update {
+                it.copy(
+                    hideInfo = shouldHide
+                )
+            }
+        }
+
+    }
+
     private fun toggleLoading(isLoading: Boolean) {
         _viewState.update {
             it.copy(
@@ -102,6 +118,7 @@ internal data class AccountHomeViewState(
     val accountsSummary: List<AccountGroupSummaryUI> = listOf(),
     val totalAsset: String = "",
     val isLoading: Boolean = false,
+    val hideInfo: Boolean = false
 ) {
     internal data class AccountGroupSummaryUI(
         val accountGroupName: String,

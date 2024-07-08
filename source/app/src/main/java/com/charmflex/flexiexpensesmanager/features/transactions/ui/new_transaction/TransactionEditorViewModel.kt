@@ -1,7 +1,10 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction
 
+import androidx.compose.runtime.isTraceInProgress
+import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
+import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.scheduler.di.modules.TransactionEditorProvider
@@ -25,6 +28,7 @@ internal class TransactionEditorViewModel @Inject constructor(
     currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
     getUserCurrencyUseCase: GetUserCurrencyUseCase,
     tagRepository: TagRepository,
+    private val resourcesProvider: ResourcesProvider
 ) : TransactionEditorBaseViewModel(
     contentProvider,
     accountRepository,
@@ -46,6 +50,7 @@ internal class TransactionEditorViewModel @Inject constructor(
         private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
         private val getUserCurrencyUseCase: GetUserCurrencyUseCase,
         private val tagRepository: TagRepository,
+        private val resourcesProvider: ResourcesProvider
     ) {
         fun create(transactionId: Long?): TransactionEditorViewModel {
             return TransactionEditorViewModel(
@@ -59,6 +64,7 @@ internal class TransactionEditorViewModel @Inject constructor(
                 currencyVisualTransformationBuilder,
                 getUserCurrencyUseCase,
                 tagRepository,
+                resourcesProvider
             )
         }
     }
@@ -132,6 +138,22 @@ internal class TransactionEditorViewModel @Inject constructor(
     ): Result<Unit> {
         return submitTransactionUseCase.submitTransfer(
             id, name, fromAccountId, toAccountId, amount, transactionDate, currency, rate
+        )
+    }
+
+    override suspend fun submitUpdate(
+        id: Long?,
+        accountId: Int,
+        isIncrement: Boolean,
+        amount: Long,
+        transactionDate: String,
+        currency: String,
+        rate: Float
+    ) : Result<Unit> {
+        val hint = if (isIncrement) UpdateAccountType.INCREMENT.name else UpdateAccountType.DEDUCTION.name
+        val name = resourcesProvider.getString(R.string.generic_update_account)
+        return submitTransactionUseCase.submitUpdateAccount(
+            id, "$name ($hint)", accountId, isIncrement, amount, transactionDate, currency, rate
         )
     }
 

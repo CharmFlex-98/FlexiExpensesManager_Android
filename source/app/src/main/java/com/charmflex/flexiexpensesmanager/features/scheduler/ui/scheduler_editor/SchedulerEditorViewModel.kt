@@ -11,6 +11,7 @@ import com.charmflex.flexiexpensesmanager.features.scheduler.domain.repository.T
 import com.charmflex.flexiexpensesmanager.features.scheduler.usecases.SubmitTransactionSchedulerUseCase
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_SCHEDULER_PERIOD
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TransactionEditorContentProvider
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction.TransactionEditorBaseViewModel
@@ -19,6 +20,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transacti
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalDate
 import javax.inject.Inject
+import kotlin.enums.EnumEntries
 
 internal class SchedulerEditorViewModel(
     private val schedulerId: Long?,
@@ -69,6 +71,9 @@ internal class SchedulerEditorViewModel(
             )
         }
     }
+
+    override val transactionType: List<TransactionType>
+        get() = super.transactionType.filter { it != TransactionType.UPDATE_ACCOUNT }
 
     init {
         initialise()
@@ -168,6 +173,19 @@ internal class SchedulerEditorViewModel(
             selectedPeriod.value,
             tagIds
         )
+    }
+
+    override suspend fun submitUpdate(
+        id: Long?,
+        accountId: Int,
+        isIncrement: Boolean,
+        amount: Long,
+        transactionDate: String,
+        currency: String,
+        rate: Float
+    ): Result<Unit> {
+        // Do nothing
+        return Result.failure(Throwable("Should not be able to call here"))
     }
 
     override fun onPeriodSelected(period: SchedulerPeriod, targetField: FEField?) {

@@ -37,6 +37,15 @@ internal interface TransactionRecordable {
         rate: Float,
         tagIds: List<Int>,
     ): Result<Unit>
+    suspend fun submitUpdate(
+        id: Long?,
+        accountId: Int,
+        isIncrement: Boolean,
+        amount: Long,
+        transactionDate: String,
+        currency: String,
+        rate: Float,
+    ) : Result<Unit>
     fun getType(): TransactionRecordableType
 }
 
