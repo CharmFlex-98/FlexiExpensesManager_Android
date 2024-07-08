@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.charmflex.flexiexpensesmanager.R
+import com.charmflex.flexiexpensesmanager.core.utils.toPercentageString
 import com.charmflex.flexiexpensesmanager.ui_common.BasicColumnContainerItemList
 import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
@@ -112,7 +113,7 @@ internal fun BudgetDetailScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 FEMetaData1(text = it.expensesAmount)
-                                FEMetaData1(text = "(${toPercentageString(it.expensesBudgetRatio*100)})")
+                                FEMetaData1(text = "(${toPercentageString(it.expensesBudgetRatio)})")
                             }
                         }
 
@@ -133,8 +134,4 @@ internal fun BudgetDetailScreen(
         }
     }
 
-}
-
-private fun toPercentageString(float: Float): String {
-    return "%.2f".format(float) + "%"
 }

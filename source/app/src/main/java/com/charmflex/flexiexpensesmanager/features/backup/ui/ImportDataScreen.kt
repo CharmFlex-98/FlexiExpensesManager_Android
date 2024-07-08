@@ -19,7 +19,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,10 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.charmflex.flexiexpensesmanager.R
+import com.charmflex.flexiexpensesmanager.core.utils.toPercentageString
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
+import com.charmflex.flexiexpensesmanager.ui_common.FECallout3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading4
 import com.charmflex.flexiexpensesmanager.ui_common.FEMetaData1
+import com.charmflex.flexiexpensesmanager.ui_common.FEMetaData2
 import com.charmflex.flexiexpensesmanager.ui_common.ListTable
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
@@ -236,6 +238,19 @@ private fun ColumnScope.LoadedScreen(
         }
 
         1 -> {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(grid_x2),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FECallout3(text = stringResource(id = R.string.error_fix_progress_bar_label))
+                LinearProgressIndicator(
+                    modifier = Modifier.weight(1f).padding(horizontal = grid_x1),
+                    progress = { viewState.importFixPercentage }
+                )
+                FECallout3(text = toPercentageString(viewState.importFixPercentage))
+            }
             ListTable(items = viewState.missingData.toList()) { index, item ->
                 Column(
                     modifier = Modifier

@@ -25,6 +25,10 @@ fun <T> unwrapResult(result: Result<T>): T {
     return result.getOrThrow()
 }
 
+internal fun toPercentageString(ratio: Float): String {
+    return "%.2f".format(ratio*100) + "%"
+}
+
 const val DEFAULT_DATE_TIME_PATTERN = "dd MMMM yyyy hh:mm a"
 const val DATE_ONLY_DEFAULT_PATTERN = "yyyy-MM-dd"
 const val MONTH_ONLY_DEFAULT_PATTERN = "MMMM"

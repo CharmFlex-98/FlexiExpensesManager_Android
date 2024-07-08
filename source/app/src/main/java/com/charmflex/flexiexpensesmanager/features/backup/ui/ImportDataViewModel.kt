@@ -74,7 +74,8 @@ internal class ImportDataViewModel @Inject constructor(
                 it.copy(
                     importedData = importedData,
                     missingData = missingData,
-                    isLoading = false
+                    isLoading = false,
+                    initialErrorCount = missingData.size
                 )
             }
         }
@@ -164,9 +165,14 @@ internal data class ImportDataViewState(
     val isLoading: Boolean = false,
     val importedData: List<ImportedData> = listOf(),
     val missingData: Set<ImportedData.MissingData> = setOf(),
-    val progress: Float = 0f
+    val progress: Float = 0f,
+    private val initialErrorCount: Int = 0,
 ) {
-
+    val importFixPercentage: Float
+        get() {
+            return if (initialErrorCount == 0) return 1f
+            else 1 - missingData.size/initialErrorCount.toFloat()
+        }
 }
 
 internal data class ImportedData(
