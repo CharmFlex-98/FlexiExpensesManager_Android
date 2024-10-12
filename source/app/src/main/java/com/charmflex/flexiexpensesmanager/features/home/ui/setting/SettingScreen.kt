@@ -77,10 +77,12 @@ internal fun SettingScreen(
         when (val state = snackbarState) {
             is SnackBarState.Error -> {
                 snackbarHostState.showSnackBarImmediately(state.message ?: "Something went wrong")
+                viewModel.refreshSnackBarState()
             }
 
             is SnackBarState.Success -> {
                 snackbarHostState.showSnackBarImmediately(state.message)
+                viewModel.refreshSnackBarState()
             }
 
             else -> {}

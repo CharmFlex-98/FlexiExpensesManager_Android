@@ -148,6 +148,10 @@ internal class SettingViewModel @Inject constructor(
         }
     }
 
+    fun refreshSnackBarState() {
+        snackBarState.value = SnackBarState.None
+    }
+
     fun closeDialog() {
         _viewState.update {
             it.copy(
