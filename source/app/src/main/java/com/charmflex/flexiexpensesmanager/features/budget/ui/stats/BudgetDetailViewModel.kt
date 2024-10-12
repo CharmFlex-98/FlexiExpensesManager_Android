@@ -4,11 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.features.budget.domain.usecases.GetAdjustedCategoryBudgetInfoUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 internal class BudgetDetailViewModel @Inject constructor(
@@ -17,15 +21,18 @@ internal class BudgetDetailViewModel @Inject constructor(
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(BudgetStatViewState())
     val viewState = _viewState.asStateFlow()
-    private val dateFilter = DateFilter.Monthly(0)
+
+    private val _dateFilter: MutableStateFlow<DateFilter> = MutableStateFlow(DateFilter.Monthly(0))
+    val dateFilter = _dateFilter.asStateFlow()
 
     init {
-        observeBudgetStat()
+        observeDateFilterChanged()
     }
 
-    private fun observeBudgetStat() {
+    private fun observeDateFilterChanged() {
         viewModelScope.launch {
-            getAdjustedCategoryBudgetInfoUseCase(dateFilter).collectLatest { res ->
+            dateFilter.collectLatest {
+                val res = getAdjustedCategoryBudgetInfoUseCase(_dateFilter.value).first()
                 _viewState.update {
                     it.copy(
                         budgets = mapper.map(res)
@@ -33,6 +40,10 @@ internal class BudgetDetailViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onDateFilterChanged(dateFilter: DateFilter) {
+        _dateFilter.value = dateFilter
     }
 
     fun onToggleExpandable(budgetItem: BudgetStatViewState.CategoryBudgetItem) {

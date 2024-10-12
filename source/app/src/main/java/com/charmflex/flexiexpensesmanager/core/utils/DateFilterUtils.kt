@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 
 @Parcelize
-sealed interface DateFilter : Parcelable{
+sealed interface DateFilter : Parcelable {
 
     @SuppressLint("ParcelCreator")
     object All : DateFilter

@@ -26,9 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.charmflex.flexiexpensesmanager.R
+import com.charmflex.flexiexpensesmanager.core.utils.DateFilter
 import com.charmflex.flexiexpensesmanager.core.utils.toPercentageString
 import com.charmflex.flexiexpensesmanager.ui_common.BasicColumnContainerItemList
 import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
+import com.charmflex.flexiexpensesmanager.ui_common.DateFilterBar
+import com.charmflex.flexiexpensesmanager.ui_common.DateFilterConfig
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
@@ -50,6 +53,7 @@ internal fun BudgetDetailScreen(
 ) {
     val viewState by viewModel.viewState.collectAsState()
     val items = viewState.onScreenBudgetSections
+    val dateFilter by viewModel.dateFilter.collectAsState()
 
     SGScaffold(
         modifier = Modifier
@@ -59,6 +63,12 @@ internal fun BudgetDetailScreen(
             BasicTopBar(title = stringResource(id = R.string.budget_detail_app_bar_title))
         }
     ) {
+        DateFilterBar(
+            modifier = Modifier.padding(vertical = grid_x2),
+            currentDateFilter = dateFilter,
+            dateFilterConfig = DateFilterConfig(dateFilterOptions = listOf(DateFilter.Monthly::class)),
+            onDateFilterChanged = viewModel::onDateFilterChanged
+        )
         items.forEach {
             BasicColumnContainerItemList(
                 modifier = Modifier

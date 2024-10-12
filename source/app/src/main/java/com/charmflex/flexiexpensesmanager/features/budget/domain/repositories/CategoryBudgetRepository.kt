@@ -1,9 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.budget.domain.repositories
 
-import com.charmflex.flexiexpensesmanager.features.budget.data.entities.CategoryBudgetEntity
 import com.charmflex.flexiexpensesmanager.features.budget.data.responses.CategoryBudgetResponse
 import com.charmflex.flexiexpensesmanager.features.budget.domain.models.AdjustedCategoryBudgetNode
-import com.charmflex.flexiexpensesmanager.features.budget.domain.models.CategoryBudgetFullInfo
 import kotlinx.coroutines.flow.Flow
 
 internal interface CategoryBudgetRepository {

@@ -32,9 +32,10 @@ import com.charmflex.flexiexpensesmanager.features.home.ui.summary.expenses_pie_
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import java.nio.file.DirectoryStream.Filter
 import java.time.LocalDate
+import kotlin.reflect.KClass
 
 @Composable
-fun DateFilterBar(
+internal fun DateFilterBar(
     modifier: Modifier = Modifier,
     currentDateFilter: DateFilter,
     onDateFilterChanged: (DateFilter) -> Unit,
@@ -46,7 +47,8 @@ fun DateFilterBar(
     },
     onShowCustomEndFilter: (LocalDate) -> String = {
         it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
-    }
+    },
+    dateFilterConfig: DateFilterConfig = DateFilterConfig()
 ) {
     var dropDownExpanded by remember { mutableStateOf(false) }
     val datePickerUseCaseState = remember { UseCaseState() }
@@ -89,6 +91,7 @@ fun DateFilterBar(
         Spacer(modifier = Modifier.weight(1f))
 
         DateFilterMenuSelection(
+            dateFilterConfig,
             menuName = selectedMenu,
             onMenuTap = { dropDownExpanded = true },
             onDismiss = { dropDownExpanded = false },
@@ -122,6 +125,7 @@ fun DateFilterBar(
 
 @Composable
 private fun DateFilterMenuSelection(
+    dateFilterConfig: DateFilterConfig,
     menuName: String,
     onMenuTap: () -> Unit,
     dropDownExpanded: Boolean,
@@ -143,11 +147,14 @@ private fun DateFilterMenuSelection(
             expanded = dropDownExpanded,
             onDismissRequest = onDismiss
         ) {
-            listOf(
-                FilterMenuDropDownItem.Monthly,
-                FilterMenuDropDownItem.Custom,
-                FilterMenuDropDownItem.All
-            ).forEach { item ->
+            dateFilterConfig.dateFilterOptions.mapNotNull {
+                when (it) {
+                    DateFilter.All::class -> FilterMenuDropDownItem.All
+                    DateFilter.Monthly::class -> FilterMenuDropDownItem.Monthly
+                    DateFilter.Custom::class -> FilterMenuDropDownItem.Custom
+                    else -> null
+                }
+            }.forEach { item ->
                 DropdownMenuItem(
                     text = {
                         FECallout3(text = stringResource(id = item.titleResId))
@@ -243,4 +250,8 @@ private fun CustomDateSelection(
 internal data class CustomDateSelection(
     val dateFilter: DateFilter.Custom,
     val isStartSelected: Boolean
+)
+
+internal data class DateFilterConfig (
+    val dateFilterOptions: List<KClass<out DateFilter>> = listOf(DateFilter.All::class, DateFilter.Custom::class, DateFilter.Monthly::class)
 )
