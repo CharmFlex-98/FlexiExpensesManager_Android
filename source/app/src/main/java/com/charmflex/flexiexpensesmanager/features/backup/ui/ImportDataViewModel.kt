@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.features.backup.ui
 
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
@@ -37,6 +38,10 @@ internal class ImportDataViewModel @Inject constructor(
     val tabIndex = _tabIndex.asStateFlow()
 
     private var awaitingMissingData: ImportedData.MissingData? = null
+
+    private val _snackbarState = MutableStateFlow("")
+    val snackBarState = _snackbarState.asStateFlow()
+
 
     init {
         viewModelScope.launch {
@@ -159,9 +164,9 @@ internal class ImportDataViewModel @Inject constructor(
                     toggleLoader(false)
                     routeNavigator.pop()
                 },
-                onFailure = {
-                    Log.d("test", it.message.toString())
+                onFailure = { e ->
                     toggleLoader(false)
+                    _snackbarState.value = e.toString()
                 }
             )
         }

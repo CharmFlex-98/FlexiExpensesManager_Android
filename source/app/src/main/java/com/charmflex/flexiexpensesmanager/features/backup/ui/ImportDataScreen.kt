@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,9 +41,13 @@ import com.charmflex.flexiexpensesmanager.ui_common.FEMetaData2
 import com.charmflex.flexiexpensesmanager.ui_common.ListTable
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
+import com.charmflex.flexiexpensesmanager.ui_common.SGSnackBar
+import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
+import com.charmflex.flexiexpensesmanager.ui_common.SnackBarType
 import com.charmflex.flexiexpensesmanager.ui_common.TransparentBackground
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
+import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 import kotlin.math.round
 
 @Composable
@@ -49,6 +55,17 @@ internal fun ImportDataScreen(importDataViewModel: ImportDataViewModel) {
 
     val viewState by importDataViewModel.viewState.collectAsState()
     val tabIndex by importDataViewModel.tabIndex.collectAsState()
+    val errorString by importDataViewModel.snackBarState.collectAsState()
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
+
+    LaunchedEffect(key1 = errorString) {
+        if (errorString.isNotBlank()) {
+            snackBarHostState.showSnackBarImmediately(errorString)
+        }
+    }
+
 
     SGScaffold(
         modifier = Modifier.padding(grid_x2)
@@ -95,6 +112,8 @@ internal fun ImportDataScreen(importDataViewModel: ImportDataViewModel) {
             }
         }
     }
+
+    SGSnackBar(snackBarHostState = snackBarHostState, snackBarType = SnackBarType.Error)
 }
 
 @Composable
