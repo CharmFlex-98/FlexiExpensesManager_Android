@@ -82,7 +82,7 @@ private fun TagListScreen(
         BasicColumnContainerItemList(
             items = tags,
             itemContent = {
-                FEBody2(modifier = Modifier.weight(1f), text = it.name)
+                FEBody2(modifier = Modifier.weight(1f), text = "#${it.name}")
             },
             actionItems = {
                 IconButton(onClick = { viewModel.onDeleteIconTap(it) }) {

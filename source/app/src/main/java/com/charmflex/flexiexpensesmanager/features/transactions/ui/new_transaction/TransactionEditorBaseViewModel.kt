@@ -188,7 +188,7 @@ internal abstract class TransactionEditorBaseViewModel(
             if (initialIds.isNullOrBlank()) tag.id.toString() else initialIds + ", ${tag.id}"
 
         val tagNames = targetField?.valueItem?.value
-        val updatedNames = if (tagNames.isNullOrBlank()) tag.name else tagNames + ", ${tag.name}"
+        val updatedNames = if (tagNames.isNullOrBlank()) "#${tag.name}" else tagNames + " #${tag.name}"
 
         onFieldValueChanged(
             targetField,

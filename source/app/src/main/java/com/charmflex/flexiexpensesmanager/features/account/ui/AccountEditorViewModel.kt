@@ -123,7 +123,7 @@ internal class AccountEditorViewModel @Inject constructor(
     }
 
     fun back() {
-        if (_viewState.value.isAccountEditor || _viewState.value.isAccountGroupEditor) {
+        if (_viewState.value.isAccountEditor) {
             _viewState.update {
                 it.copy(
                     editorState = null
@@ -155,17 +155,15 @@ internal class AccountEditorViewModel @Inject constructor(
     }
 
     fun toggleEditor(open: Boolean) {
-        val shouldToggleAccountEditor = _viewState.value.selectedAccountGroup != null
         _viewState.update {
             it.copy(
-                editorState = if (open) {
-                    if (shouldToggleAccountEditor) AccountEditorViewState.AccountEditorState(
+                editorState = if (open && _viewState.value.selectedAccountGroup != null) {
+                    AccountEditorViewState.AccountEditorState(
                         accountName = when (val flow = _flowType) {
                             is AccountEditorFlow.ImportFix -> flow.name
                             else -> ""
                         }
                     )
-                    else AccountEditorViewState.AccountGroupEditorState()
                 } else null
             )
         }
@@ -176,7 +174,6 @@ internal class AccountEditorViewModel @Inject constructor(
             it.copy(
                 editorState = when (val vs = it.editorState) {
                     is AccountEditorViewState.AccountEditorState -> vs.copy(accountName = newValue)
-                    is AccountEditorViewState.AccountGroupEditorState -> vs.copy(accountGroupName = newValue)
                     else -> vs
                 }
             )
@@ -195,31 +192,30 @@ internal class AccountEditorViewModel @Inject constructor(
     }
 
     fun addNewItem() {
-        if (_viewState.value.isAccountGroupEditor) addNewSubGroup()
-        else if (_viewState.value.isAccountEditor) addNewAccount()
+        addNewAccount()
     }
 
-    private fun addNewSubGroup() {
-        val accountGroupEditor =
-            _viewState.value.editorState as? AccountEditorViewState.AccountGroupEditorState
-                ?: return
-
-        viewModelScope.launch {
-            resultOf {
-                accountRepository.addAccountGroup(accountGroupEditor.accountGroupName)
-            }.fold(
-                onSuccess = {
-                    _snackBarState.emit(SnackBarState.Success("Add success!"))
-                    toggleEditor(false)
-                },
-                onFailure = {
-                    _snackBarState.emit(SnackBarState.Success("Add failed!"))
-                    toggleEditor(false)
-                }
-            )
-        }
-
-    }
+//    private fun addNewSubGroup() {
+//        val accountGroupEditor =
+//            _viewState.value.editorState as? AccountEditorViewState.AccountGroupEditorState
+//                ?: return
+//
+//        viewModelScope.launch {
+//            resultOf {
+//                accountRepository.addAccountGroup(accountGroupEditor.accountGroupName)
+//            }.fold(
+//                onSuccess = {
+//                    _snackBarState.emit(SnackBarState.Success("Add success!"))
+//                    toggleEditor(false)
+//                },
+//                onFailure = {
+//                    _snackBarState.emit(SnackBarState.Success("Add failed!"))
+//                    toggleEditor(false)
+//                }
+//            )
+//        }
+//
+//    }
 
     private fun addNewAccount() {
         val accountEditorState =
@@ -277,13 +273,12 @@ internal data class AccountEditorViewState(
     val deleteDialogState: DeleteDialogState? = null,
     val currencyCode: String = "MYR"
 ) {
-    val isAccountGroupEditor get() = editorState is AccountGroupEditorState
     val isAccountEditor get() = editorState is AccountEditorState
 
     sealed interface EditorState
-    data class AccountGroupEditorState(
-        val accountGroupName: String = ""
-    ) : EditorState
+//    data class AccountGroupEditorState(
+//        val accountGroupName: String = ""
+//    ) : EditorState
 
     data class AccountEditorState(
         val accountName: String = "",

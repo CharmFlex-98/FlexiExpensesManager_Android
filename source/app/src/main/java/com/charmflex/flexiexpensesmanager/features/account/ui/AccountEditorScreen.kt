@@ -3,6 +3,7 @@ package com.charmflex.flexiexpensesmanager.features.account.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -10,10 +11,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
@@ -40,6 +44,9 @@ import com.charmflex.flexiexpensesmanager.ui_common.SGSnackBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarType
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x0_25
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x0_5
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 
@@ -56,7 +63,6 @@ internal fun AccountEditorScreen(
     }
     val editorLabel = when (viewState.editorState) {
         is AccountEditorViewState.AccountEditorState -> "Account Name"
-        is AccountEditorViewState.AccountGroupEditorState -> "Account Group Name"
         else -> ""
     }
     val isEditorOpened = viewState.editorState != null
@@ -115,35 +121,26 @@ internal fun AccountEditorScreen(
                             .verticalScroll(scrollState)
                     ) {
                         if (selectedAccountGroup == null) {
-                            viewState.accountGroups.forEach {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            viewModel.selectAccountGroup(it)
-                                        }
-                                        .padding(grid_x2),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Row {
+                            viewState.accountGroups.forEachIndexed { index, it ->
+                                Column {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                viewModel.selectAccountGroup(it)
+                                            }
+                                            .padding(grid_x2),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
                                         FEBody1(
                                             modifier = Modifier.weight(1f),
                                             text = it.accountGroupName
                                         )
-                                        IconButton(
-                                            onClick = {
-                                                viewModel.launchDeleteDialog(
-                                                    it.accountGroupId,
-                                                    AccountEditorViewState.Type.ACCOUNT_GROUP
-                                                )
-                                            }
-                                        ) {
-                                            SGIcons.Delete()
-                                        }
                                         SGIcons.NextArrow()
                                     }
-
+                                    if (index != viewState.accountGroups.size - 1) HorizontalDivider()
                                 }
+                                
                             }
                         } else {
                             selectedAccountGroup.accounts.forEach {
@@ -177,11 +174,13 @@ internal fun AccountEditorScreen(
                     }
                 }
 
-                SGLargePrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "ADD"
-                ) {
-                    viewModel.toggleEditor(true)
+                if (viewState.selectedAccountGroup != null) {
+                    SGLargePrimaryButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "ADD"
+                    ) {
+                        viewModel.toggleEditor(true)
+                    }
                 }
             }
         }
@@ -221,7 +220,6 @@ private fun ColumnScope.EditorScreen(
         modifier = Modifier.fillMaxWidth(),
         label = editorLabel,
         value = when (val vs = viewState.editorState) {
-            is AccountEditorViewState.AccountGroupEditorState -> vs.accountGroupName
             is AccountEditorViewState.AccountEditorState -> vs.accountName
             null -> ""
         }

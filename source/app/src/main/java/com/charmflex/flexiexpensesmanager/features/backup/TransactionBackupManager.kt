@@ -73,7 +73,9 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                         row.safeGetCell(9).stringCellValue,
                         row.safeGetCell(10).stringCellValue
                     )
-                    val tags = row.safeGetCell(11).stringCellValue.split(", ")
+                    val tags = row.safeGetCell(11).stringCellValue.split("#").map {
+                        it.trim()
+                    }
                     data.add(
                         TransactionBackupData(
                             transactionName = transactionName,
@@ -100,6 +102,7 @@ internal class TransactionBackupManagerImpl @Inject constructor(
             val categoriesMap = transactionCategoryRepository.getAllCategoriesIncludedDeleted().groupBy {
                 it.id
             }.mapValues {
+                // only 1 s=unique id per category
                 it.value[0]
             }
             transactionRepository.getTransactions().firstOrNull()?.let { transactions ->
@@ -173,7 +176,7 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                 if (c <= categoryColumns.size - 1) stringCell(categoryColumns[c])
                 else emptyCell()
             }
-            tags.joinToString().let { if (it.isEmpty().not()) stringCell(it) else emptyCell() }
+            tags.joinTags().let { if (it.isEmpty().not()) stringCell(it) else emptyCell() }
         }
     }
 
@@ -192,6 +195,20 @@ internal class TransactionBackupManagerImpl @Inject constructor(
             ExcelColumn(10, "Category3"),
             ExcelColumn(11, "Tags"),
         )
+    }
+
+    private fun List<String>.joinTags(): String {
+        if (this.isEmpty()) return ""
+
+        return buildString {
+            this@joinTags.forEachIndexed { index, tag ->
+                append("#$tag")
+                // If it is not the last, append another space for next hashtag #
+                if (index != this@joinTags.size - 1) {
+                    append(" ")
+                }
+            }
+        }
     }
 }
 

@@ -95,7 +95,7 @@ private fun migrationList(): List<Migration> {
 }
 
 private const val INIT_ACCOUNT_GROUP_SCRIPT =
-    "INSERT INTO AccountGroupEntity (id, name) VALUES (0, 'Account'), (1, 'Cash')"
+    "INSERT INTO AccountGroupEntity (id, name) VALUES (0, '${AccountGroupName.BANK_ACCOUNT}'), (1, '${AccountGroupName.CASH}'), (2, '${AccountGroupName.CREDIT_CARD}'), (3, '${AccountGroupName.DEBIT_CARD}'), (4, '${AccountGroupName.INSURANCE}'), (5, '${AccountGroupName.INVESTMENT}'), (6, '${AccountGroupName.LOAN}'), (7, '${AccountGroupName.PREPAID}'), (8, '${AccountGroupName.SAVING}'), (9, '${AccountGroupName.OTHERS}')"
 private const val INIT_ACCOUNT_SCRIPT =
     "INSERT INTO AccountEntity (name, account_group_id) VALUES ('Cash', 1)"
 private const val INIT_TRANSACTION_TYPE_SCRIPT =

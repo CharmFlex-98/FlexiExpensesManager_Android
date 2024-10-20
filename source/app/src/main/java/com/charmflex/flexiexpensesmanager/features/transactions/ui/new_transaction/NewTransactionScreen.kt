@@ -323,7 +323,7 @@ internal fun TransactionEditorScreen(
                     GeneralSelectionBottomSheet(
                         title = stringResource(id = R.string.tag_selection_bottomsheet_title),
                         items = viewState.tagList,
-                        name = { it.name }) {
+                        name = { "#${it.name}" }) {
                         viewModel.onTagSelected(it, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
