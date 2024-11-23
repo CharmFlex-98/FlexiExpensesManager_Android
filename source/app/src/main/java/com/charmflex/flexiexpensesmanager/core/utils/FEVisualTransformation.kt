@@ -60,11 +60,17 @@ internal class CurrencyVisualTransformation(
 
 internal class CurrencyTextFieldOutputFormatter @Inject constructor() {
     fun format(value: String): String {
-        val trimmedText = value.trim()
+        var trimmedText = value.trim()
 
         if (trimmedText.isEmpty()) return trimmedText
-        if (trimmedText.isDigitsOnly().not()) return trimmedText.split(',', '.', '-', '_').first()
+        val isNegative = trimmedText.count { it == '-' } % 2 != 0
+        trimmedText = trimmedText.replace("-", "");
+        if (trimmedText.isDigitsOnly().not()) {
+            trimmedText = trimmedText.split(',', '.', '-', '_').first()
+        }
 
+        if (trimmedText.isEmpty()) return trimmedText
+        if (isNegative) return "-$trimmedText"
         return trimmedText
     }
 }

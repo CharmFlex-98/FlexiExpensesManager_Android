@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.max
 import kotlin.random.Random
 
 internal class ExpensesChartViewModel @Inject constructor(
@@ -146,7 +147,7 @@ internal class ExpensesChartViewModel @Inject constructor(
         for ((rootCategory, amount) in data.entries) {
             res.add(
                 PieChartData(
-                    data = amount.toDouble(),
+                    data = max(0.0, amount.toDouble()), // Use max to eliminate negative value.
                     color = generateRandomColor(),
                     partName = rootCategory
                 )
