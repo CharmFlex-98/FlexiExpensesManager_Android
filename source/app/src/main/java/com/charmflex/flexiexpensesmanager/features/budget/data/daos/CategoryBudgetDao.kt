@@ -41,7 +41,7 @@ internal interface CategoryBudgetDao {
                 "subtable.default_budget_in_cent, " +
                 "mcb.budget_month_year," +
                 "mcb.custom_budget_in_cent FROM " +
-                "(SELECT tc.id as category_id, tc.name as category_name, tc.parent_id as category_parent_id, COALESCE(SUM(t.amount_in_cent), 0) as expenses_amount_in_cent, cb.id as category_budget_id, cb.default_budget_in_cent " +
+                "(SELECT tc.id as category_id, tc.name as category_name, tc.parent_id as category_parent_id, COALESCE(SUM(t.amount_in_cent * t.rate), 0) as expenses_amount_in_cent, cb.id as category_budget_id, cb.default_budget_in_cent " +
                 "FROM TransactionCategoryEntity tc " +
                 "LEFT JOIN CategoryBudgetEntity cb ON cb.category_id = tc.id " +
                 "LEFT JOIN (SELECT * FROM TransactionEntity WHERE transaction_type_code = 'EXPENSES' " +
