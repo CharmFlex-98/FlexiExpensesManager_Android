@@ -145,13 +145,15 @@ internal class ExpensesChartViewModel @Inject constructor(
     private fun generatePieChartData(data: Map<String, Long>): List<PieChartData> {
         val res = mutableListOf<PieChartData>()
         for ((rootCategory, amount) in data.entries) {
-            res.add(
-                PieChartData(
-                    data = max(0.0, amount.toDouble()), // Use max to eliminate negative value.
-                    color = generateRandomColor(),
-                    partName = rootCategory
+            if (amount > 0) {
+                res.add(
+                    PieChartData(
+                        data = amount.toDouble(), // Use max to eliminate negative value.
+                        color = generateRandomColor(),
+                        partName = rootCategory
+                    )
                 )
-            )
+            }
         }
         return res
     }
