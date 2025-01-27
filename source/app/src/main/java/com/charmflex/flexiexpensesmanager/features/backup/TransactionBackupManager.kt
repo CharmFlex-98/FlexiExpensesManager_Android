@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.features.backup
 
 import android.content.Context
 import android.content.Intent
+import android.text.TextUtils
 import com.charmflex.flexiexpensesmanager.core.di.Dispatcher
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
@@ -67,7 +68,7 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                     val currency = row.safeGetCell(4).stringCellValue
                     val currencyRate = row.safeGetCell(5).numericCellValue
                     val amount = row.safeGetCell(6).numericCellValue
-                    val date = row.safeGetCell(7).dateCellValue.toLocalDate()
+                    val date = row.safeGetCell(7).dateCellValue?.toLocalDate()
                     val categoryColumns = listOf(
                         row.safeGetCell(8).stringCellValue,
                         row.safeGetCell(9).stringCellValue,
@@ -76,6 +77,10 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                     val tags = row.safeGetCell(11).stringCellValue.split("#").map {
                         it.trim()
                     }
+
+                    // Break if there is no value anymore.
+                    if (date == null) break
+
                     data.add(
                         TransactionBackupData(
                             transactionName = transactionName,
