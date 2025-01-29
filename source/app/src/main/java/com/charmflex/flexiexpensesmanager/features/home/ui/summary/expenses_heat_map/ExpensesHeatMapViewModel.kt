@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 internal class ExpensesHeatMapViewModel @Inject constructor(
     private val getExpensesDailyMedianRatioUseCase: GetExpensesDailyMedianRatioUseCase,

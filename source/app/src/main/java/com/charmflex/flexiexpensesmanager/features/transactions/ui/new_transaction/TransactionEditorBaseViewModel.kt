@@ -34,6 +34,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSAC
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_UPDATE_ACCOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_UPDATE_ACCOUNT_TYPE
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
+import com.patrykandpatrick.vico.core.extension.getFieldValue
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -173,6 +174,11 @@ internal abstract class TransactionEditorBaseViewModel(
             getField(TRANSACTION_RATE)?.let {
                 onFieldValueChanged(it, transaction.rate.toString())
             }
+            _viewState.update {
+                it.copy(
+                    currencyCode = transaction.currency
+                )
+            }
             toggleLoader(false)
         }
     }
@@ -226,6 +232,7 @@ internal abstract class TransactionEditorBaseViewModel(
             _viewState.update {
                 it.copy(
                     fields = updatedFields,
+                    currencyCode = currency?.name ?: it.currencyCode
                 )
             }
 
