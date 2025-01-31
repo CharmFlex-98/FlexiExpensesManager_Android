@@ -24,7 +24,8 @@ internal class AccountRepositoryImpl @Inject constructor(
         val res = accountDao.getAccountById(id)
         return AccountGroup.Account(
             accountId = res.id,
-            accountName = res.name
+            accountName = res.name,
+            currency = res.currency
         )
     }
 
@@ -52,7 +53,8 @@ internal class AccountRepositoryImpl @Inject constructor(
                         accounts = data.filter { it.account != null }.map { acc ->
                             AccountGroup.Account(
                                 accountId = acc.account!!.accountId,
-                                accountName = acc.account.accountName
+                                accountName = acc.account.accountName,
+                                currency = acc.account.currency
                             )
                         }
                     )
@@ -78,7 +80,8 @@ internal class AccountRepositoryImpl @Inject constructor(
                                     AccountGroupSummary.AccountSummary(
                                         accountId = acc.accountId!!,
                                         accountName = acc.accountName!!,
-                                        balance = acc.inAmount - acc.outAmount
+                                        balance = acc.inAmount - acc.outAmount,
+                                        currency = acc.currency!!
                                     )
                                 }
                         )

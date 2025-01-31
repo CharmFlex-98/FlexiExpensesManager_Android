@@ -19,7 +19,7 @@ internal interface AccountDao {
     @Query(
         "SELECT ag.id as account_group_id," +
                 "ag.name as account_group_name," +
-                "a.id as account_id, a.name as account_name, " +
+                "a.id as account_id, a.name as account_name, a.currency as currency, " +
                 "a.remarks as remarks " +
                 "FROM (SELECT * FROM AccountGroupEntity WHERE is_deleted = 0) ag" +
                 " LEFT OUTER JOIN (SELECT * FROM AccountEntity WHERE is_deleted = 0) a" +

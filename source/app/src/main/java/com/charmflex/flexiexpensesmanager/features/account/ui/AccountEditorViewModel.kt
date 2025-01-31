@@ -9,10 +9,12 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.BackupRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
+import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +27,7 @@ internal class AccountEditorViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val routeNavigator: RouteNavigator,
     private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
-    private val userCurrencyRepository: UserCurrencyRepository,
+    private val currencyUseCase: GetCurrencyUseCase,
     private val resourcesProvider: ResourcesProvider,
     private val currencyRateUseCase: GetCurrencyRateUseCase,
 ) : ViewModel() {
@@ -45,7 +47,7 @@ internal class AccountEditorViewModel @Inject constructor(
                     it.copy(
                         accountGroups = accGroups,
                         selectedAccountGroup = it.selectedAccountGroup?.let { accGroup -> accGroups.firstOrNull { it.accountGroupId == accGroup.accountGroupId } },
-                        primaryCurrencyCode = userCurrencyRepository.getPrimaryCurrency()
+                        primaryCurrencyCode = unwrapResult(currencyUseCase.primary())?.name ?: ""
                     )
                 }
                 toggleLoader(false)
@@ -208,11 +210,11 @@ internal class AccountEditorViewModel @Inject constructor(
         when (tapFieldType) {
             TapFieldType.CurrencyField -> {
                 viewModelScope.launch {
-                    val currencyCodes = userCurrencyRepository.getSecondaryCurrency()
+                    val currencyCodes = unwrapResult(currencyUseCase.getAll())
                     _viewState.update {
                         it.copy(
                             bottomSheetState = BottomSheetState.CurrencySelectionState(
-                                currencyCodes = currencyCodes
+                                currencyCodes = currencyCodes.map { it.name }.toSet()
                             )
                         )
                     }
@@ -267,7 +269,7 @@ internal class AccountEditorViewModel @Inject constructor(
         val currency = accountEditorState.currency;
 
         viewModelScope.launch {
-            val currencyRate = currencyRateUseCase.invoke(currency, false)?.rate ?: 1f
+            val currencyRate = currencyRateUseCase.getCurrency(currency, false)?.rate ?: 1f
             resultOf {
                 accountRepository.addAccount(
                     accountEditorState.accountName,

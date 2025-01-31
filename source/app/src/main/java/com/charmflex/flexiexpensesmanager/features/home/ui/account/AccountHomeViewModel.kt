@@ -134,6 +134,10 @@ internal data class AccountHomeViewState(
             val accountName: String,
             val balance: String,
             val balanceInCent: Long,
+            val mainCurrencyBalance: String,
+            val mainCurrencyBalanceInCent: Long,
+            val currency: String,
+            val isCurrencyPrimary: Boolean
         )
     }
 }

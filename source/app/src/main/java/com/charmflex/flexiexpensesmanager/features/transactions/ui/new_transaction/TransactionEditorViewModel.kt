@@ -1,12 +1,11 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction
 
-import androidx.compose.runtime.isTraceInProgress
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
-import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.scheduler.di.modules.TransactionEditorProvider
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
@@ -26,7 +25,7 @@ internal class TransactionEditorViewModel @Inject constructor(
     routeNavigator: RouteNavigator,
     transactionCategoryRepository: TransactionCategoryRepository,
     currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
-    getUserCurrencyUseCase: GetUserCurrencyUseCase,
+    getCurrencyUseCase: GetCurrencyUseCase,
     tagRepository: TagRepository,
     private val resourcesProvider: ResourcesProvider
 ) : TransactionEditorBaseViewModel(
@@ -35,7 +34,7 @@ internal class TransactionEditorViewModel @Inject constructor(
     routeNavigator,
     transactionCategoryRepository,
     currencyVisualTransformationBuilder,
-    getUserCurrencyUseCase,
+    getCurrencyUseCase,
     tagRepository,
     transactionId
 ) {
@@ -48,7 +47,7 @@ internal class TransactionEditorViewModel @Inject constructor(
         private val transactionCategoryRepository: TransactionCategoryRepository,
         private val submitTransactionUseCase: SubmitTransactionUseCase,
         private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
-        private val getUserCurrencyUseCase: GetUserCurrencyUseCase,
+        private val getCurrencyUseCase: GetCurrencyUseCase,
         private val tagRepository: TagRepository,
         private val resourcesProvider: ResourcesProvider
     ) {
@@ -62,7 +61,7 @@ internal class TransactionEditorViewModel @Inject constructor(
                 routeNavigator,
                 transactionCategoryRepository,
                 currencyVisualTransformationBuilder,
-                getUserCurrencyUseCase,
+                getCurrencyUseCase,
                 tagRepository,
                 resourcesProvider
             )

@@ -11,10 +11,14 @@ internal data class ScheduledTransactionResponse(
     val scheduledAccountFromId: Int?,
     @ColumnInfo("account_from_name")
     val scheduledAccountFromName: String?,
+    @ColumnInfo("account_from_currency")
+    val scheduledAccountFromCurrency: String?,
     @ColumnInfo("scheduled_account_to_id")
     val scheduledAccountToId: Int?,
     @ColumnInfo("account_to_name")
     val scheduledAccountToName: String?,
+    @ColumnInfo("account_to_currency")
+    val scheduledAccountToCurrency: String?,
     @ColumnInfo("transaction_type_code")
     val transactionTypeCode: String,
     @ColumnInfo("amount_in_cent")

@@ -24,6 +24,7 @@ import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.ui_common.DateFilterBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
+import com.charmflex.flexiexpensesmanager.ui_common.FECallout3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading5
 import com.charmflex.flexiexpensesmanager.ui_common.FeColumnContainer
@@ -103,10 +104,21 @@ private fun AccountGroupSection(
                     modifier = Modifier.weight(1f),
                     text = it.accountName
                 )
-                FEBody3(
-                    text = if (hideInfo) HIDE_INFO_LABEL else it.balance,
-                    color = if (hideInfo) Color.Black else if (accountGroupSummary.balanceInCent < 0) Color.Red else MaterialTheme.colorScheme.primary
-                )
+
+                Column {
+
+                    FEBody3(
+                        text = if (hideInfo) HIDE_INFO_LABEL else it.balance,
+                        color = if (hideInfo) Color.Black else if (accountGroupSummary.balanceInCent < 0) Color.Red else MaterialTheme.colorScheme.primary
+                    )
+
+                    if (!it.isCurrencyPrimary) {
+                        FECallout3(
+                            text = if (hideInfo) HIDE_INFO_LABEL else it.mainCurrencyBalance,
+                            color = if (hideInfo) Color.Black else if (accountGroupSummary.balanceInCent < 0) Color.Red else MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             }
         }
     }

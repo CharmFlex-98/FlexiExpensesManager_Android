@@ -4,7 +4,7 @@ import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
-import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.scheduler.di.modules.TransactionEditorProvider
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.repository.TransactionSchedulerRepository
@@ -20,7 +20,6 @@ import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transacti
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalDate
 import javax.inject.Inject
-import kotlin.enums.EnumEntries
 
 internal class SchedulerEditorViewModel(
     private val schedulerId: Long?,
@@ -31,7 +30,7 @@ internal class SchedulerEditorViewModel(
     routeNavigator: RouteNavigator,
     transactionCategoryRepository: TransactionCategoryRepository,
     currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
-    getUserCurrencyUseCase: GetUserCurrencyUseCase,
+    getCurrencyUseCase: GetCurrencyUseCase,
     tagRepository: TagRepository,
 ) : TransactionEditorBaseViewModel(
     contentProvider,
@@ -39,7 +38,7 @@ internal class SchedulerEditorViewModel(
     routeNavigator,
     transactionCategoryRepository,
     currencyVisualTransformationBuilder,
-    getUserCurrencyUseCase,
+    getCurrencyUseCase,
     tagRepository,
     schedulerId
 ) {
@@ -53,7 +52,7 @@ internal class SchedulerEditorViewModel(
         private val routeNavigator: RouteNavigator,
         private val transactionCategoryRepository: TransactionCategoryRepository,
         private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
-        private val getUserCurrencyUseCase: GetUserCurrencyUseCase,
+        private val getCurrencyUseCase: GetCurrencyUseCase,
         private val tagRepository: TagRepository,
     ) {
         fun create(schedulerId: Long?): SchedulerEditorViewModel {
@@ -66,7 +65,7 @@ internal class SchedulerEditorViewModel(
                 routeNavigator,
                 transactionCategoryRepository,
                 currencyVisualTransformationBuilder,
-                getUserCurrencyUseCase,
+                getCurrencyUseCase,
                 tagRepository,
             )
         }

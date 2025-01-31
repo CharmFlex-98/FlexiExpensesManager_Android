@@ -11,10 +11,14 @@ internal data class TransactionResponse(
     val accountFromId: Int?,
     @ColumnInfo("account_from_name")
     val accountFromName: String?,
+    @ColumnInfo("account_from_currency")
+    val accountFromCurrency: String?,
     @ColumnInfo("account_to_id")
     val accountToId: Int?,
     @ColumnInfo("account_to_name")
     val accountToName: String?,
+    @ColumnInfo("account_to_currency")
+    val accountToCurrency: String?,
     @ColumnInfo("transaction_type_code")
     val transactionTypeCode: String,
     @ColumnInfo("amount_in_cent")

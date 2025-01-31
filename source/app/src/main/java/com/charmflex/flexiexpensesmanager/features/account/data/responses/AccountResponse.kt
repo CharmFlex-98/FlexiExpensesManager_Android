@@ -17,6 +17,8 @@ internal data class AccountResponse(
         val accountId: Int,
         @ColumnInfo("account_name")
         val accountName: String,
+        @ColumnInfo("currency")
+        val currency: String,
         @ColumnInfo("remarks")
         val remarks: String?
     )

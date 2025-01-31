@@ -12,7 +12,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
-import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
 import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
@@ -34,7 +34,6 @@ import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSAC
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_UPDATE_ACCOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_UPDATE_ACCOUNT_TYPE
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
-import com.patrykandpatrick.vico.core.extension.getFieldValue
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,7 +42,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.apache.poi.hssf.record.common.FeatFormulaErr2
 import java.time.LocalDate
 
 internal abstract class TransactionEditorBaseViewModel(
@@ -52,7 +50,7 @@ internal abstract class TransactionEditorBaseViewModel(
     private val routeNavigator: RouteNavigator,
     private val transactionCategoryRepository: TransactionCategoryRepository,
     private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
-    private val getUserCurrencyUseCase: GetUserCurrencyUseCase,
+    private val getCurrencyUseCase: GetCurrencyUseCase,
     private val tagRepository: TagRepository,
     private val dataId: Long?
 ) : ViewModel(), TransactionRecordable {
@@ -83,14 +81,12 @@ internal abstract class TransactionEditorBaseViewModel(
 
     private fun onUpdateUserCurrencyOptions() {
         viewModelScope.launch {
-            val primary = unwrapResult(getUserCurrencyUseCase.primary())
-            val secondaryList = unwrapResult(getUserCurrencyUseCase.secondary())
+            val all = unwrapResult (
+                getCurrencyUseCase.getAll()
+            )
             _viewState.update {
                 it.copy(
-                    currencyList = mutableListOf<CurrencyRate>().apply {
-                        primary?.let { add(it) }
-                        addAll(secondaryList)
-                    }
+                    currencyList = all
                 )
             }
         }
@@ -209,13 +205,23 @@ internal abstract class TransactionEditorBaseViewModel(
             account.accountName,
             account.accountId.toString()
         )
+        val currencyRate = viewState.value.currencyList.firstOrNull {
+            it.name == account.currency
+        }
+        val currencyField = viewState.value.fields.firstOrNull {
+            it.id == TRANSACTION_CURRENCY
+        }
+
+        if (currencyRate == null || currencyField == null) return
+
+        onCurrencySelected(currencyRate, currencyField)
     }
 
     fun onTransactionTypeChanged(transactionType: TransactionType): Job {
         _currentTransactionType.update { transactionType }
         return viewModelScope.launch {
             val fields = contentProvider.getContent(transactionType)
-            val currency = unwrapResult(getUserCurrencyUseCase.primary())
+            val currency = unwrapResult(getCurrencyUseCase.primary())
             val updatedFields = fields.map {
                 if (it.id == TRANSACTION_CURRENCY) {
                     return@map it.copy(

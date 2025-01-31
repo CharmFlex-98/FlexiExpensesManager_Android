@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CurrencyRoutes
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.CurrencyRate
-import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetUserCurrencyUseCase
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 internal class UserCurrencyViewModel @Inject constructor(
-    private val getUserCurrencyUseCase: GetUserCurrencyUseCase,
+    private val getCurrencyUseCase: GetCurrencyUseCase,
     private val routeNavigator: RouteNavigator
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(UserCurrencyViewState())
@@ -22,7 +22,7 @@ internal class UserCurrencyViewModel @Inject constructor(
     fun initialise() {
         toggleLoader(true)
         viewModelScope.launch {
-            getUserCurrencyUseCase.secondary().fold(
+            getCurrencyUseCase.secondary().fold(
                 onSuccess = { res ->
                     _viewState.update {
                         it.copy(

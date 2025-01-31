@@ -12,7 +12,7 @@ internal class GetCurrencyRateUseCase @Inject constructor(
     private val currencyRepository: CurrencyRepository,
 ) {
 
-    suspend operator fun invoke(currency: String, customFirst: Boolean = true): CurrencyRate? {
+    suspend fun getCurrency(currency: String, customFirst: Boolean = true): CurrencyRate? {
         val fromCurrency = userCurrencyRepository.getPrimaryCurrency()
         return if (customFirst) {
             userCurrencyRepository.getUserSetCurrencyRate(currency = currency)?.let {
@@ -26,6 +26,24 @@ internal class GetCurrencyRateUseCase @Inject constructor(
         } else {
             getLatestCurrencyRate(currency, fromCurrency)
         }
+    }
+
+    suspend fun getAll(): List<CurrencyRate> {
+        val fromCurrency = userCurrencyRepository.getPrimaryCurrency()
+        val fromCurrencyRate =
+            currencyRepository.getCacheCurrencyRates()?.currencyRates?.get(fromCurrency)
+        val currencyRates =
+            currencyRepository.getCacheCurrencyRates()?.currencyRates
+        return currencyRates?.let {
+            it.map { r ->
+                CurrencyRate(
+                    r.key,
+                    fromCurrency,
+                    fromCurrencyRate?.div(r.value) ?: 1f,
+                    false
+                )
+            }
+        } ?: listOf()
     }
 
     private suspend fun getLatestCurrencyRate(currency: String, fromCurrency: String): CurrencyRate? {

@@ -18,8 +18,8 @@ internal class TransactionMapper @Inject constructor() : Mapper<TransactionRespo
             currency = from.currency,
             rate = from.rate,
             transactionCategory = getCategory(from.categoryId, from.categoryName),
-            transactionAccountFrom = getTransactionAccount(from.accountFromId, from.accountFromName),
-            transactionAccountTo = getTransactionAccount(from.accountToId, from.accountToName),
+            transactionAccountFrom = getTransactionAccount(from.accountFromId, from.accountFromName, from.accountFromCurrency),
+            transactionAccountTo = getTransactionAccount(from.accountToId, from.accountToName, from.accountToCurrency),
             // TODO: Not supported yet
             tags = from.tagIds?.let {
                 it.split(", ").mapIndexed { index, it ->
@@ -32,13 +32,15 @@ internal class TransactionMapper @Inject constructor() : Mapper<TransactionRespo
         )
     }
 
-    private fun getTransactionAccount(accountId: Int?, accountName: String?): AccountGroup.Account? {
+    private fun getTransactionAccount(accountId: Int?, accountName: String?, currency: String?): AccountGroup.Account? {
         if (accountId == null) return null
         if (accountName == null) return null
+        if (currency == null) return null;
 
         return AccountGroup.Account(
             accountId = accountId,
-            accountName = accountName
+            accountName = accountName,
+            currency = currency
         )
     }
 

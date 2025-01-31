@@ -68,8 +68,10 @@ internal interface TransactionDao {
         "t.transaction_name," +
                 "t.account_from_id as account_from_id," +
                 "afrom.name as account_from_name," +
+                "afrom.currency as account_from_currency," +
                 "t.account_to_id as account_to_id," +
                 "ato.name as account_to_name," +
+                "ato.currency as account_to_currency," +
                 "t.transaction_type_code," +
                 "t.amount_in_cent," +
                 "t.transaction_date," +
