@@ -15,8 +15,7 @@ internal data class AccountGroupSummary(
     ) {
         suspend fun getPrimaryBalanceInCent(primaryCurrencyRate: Float, currencyRateUseCase: GetCurrencyRateUseCase): Long {
             val rate = currencyRateUseCase.getCurrency(currency, false)?.rate ?: primaryCurrencyRate
-            val ratio = primaryCurrencyRate.div(rate)
-            return (balance * ratio).toLong()
+            return (balance * rate).toLong()
         }
     }
 
