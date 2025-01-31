@@ -25,6 +25,8 @@ internal data class AccountEntity(
     val accountGroupId: Int,
     @ColumnInfo("name")
     val name: String,
+    @ColumnInfo("currency")
+    val currency: String,
     @ColumnInfo("is_deleted", defaultValue = "false")
     val isDeleted: Boolean = false,
     @Embedded

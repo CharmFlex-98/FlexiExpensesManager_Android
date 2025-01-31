@@ -14,6 +14,12 @@ val Migration_1_2 = object : Migration(1, 2) {
         db.execSQL("COMMIT;");
     }
 }
+
+val Migration_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE AccountEntity ADD currency TEXT NOT NULL DEFAULT 'MYR'")
+    }
+}
 // The migration here basically just change the type of categoryId from not nullable to nullable.
 // Because transfer type transaction does not support category.
 //val MIGRATION_1_2 = object : Migration(1, 2) {

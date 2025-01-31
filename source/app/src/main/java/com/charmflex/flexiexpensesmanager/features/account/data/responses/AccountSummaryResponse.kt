@@ -11,6 +11,8 @@ internal data class AccountSummaryResponse(
     val accountId: Int?,
     @ColumnInfo("account_name")
     val accountName: String?,
+    @ColumnInfo("currency")
+    val currency: String?,
     @ColumnInfo("out_amount")
     val outAmount: Long,
     @ColumnInfo("in_amount")

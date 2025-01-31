@@ -12,6 +12,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.getStartDate
 import com.charmflex.flexiexpensesmanager.features.account.AccountHiderService
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
 import com.charmflex.flexiexpensesmanager.features.home.ui.HomeItemRefreshable
 import com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper.AccountHomeUIMapper
 import kotlinx.coroutines.Job
@@ -31,7 +32,8 @@ internal class AccountHomeViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val userCurrencyRepository: UserCurrencyRepository,
     private val routeNavigator: RouteNavigator,
-    private val accountHiderService: AccountHiderService
+    private val accountHiderService: AccountHiderService,
+    private val getCurrencyRateUseCase: GetCurrencyRateUseCase
 ) : ViewModel(), HomeItemRefreshable {
     private var job: Job = SupervisorJob()
         get() {

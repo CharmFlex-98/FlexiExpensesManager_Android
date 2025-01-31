@@ -8,6 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.charmflex.flexiexpensesmanager.db.migration.Migration_1_2
+import com.charmflex.flexiexpensesmanager.db.migration.Migration_2_3
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountTransactionDao
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
@@ -46,7 +47,7 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.Tr
         CategoryBudgetEntity::class,
         MonthlyCategoryBudgetEntity::class
     ],
-    version = 2,
+    version = 3,
     autoMigrations = [
         AutoMigration(from = 1, to = 2)
     ],
@@ -73,7 +74,7 @@ internal abstract class AppDatabase : RoomDatabase() {
                 AppDatabase::class.java,
                 "FlexiExpensesManagerDB"
             )
-//                .addMigrations(*migrationList().toTypedArray())
+                .addMigrations(*migrationList().toTypedArray())
                 .addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
@@ -90,7 +91,8 @@ internal abstract class AppDatabase : RoomDatabase() {
 
 private fun migrationList(): List<Migration> {
     return listOf(
-        Migration_1_2,
+//        Migration_1_2,
+        Migration_2_3
     )
 }
 

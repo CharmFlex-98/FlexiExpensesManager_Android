@@ -102,6 +102,7 @@ internal class AccountRepositoryImpl @Inject constructor(
             name = accountName,
             accountGroupId = accountGroupId,
             additionalInfo = null,
+            currency = currency
         )
 
         if (accountAmount == 0L) accountDao.insertAccount(entity)

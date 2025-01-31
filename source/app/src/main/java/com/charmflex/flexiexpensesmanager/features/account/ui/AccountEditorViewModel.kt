@@ -1,7 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.account.ui
 
 import android.util.Log
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.R
@@ -27,7 +26,8 @@ internal class AccountEditorViewModel @Inject constructor(
     private val routeNavigator: RouteNavigator,
     private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
     private val userCurrencyRepository: UserCurrencyRepository,
-    private val resourcesProvider: ResourcesProvider
+    private val resourcesProvider: ResourcesProvider,
+    private val currencyRateUseCase: GetCurrencyRateUseCase,
 ) : ViewModel() {
     private lateinit var _flowType: AccountEditorFlow
 
@@ -45,7 +45,7 @@ internal class AccountEditorViewModel @Inject constructor(
                     it.copy(
                         accountGroups = accGroups,
                         selectedAccountGroup = it.selectedAccountGroup?.let { accGroup -> accGroups.firstOrNull { it.accountGroupId == accGroup.accountGroupId } },
-                        currencyCode = userCurrencyRepository.getPrimaryCurrency()
+                        primaryCurrencyCode = userCurrencyRepository.getPrimaryCurrency()
                     )
                 }
                 toggleLoader(false)
@@ -64,6 +64,14 @@ internal class AccountEditorViewModel @Inject constructor(
 
     fun resetSnackBarState() {
         _snackBarState.value = SnackBarState.None
+    }
+
+    fun resetBottomSheetState() {
+        _viewState.update {
+            it.copy(
+                bottomSheetState = null
+            )
+        }
     }
 
     private fun deleteAccountGroup(id: Int) {
@@ -162,7 +170,8 @@ internal class AccountEditorViewModel @Inject constructor(
                         accountName = when (val flow = _flowType) {
                             is AccountEditorFlow.ImportFix -> flow.name
                             else -> ""
-                        }
+                        },
+                        currency = viewState.value.primaryCurrencyCode
                     )
                 } else null
             )
@@ -195,6 +204,39 @@ internal class AccountEditorViewModel @Inject constructor(
         addNewAccount()
     }
 
+    fun onTapField(tapFieldType: TapFieldType) {
+        when (tapFieldType) {
+            TapFieldType.CurrencyField -> {
+                viewModelScope.launch {
+                    val currencyCodes = userCurrencyRepository.getSecondaryCurrency()
+                    _viewState.update {
+                        it.copy(
+                            bottomSheetState = BottomSheetState.CurrencySelectionState(
+                                currencyCodes = currencyCodes
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun onBottomSheetItemSelected(item: String) {
+        when (_viewState.value.bottomSheetState) {
+            is BottomSheetState.CurrencySelectionState -> {
+                val accountEditorState = _viewState.value.editorState as? AccountEditorViewState.AccountEditorState
+                accountEditorState?.let {
+                    _viewState.update {
+                        it.copy(
+                            editorState = accountEditorState.copy(currency = item)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+
 //    private fun addNewSubGroup() {
 //        val accountGroupEditor =
 //            _viewState.value.editorState as? AccountEditorViewState.AccountGroupEditorState
@@ -222,15 +264,17 @@ internal class AccountEditorViewModel @Inject constructor(
             _viewState.value.editorState as? AccountEditorViewState.AccountEditorState
                 ?: return
         val selectedAccountGroupId = _viewState.value.selectedAccountGroup?.accountGroupId ?: return
+        val currency = accountEditorState.currency;
 
         viewModelScope.launch {
+            val currencyRate = currencyRateUseCase.invoke(currency, false)?.rate ?: 1f
             resultOf {
                 accountRepository.addAccount(
                     accountEditorState.accountName,
                     selectedAccountGroupId,
                     accountEditorState.amount.toLong(),
-                    _viewState.value.currencyCode,
-                    1f
+                    currency,
+                    currencyRate
                 )
             }.fold(
                 onSuccess = {
@@ -258,6 +302,18 @@ internal class AccountEditorViewModel @Inject constructor(
     }
 }
 
+internal interface BottomSheetState {
+    val title: String
+    data class CurrencySelectionState(
+        override val title: String = "Select Currency",
+        val currencyCodes: Set<String> = setOf()
+    ) : BottomSheetState
+}
+
+internal sealed interface TapFieldType {
+    data object CurrencyField : TapFieldType
+}
+
 internal sealed interface AccountEditorFlow {
     object Default : AccountEditorFlow
     data class ImportFix(
@@ -271,7 +327,8 @@ internal data class AccountEditorViewState(
     val selectedAccountGroup: AccountGroup? = null,
     val editorState: EditorState? = null,
     val deleteDialogState: DeleteDialogState? = null,
-    val currencyCode: String = "MYR"
+    val primaryCurrencyCode: String = "",
+    val bottomSheetState: BottomSheetState? = null
 ) {
     val isAccountEditor get() = editorState is AccountEditorState
 
@@ -283,6 +340,7 @@ internal data class AccountEditorViewState(
     data class AccountEditorState(
         val accountName: String = "",
         val amount: String = "0",
+        val currency: String = ""
     ) : EditorState
 
     enum class Type {

@@ -1,8 +1,16 @@
 package com.charmflex.flexiexpensesmanager.ui_common
 
 import android.icu.text.CaseMap.Title
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -239,4 +247,38 @@ fun FEMetaData2(
             color = color
         )
     )
+}
+
+@Composable
+fun <T> FEGeneralSelectionBottomSheet(
+    title: String,
+    items: List<T>,
+    name: (T) -> String,
+    onSelectItem: (T) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        FEHeading2(text = title)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(state = rememberScrollState())
+        ) {
+            items.forEach {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onSelectItem(it)
+                        }
+                        .padding(grid_x2),
+                    contentAlignment = Alignment.Center
+                ) {
+                    FEBody2(text = name(it))
+                }
+            }
+        }
+    }
 }

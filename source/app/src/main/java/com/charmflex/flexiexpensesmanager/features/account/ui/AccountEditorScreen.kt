@@ -3,6 +3,8 @@ package com.charmflex.flexiexpensesmanager.features.account.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,14 +19,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,9 +42,11 @@ import com.charmflex.flexiexpensesmanager.core.utils.CurrencyTextFieldOutputForm
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.ui_common.BasicTopBar
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody1
+import com.charmflex.flexiexpensesmanager.ui_common.FEGeneralSelectionBottomSheet
 import com.charmflex.flexiexpensesmanager.ui_common.SGActionDialog
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
+import com.charmflex.flexiexpensesmanager.ui_common.SGModalBottomSheet
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.SGSnackBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
@@ -51,6 +59,7 @@ import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AccountEditorScreen(
     viewModel: AccountEditorViewModel
@@ -69,8 +78,16 @@ internal fun AccountEditorScreen(
     val scrollState = rememberScrollState()
     val snackBarHostState = remember { SnackbarHostState() }
     val snackBarState by viewModel.snackBarState.collectAsState()
+    val currency = (viewState.editorState as? AccountEditorViewState.AccountEditorState)?.currency
+        ?: viewState.primaryCurrencyCode
     val visualTransformation =
-        remember(viewState.currencyCode) { viewModel.getCurrencyVisualTransformer(viewState.currencyCode) }
+        remember(currency) {
+            currency.let {
+                viewModel.getCurrencyVisualTransformer(currency)
+            }
+        }
+    val bottomSheetState = viewState.bottomSheetState
+    val modalBottomSheetState = rememberModalBottomSheetState()
 
     LaunchedEffect(key1 = snackBarState) {
         when (val state = snackBarState) {
@@ -94,7 +111,7 @@ internal fun AccountEditorScreen(
             .padding(grid_x2),
         topBar = {
             BasicTopBar(title = title)
-        }
+        },
     ) {
         if (isEditorOpened) {
             EditorScreen(
@@ -102,6 +119,9 @@ internal fun AccountEditorScreen(
                 viewState = viewState,
                 updateAccountName = viewModel::updateAccountName,
                 updateAmount = viewModel::updateInitialAmount,
+                onFieldTap = {
+                    viewModel.onTapField(it)
+                },
                 visualTransformation = visualTransformation
             ) {
                 viewModel.addNewItem()
@@ -140,7 +160,7 @@ internal fun AccountEditorScreen(
                                     }
                                     if (index != viewState.accountGroups.size - 1) HorizontalDivider()
                                 }
-                                
+
                             }
                         } else {
                             selectedAccountGroup.accounts.forEach {
@@ -199,6 +219,27 @@ internal fun AccountEditorScreen(
         }
     }
 
+    bottomSheetState?.let {
+        SGModalBottomSheet(
+            modifier = Modifier.padding(grid_x2),
+            onDismiss = { viewModel.resetBottomSheetState() },
+            sheetState = modalBottomSheetState
+        ) {
+            when (it) {
+                is BottomSheetState.CurrencySelectionState -> {
+                    FEGeneralSelectionBottomSheet(
+                        title = it.title,
+                        items = it.currencyCodes.toList(),
+                        { it }
+                    ) {
+                        viewModel.onBottomSheetItemSelected(it)
+                        viewModel.resetBottomSheetState()
+                    }
+                }
+            }
+        }
+    }
+
     SGSnackBar(
         snackBarHostState = snackBarHostState,
         snackBarType = if (snackBarState is SnackBarState.Error) SnackBarType.Error else SnackBarType.Success
@@ -212,6 +253,7 @@ private fun ColumnScope.EditorScreen(
     updateAccountName: (String) -> Unit,
     updateAmount: (String) -> Unit,
     visualTransformation: CurrencyVisualTransformation,
+    onFieldTap: (TapFieldType) -> Unit,
     addNewItem: () -> Unit,
 ) {
 
@@ -229,12 +271,20 @@ private fun ColumnScope.EditorScreen(
     if (viewState.editorState is AccountEditorViewState.AccountEditorState) {
         SGTextField(
             modifier = Modifier.fillMaxWidth(),
+            label = stringResource(id = R.string.account_editor_currency_label),
+            value = viewState.editorState.currency,
+            readOnly = true,
+            onClicked = { onFieldTap(TapFieldType.CurrencyField) }
+        ) {
+
+        }
+        SGTextField(
+            modifier = Modifier.fillMaxWidth(),
             label = stringResource(id = R.string.account_editor_amount_label),
             value = viewState.editorState.amount,
             keyboardType = KeyboardType.Number,
             visualTransformation = visualTransformation,
             outputFormatter = { outputCurrencyFormatter.format(it) }
-
         ) {
             updateAmount(it)
         }
