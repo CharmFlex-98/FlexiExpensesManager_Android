@@ -33,7 +33,6 @@ android {
             applicationIdSuffix ".debug"
         }
         release {
-            applicationIdSuffix ".release"
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
