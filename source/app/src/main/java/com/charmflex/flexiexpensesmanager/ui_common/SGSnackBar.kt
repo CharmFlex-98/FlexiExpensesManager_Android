@@ -6,16 +6,19 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.delay
 
 @Composable
 fun SGSnackBar(
+    modifier: Modifier = Modifier,
     snackBarHostState: SnackbarHostState,
     snackBarType: SnackBarType
 ) {
     SnackbarHost(hostState = snackBarHostState) {
         Snackbar(
+            modifier = modifier,
             snackbarData = it,
             containerColor = SnackBarType.containerColor(snackBarType = snackBarType),
             contentColor = SnackBarType.textColor(snackBarType = snackBarType)
@@ -52,7 +55,7 @@ suspend fun SnackbarHostState.showSnackBarImmediately(message: String) {
 }
 
 internal sealed interface SnackBarState {
-    object None : SnackBarState
+    data object None : SnackBarState
     data class Error(val message: String? = null) : SnackBarState
     data class Success(val message: String) : SnackBarState
 }

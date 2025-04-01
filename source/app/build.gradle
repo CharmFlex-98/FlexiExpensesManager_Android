@@ -33,6 +33,7 @@ android {
             applicationIdSuffix ".debug"
         }
         release {
+            applicationIdSuffix ".release"
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -180,10 +181,17 @@ dependencies {
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.crashlytics)
     implementation(libs.google.firebase.analytics)
+    implementation(libs.google.identity.id)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.play.services.auth)
+    implementation(libs.google.firebase.auth)
 
     // security
     implementation(libs.androidx.security.crypto)
 
     // work manager
     implementation(libs.work.manager)
+
+    // Google
+
 }

@@ -13,61 +13,61 @@ private const val PRIMARY_CURRENCY_KEY = "primary_currency_key"
 internal const val SECONDARY_CURRENCY_KEY = "secondary_currency_key"
 internal interface CurrencyKeyStorage {
 
-    suspend fun setUserSetCurrencyRate(currency: String, rate: Float)
-    suspend fun getUserSetCurrencyRate(currency: String): Float
-    suspend fun setLastCurrencyRateUpdateTimestamp(localDateTime: LocalDateTime)
-    suspend fun getLastCurrencyRateUpdateTimestamp(): LocalDateTime?
-    suspend fun setPrimaryCurrency(currency: String)
-    suspend fun getPrimaryCurrency(): String
-    suspend fun addSecondaryCurrency(currency: String)
-    suspend fun removeSecondaryCurrency(currency: String)
-    suspend fun getSecondaryCurrency(): Set<String>
+    fun setUserSetCurrencyRate(currency: String, rate: Float)
+    fun getUserSetCurrencyRate(currency: String): Float
+    fun setLastCurrencyRateUpdateTimestamp(localDateTime: LocalDateTime)
+    fun getLastCurrencyRateUpdateTimestamp(): LocalDateTime?
+    fun setPrimaryCurrency(currency: String)
+    fun getPrimaryCurrency(): String
+    fun addSecondaryCurrency(currency: String)
+    fun removeSecondaryCurrency(currency: String)
+    fun getSecondaryCurrency(): Set<String>
 }
 
 internal class CurrencyKeyStorageImpl @Inject constructor(
     private val sharedPrefs: SharedPrefs,
 ) : CurrencyKeyStorage {
-    override suspend fun setUserSetCurrencyRate(currency: String, rate: Float) {
+    override fun setUserSetCurrencyRate(currency: String, rate: Float) {
         sharedPrefs.setFloat("${USER_SET_CURRENCY_RATE_KEY}_$currency", rate)
     }
 
-    override suspend fun getUserSetCurrencyRate(currency: String): Float {
+    override fun getUserSetCurrencyRate(currency: String): Float {
         return sharedPrefs.getFloat("${USER_SET_CURRENCY_RATE_KEY}_$currency", -1f)
     }
 
-    override suspend fun setLastCurrencyRateUpdateTimestamp(localDateTime: LocalDateTime) {
+    override fun setLastCurrencyRateUpdateTimestamp(localDateTime: LocalDateTime) {
         return sharedPrefs.setString(
             LAST_CURRENCY_UPDATE_TIMESTAMP_KEY,
             localDateTime.toStringWithPattern(DEFAULT_DATE_TIME_PATTERN)
         )
     }
 
-    override suspend fun getLastCurrencyRateUpdateTimestamp(): LocalDateTime? {
+    override fun getLastCurrencyRateUpdateTimestamp(): LocalDateTime? {
         val res = sharedPrefs.getString(LAST_CURRENCY_UPDATE_TIMESTAMP_KEY, "")
         return if (res.isEmpty()) null
         else res.toLocalDateTime(DEFAULT_DATE_TIME_PATTERN)
     }
 
-    override suspend fun setPrimaryCurrency(currency: String) {
+    override fun setPrimaryCurrency(currency: String) {
         sharedPrefs.setString(PRIMARY_CURRENCY_KEY, currency)
     }
 
-    override suspend fun getPrimaryCurrency(): String {
+    override fun getPrimaryCurrency(): String {
         return sharedPrefs.getString(PRIMARY_CURRENCY_KEY, "")
     }
 
-    override suspend fun addSecondaryCurrency(currency: String) {
+    override fun addSecondaryCurrency(currency: String) {
         val res = getSecondaryCurrency().toMutableSet().apply { add(currency) }
         sharedPrefs.setStringSet(SECONDARY_CURRENCY_KEY, res)
     }
 
-    override suspend fun removeSecondaryCurrency(currency: String) {
+    override fun removeSecondaryCurrency(currency: String) {
         val res = getSecondaryCurrency()
         res.toMutableSet().remove(currency)
         sharedPrefs.setStringSet(SECONDARY_CURRENCY_KEY, res)
     }
 
-    override suspend fun getSecondaryCurrency(): Set<String> {
+    override fun getSecondaryCurrency(): Set<String> {
         return sharedPrefs.getStringSet(SECONDARY_CURRENCY_KEY)
     }
 }

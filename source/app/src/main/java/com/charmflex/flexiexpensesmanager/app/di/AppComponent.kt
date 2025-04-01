@@ -8,6 +8,7 @@ import com.charmflex.flexiexpensesmanager.dependency_injection.modules.navigatio
 import com.charmflex.flexiexpensesmanager.features.account.di.AccountInjector
 import com.charmflex.flexiexpensesmanager.features.account.di.modules.AccountModule
 import com.charmflex.flexiexpensesmanager.features.auth.di.AuthInjector
+import com.charmflex.flexiexpensesmanager.features.auth.di.modules.AuthModule
 import com.charmflex.flexiexpensesmanager.features.backup.di.BackupInjector
 import com.charmflex.flexiexpensesmanager.features.backup.di.BackupModule
 import com.charmflex.flexiexpensesmanager.features.budget.di.BudgetInjector
@@ -29,6 +30,7 @@ import javax.inject.Singleton
 
 @Component(
     modules = [
+        AuthModule::class,
         NavigationModule::class,
         TransactionModule::class,
         AccountModule::class,

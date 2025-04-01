@@ -34,28 +34,30 @@ fun SGScaffold(
     isLoading: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    return Scaffold(
-        Modifier.fillMaxSize(),
-        topBar,
-        bottomBar,
-        snackbarHost,
-        floatingActionButton,
-        floatingActionButtonPosition,
-        containerColor,
-        contentColor,
-        contentWindowInsets,
-    ) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(
-                modifier = modifier
-                    .padding(it)
-                    .fillMaxSize(),
-                verticalArrangement = verticalArrangement,
-                horizontalAlignment = horizontalAlignment
-            ) {
-                this.content()
+    Box {
+        Scaffold(
+            Modifier.fillMaxSize(),
+            topBar,
+            bottomBar,
+            snackbarHost,
+            floatingActionButton,
+            floatingActionButtonPosition,
+            containerColor,
+            contentColor,
+            contentWindowInsets,
+        ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = modifier
+                        .padding(it)
+                        .fillMaxSize(),
+                    verticalArrangement = verticalArrangement,
+                    horizontalAlignment = horizontalAlignment
+                ) {
+                    this.content()
+                }
+                if (isLoading) CircularProgressIndicatorFullScreen()
             }
-            if (isLoading) CircularProgressIndicatorFullScreen()
         }
     }
 }

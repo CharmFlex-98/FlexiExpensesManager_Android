@@ -15,31 +15,29 @@ private const val FEM_SHARED_PREFS_FILE_PATH = "FLEXI-EXPENSES-MANAGER-SHARED-PR
 
 internal interface SharedPrefs {
 
-    suspend fun setInt(key: String, value: Int)
-    suspend fun getInt(key: String, default: Int): Int
-    suspend fun setString(key: String, value: String)
+    fun setInt(key: String, value: Int)
+    fun getInt(key: String, default: Int): Int
+    fun setString(key: String, value: String)
 
-    suspend fun getString(key: String, default: String): String
+    fun getString(key: String, default: String): String
 
-    suspend fun setFloat(key: String, value: Float)
+    fun setFloat(key: String, value: Float)
 
-    suspend fun getFloat(key: String, default: Float): Float
+    fun getFloat(key: String, default: Float): Float
 
-    suspend fun setBoolean(key: String, value: Boolean)
+    fun setBoolean(key: String, value: Boolean)
 
-    suspend fun getBoolean(key: String, default: Boolean): Boolean
+    fun getBoolean(key: String, default: Boolean): Boolean
 
-    suspend fun setStringSet(key: String, value: Set<String>)
-    suspend fun getStringSet(key: String): Set<String>
+    fun setStringSet(key: String, value: Set<String>)
+    fun getStringSet(key: String): Set<String>
 
-    suspend fun clearAllData()
+    fun clearAllData()
 }
 
 // Secure SharedPreferences wrapper
 internal class SharedPrefsImpl @Inject constructor(
     private val appContext: Context,
-    @Dispatcher(Dispatcher.Type.IO)
-    private val dispatcher: CoroutineDispatcher
 ) : SharedPrefs {
 
     private val sharedPrefs: SharedPreferences by lazy { initSharedPreferences() }
@@ -60,69 +58,47 @@ internal class SharedPrefsImpl @Inject constructor(
         return MasterKeys.getOrCreate(keyGenParameterSpec)
     }
 
-    override suspend fun setInt(key: String, value: Int) {
-        withContext(dispatcher) {
-            sharedPrefs.edit().putInt(key, value).apply()
-        }
+    override fun setInt(key: String, value: Int) {
+        sharedPrefs.edit().putInt(key, value).apply()
     }
 
-    override suspend fun getInt(key: String, default: Int): Int {
-        return withContext(dispatcher) {
-            sharedPrefs.getInt(key, default) ?: default
-        }
+    override fun getInt(key: String, default: Int): Int {
+        return sharedPrefs.getInt(key, default) ?: default
     }
 
-    override suspend fun setString(key: String, value: String) {
-        withContext(dispatcher) {
-            sharedPrefs.edit().putString(key, value).apply()
-        }
+    override fun setString(key: String, value: String) {
+        sharedPrefs.edit().putString(key, value).apply()
     }
 
-    override suspend fun getString(key: String, default: String): String {
-        return withContext(dispatcher) {
-            sharedPrefs.getString(key, default) ?: default
-        }
+    override fun getString(key: String, default: String): String {
+        return sharedPrefs.getString(key, default) ?: default
     }
 
-    override suspend fun setFloat(key: String, value: Float) {
-        return withContext(dispatcher) {
-            sharedPrefs.edit().putFloat(key, value).apply()
-        }
+    override fun setFloat(key: String, value: Float) {
+        sharedPrefs.edit().putFloat(key, value).apply()
     }
 
-    override suspend fun getFloat(key: String, default: Float): Float {
-        return withContext(dispatcher) {
-            sharedPrefs.getFloat(key, default)
-        }
+    override fun getFloat(key: String, default: Float): Float {
+        return sharedPrefs.getFloat(key, default)
     }
 
-    override suspend fun setBoolean(key: String, value: Boolean) {
-        return withContext(dispatcher) {
-            sharedPrefs.edit().putBoolean(key, value).apply()
-        }
+    override fun setBoolean(key: String, value: Boolean) {
+        sharedPrefs.edit().putBoolean(key, value).apply()
     }
 
-    override suspend fun getBoolean(key: String, default: Boolean): Boolean {
-        return withContext(dispatcher) {
-            sharedPrefs.getBoolean(key, default)
-        }
+    override fun getBoolean(key: String, default: Boolean): Boolean {
+        return sharedPrefs.getBoolean(key, default)
     }
 
-    override suspend fun setStringSet(key: String, value: Set<String>) {
-        return withContext(dispatcher) {
-            sharedPrefs.edit().putStringSet(key, value).apply()
-        }
+    override fun setStringSet(key: String, value: Set<String>) {
+        sharedPrefs.edit().putStringSet(key, value).apply()
     }
 
-    override suspend fun getStringSet(key: String): Set<String> {
-        return withContext(dispatcher) {
-            sharedPrefs.getStringSet(key, setOf()) ?: setOf()
-        }
+    override fun getStringSet(key: String): Set<String> {
+        return sharedPrefs.getStringSet(key, setOf()) ?: setOf()
     }
 
-    override suspend fun clearAllData() {
-        withContext(dispatcher) {
-            sharedPrefs.edit().clear().apply()
-        }
+    override fun clearAllData() {
+        sharedPrefs.edit().clear().apply()
     }
 }

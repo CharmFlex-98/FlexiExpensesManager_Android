@@ -27,3 +27,13 @@ internal data class AccountGroupSummary(
     }
     val balance get() = accountsSummary.map { it.balance }.reduceOrNull { acc, i -> acc + i } ?: 0
 }
+
+
+interface I1
+interface I2
+open class C1 : I1
+class C3: C1(), I2
+fun testing() {
+    val res1: I1 = C3();
+    val res2: I2 = res1 as I2
+}

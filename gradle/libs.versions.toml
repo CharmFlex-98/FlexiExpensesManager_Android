@@ -92,6 +92,12 @@ kotlin_serialization_version = "1.6.3"
 kotlin_seriallization_plugin_version = "1.8.10"
 uiTextGoogleFonts = "1.6.7"
 
+# firebase
+androidx_credential_version = "1.3.0"
+credentials-play-services-auth_version = "1.3.0"
+identity_google_id_version = "1.1.1"
+
+
 [libraries]
 # maxkeppper compose dialog
 compose-dialog-core = { module = 'com.maxkeppeler.sheets-compose-dialogs:core', version.ref = 'compose_dialog_version'}
@@ -147,6 +153,10 @@ google-play-service = { module = 'com.google.android.gms:play-services-location'
 google-firebase-crashlytics = { module = 'com.google.firebase:firebase-crashlytics' }
 google-firebase-analytics = { module = 'com.google.firebase:firebase-analytics' }
 google-firebase-bom = { module = 'com.google.firebase:firebase-bom', version.ref = 'firebase_bom_version' }
+google-firebase-auth = { module = 'com.google.firebase:firebase-auth'}
+androidx-credentials = { module = 'androidx.credentials:credentials', version.ref = 'androidx_credential_version'}
+androidx-play-services-auth = { module = 'androidx.credentials:credentials-play-services-auth', version.ref = 'credentials-play-services-auth_version'}
+google-identity-id = { module = 'com.google.android.libraries.identity.googleid:googleid', version.ref = 'identity_google_id_version'}
 
 # lifecycle
 lifecycle-viewModel-ktx = { module = 'androidx.lifecycle:lifecycle-viewmodel-ktx', version.ref = 'lifecycle_version'}

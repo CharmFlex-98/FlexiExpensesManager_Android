@@ -2,12 +2,20 @@ package com.charmflex.flexiexpensesmanager.core.network
 
 import android.content.Context
 import android.util.Log
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 interface NetworkClientBuilder {
 
@@ -26,7 +34,7 @@ internal class DefaultNetworkClientBuilder(
 ) : NetworkClientBuilder {
 
     private val baseUrl: String
-        get() = "https://charmflex.com"
+        get() = "https://fem.charmflex.com"
 
     override fun addInterceptor(interceptor: Interceptor): NetworkClientBuilder {
         interceptors.add(interceptor)
@@ -43,9 +51,31 @@ internal class DefaultNetworkClientBuilder(
                 .Builder()
                 .baseUrl(baseUrl)
                 .client(okHttpClient())
-                .addConverterFactory(MoshiConverterFactory.create())
+                .addConverterFactory(MoshiConverterFactory.create(buildMoshi()))
                 .build()
         }
+    }
+
+    private fun buildMoshi(): Moshi {
+        return Moshi.Builder()
+            .add(Instant::class.java, object : JsonAdapter<Instant>() {
+                override fun toJson(writer: JsonWriter, value: Instant?) {
+                    value?.let {
+                        // Convert to ISO 8601 in UTC (ending with 'Z')
+                        writer.value(it.atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                    } ?: writer.nullValue()
+                }
+
+                // Parse ISO 8601 string to Instant
+                override fun fromJson(reader: JsonReader): Instant? {
+                    return try {
+                        OffsetDateTime.parse(reader.nextString()).toInstant()
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+            })
+            .build()
     }
 
     private fun okHttpClient(): OkHttpClient {

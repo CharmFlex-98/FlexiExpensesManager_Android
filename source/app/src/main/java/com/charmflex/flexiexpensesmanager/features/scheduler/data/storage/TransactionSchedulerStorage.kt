@@ -5,9 +5,9 @@ import javax.inject.Inject
 
 private const val TRANSACTION_SCHEDULER_LATEST_ID = "TRANSACTION_SCHEDULER_LATEST_ID"
 internal interface TransactionSchedulerStorage {
-    suspend fun setLatestId(id: Int)
+    fun setLatestId(id: Int)
 
-    suspend fun getLatestId(): Int
+    fun getLatestId(): Int
 
 
 }
@@ -15,11 +15,11 @@ internal interface TransactionSchedulerStorage {
 internal class TransactionSchedulerStorageImpl @Inject constructor(
     private val sharedPrefs: SharedPrefs
 ) : TransactionSchedulerStorage {
-    override suspend fun setLatestId(id: Int) {
+    override fun setLatestId(id: Int) {
         sharedPrefs.setInt(TRANSACTION_SCHEDULER_LATEST_ID, id)
     }
 
-    override suspend fun getLatestId(): Int {
+    override fun getLatestId(): Int {
         return sharedPrefs.getInt(TRANSACTION_SCHEDULER_LATEST_ID, -1)
     }
 }

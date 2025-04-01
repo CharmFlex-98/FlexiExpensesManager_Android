@@ -118,4 +118,9 @@
     <string name="error_fix_tab_label_all_data">All Data</string>
     <string name="error_fix_tab_label_errors">Errors</string>
     <string name="account_editor_currency_label">Currency</string>
+    <string name="snackbar_login_succesful_text">Login successful!</string>
+    <string name="switching_profile">Switching to your profile...</string>
+    <string name="login_identity_verified_success">Identity verified success!</string>
+    <string name="login_success">Login Success!</string>
+    <string name="login_redirect_subtitle">Redirecting you now, please wait...</string>
 </resources>
