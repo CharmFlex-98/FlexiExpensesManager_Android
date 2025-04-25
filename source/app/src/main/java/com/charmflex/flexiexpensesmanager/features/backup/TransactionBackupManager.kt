@@ -2,7 +2,6 @@ package com.charmflex.flexiexpensesmanager.features.backup
 
 import android.content.Context
 import android.content.Intent
-import android.text.TextUtils
 import com.charmflex.flexiexpensesmanager.core.di.Dispatcher
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
@@ -67,14 +66,15 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                     val transactionType = row.safeGetCell(3).stringCellValue
                     val currency = row.safeGetCell(4).stringCellValue
                     val currencyRate = row.safeGetCell(5).numericCellValue
-                    val amount = row.safeGetCell(6).numericCellValue
-                    val date = row.safeGetCell(7).dateCellValue?.toLocalDate()
+                    val primaryCurrencyRate = row.safeGetCell(6).numericCellValue
+                    val amount = row.safeGetCell(7).numericCellValue
+                    val date = row.safeGetCell(8).dateCellValue?.toLocalDate()
                     val categoryColumns = listOf(
-                        row.safeGetCell(8).stringCellValue,
                         row.safeGetCell(9).stringCellValue,
-                        row.safeGetCell(10).stringCellValue
+                        row.safeGetCell(10).stringCellValue,
+                        row.safeGetCell(11).stringCellValue
                     )
-                    val tags = row.safeGetCell(11).stringCellValue.split("#").map {
+                    val tags = row.safeGetCell(12).stringCellValue.split("#").map {
                         it.trim()
                     }
 
@@ -89,6 +89,7 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                             transactionType = transactionType,
                             currency = currency,
                             currencyRate = currencyRate,
+                            primaryCurrencyRate = primaryCurrencyRate,
                             amount = amount,
                             date = date,
                             categoryColumns = categoryColumns.filter { it.isNotBlank() },
@@ -115,10 +116,10 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                 workbook(xssfWorkbook) {
                     sheet("guide") {}
                     sheet("record") {
-                        val columnNames = getColumns().map { it.columnName }
+                        val columnNames = getColumns().values
                         row {
                             for (element in columnNames) {
-                                stringCell(element)
+                                stringCell(element.columnName)
                             }
                         }
                         excelData.forEach {
@@ -185,20 +186,21 @@ internal class TransactionBackupManagerImpl @Inject constructor(
         }
     }
 
-    private fun getColumns(): List<ExcelColumn> {
-        return listOf(
-            ExcelColumn(0, "Transaction Name"),
-            ExcelColumn(1, "Account From"),
-            ExcelColumn(2, "Account To"),
-            ExcelColumn(3, "Transaction Type"),
-            ExcelColumn(4, "Currency"),
-            ExcelColumn(5, "Rate"),
-            ExcelColumn(6, "Amount"),
-            ExcelColumn(7, "Date"),
-            ExcelColumn(8, "Category1"),
-            ExcelColumn(9, "Category2"),
-            ExcelColumn(10, "Category3"),
-            ExcelColumn(11, "Tags"),
+    private fun getColumns(): Map<String, ExcelColumn> {
+        return mapOf(
+            ExcelColumns.TRANSACTION_NAME to ExcelColumn(0, ExcelColumns.TRANSACTION_NAME),
+            ExcelColumns.ACCOUNT_FROM to ExcelColumn(1, ExcelColumns.ACCOUNT_FROM),
+            ExcelColumns.ACCOUNT_TO to ExcelColumn(2, ExcelColumns.ACCOUNT_TO),
+            ExcelColumns.TRANSACTION_TYPE to ExcelColumn(3, ExcelColumns.TRANSACTION_TYPE),
+            ExcelColumns.CURRENCY to ExcelColumn(4, ExcelColumns.CURRENCY),
+            ExcelColumns.RATE to ExcelColumn(5, ExcelColumns.RATE),
+            ExcelColumns.PRIMARY_CURRENCY_RATE to ExcelColumn(6, ExcelColumns.PRIMARY_CURRENCY_RATE),
+            ExcelColumns.AMOUNT to ExcelColumn(7, ExcelColumns.AMOUNT),
+            ExcelColumns.DATE to ExcelColumn(8, ExcelColumns.DATE),
+            ExcelColumns.CATEGORY1 to ExcelColumn(9, ExcelColumns.CATEGORY1),
+            ExcelColumns.CATEGORY2 to ExcelColumn(10, ExcelColumns.CATEGORY2),
+            ExcelColumns.CATEGORY3 to ExcelColumn(11, ExcelColumns.CATEGORY3),
+            ExcelColumns.TAGS to ExcelColumn(12, ExcelColumns.TAGS)
         )
     }
 
@@ -224,6 +226,7 @@ internal data class TransactionBackupData(
     val transactionType: String,
     val currency: String,
     val currencyRate: Double,
+    val primaryCurrencyRate: Double?,
     val amount: Double,
     val date: LocalDate,
     val categoryColumns: List<String>,
@@ -237,5 +240,21 @@ private data class ExcelColumn(
 
 private fun Row.safeGetCell(index: Int): Cell {
     return this.getCell(index, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK)
+}
+
+private object ExcelColumns {
+    const val TRANSACTION_NAME = "Transaction Name"
+    const val ACCOUNT_FROM = "Account From"
+    const val ACCOUNT_TO = "Account To"
+    const val TRANSACTION_TYPE = "Transaction Type"
+    const val CURRENCY = "Currency"
+    const val RATE = "Rate"
+    const val PRIMARY_CURRENCY_RATE = "Primary Currency Rate"
+    const val AMOUNT = "Amount"
+    const val DATE = "Date"
+    const val CATEGORY1 = "Category1"
+    const val CATEGORY2 = "Category2"
+    const val CATEGORY3 = "Category3"
+    const val TAGS = "Tags"
 }
 

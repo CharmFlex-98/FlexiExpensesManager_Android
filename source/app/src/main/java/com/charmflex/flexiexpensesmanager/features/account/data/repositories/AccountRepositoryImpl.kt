@@ -100,7 +100,7 @@ internal class AccountRepositoryImpl @Inject constructor(
         accountDao.deleteAccountGroup(accountGroupId = accountGroupId)
     }
 
-    override suspend fun addAccount(accountName: String, accountGroupId: Int, accountAmount: Long, currency: String, rate: Float) {
+    override suspend fun addAccount(accountName: String, accountGroupId: Int, accountAmount: Long, currency: String) {
         val entity = AccountEntity(
             name = accountName,
             accountGroupId = accountGroupId,
@@ -119,7 +119,8 @@ internal class AccountRepositoryImpl @Inject constructor(
                 transactionDate = LocalDate.now().toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
                 categoryId = null,
                 currency = currency,
-                rate = rate,
+                rate = 1f,
+                primaryCurrencyRate = null,
                 schedulerId = null
             )
             accountTransactionDao.insertAccountAndAmountTransaction(entity, transactionEntity)

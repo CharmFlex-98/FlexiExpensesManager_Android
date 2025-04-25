@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.features.currency.usecases
 
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.CurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
+import com.charmflex.flexiexpensesmanager.features.currency.service.CurrencyService
 import javax.inject.Inject
 
 // Use case to get currency rate
@@ -9,10 +10,10 @@ import javax.inject.Inject
 // 2. Use real time currency rate saved earlier
 internal class GetCurrencyRateUseCase @Inject constructor(
     private val userCurrencyRepository: UserCurrencyRepository,
-    private val currencyRepository: CurrencyRepository,
+    private val currencyService: CurrencyService
 ) {
 
-    suspend fun getCurrency(currency: String, customFirst: Boolean = true): CurrencyRate? {
+    suspend fun getPrimaryCurrencyRate(currency: String, customFirst: Boolean = true): CurrencyRate? {
         val fromCurrency = userCurrencyRepository.getPrimaryCurrency()
         return if (customFirst) {
             userCurrencyRepository.getUserSetCurrencyRate(currency = currency)?.let {
@@ -22,51 +23,10 @@ internal class GetCurrencyRateUseCase @Inject constructor(
                     rate = it,
                     isCustom = true
                 )
-            } ?: getLatestCurrencyRate(currency, fromCurrency)
+            } ?: currencyService.getCurrencyRate(currency, fromCurrency)
         } else {
-            getLatestCurrencyRate(currency, fromCurrency)
+            currencyService.getCurrencyRate(currency, fromCurrency)
         }
-    }
-
-    suspend fun getAll(): List<CurrencyRate> {
-        val fromCurrency = userCurrencyRepository.getPrimaryCurrency()
-        val fromCurrencyRate =
-            currencyRepository.getCacheCurrencyRates()?.currencyRates?.get(fromCurrency)
-        val currencyRates =
-            currencyRepository.getCacheCurrencyRates()?.currencyRates
-        return currencyRates?.let {
-            it.map { r ->
-                CurrencyRate(
-                    r.key,
-                    fromCurrency,
-                    fromCurrencyRate?.div(r.value) ?: 1f,
-                    false
-                )
-            }
-        } ?: listOf()
-    }
-
-    private suspend fun getLatestCurrencyRate(currency: String, fromCurrency: String): CurrencyRate? {
-        val toCurrencyRate =
-            currencyRepository.getCacheCurrencyRates()?.currencyRates?.get(currency)
-        val fromCurrencyRate =
-            currencyRepository.getCacheCurrencyRates()?.currencyRates?.get(fromCurrency)
-
-        if (toCurrencyRate == null || fromCurrencyRate == null) {
-            return CurrencyRate(
-                name = currency,
-                from = fromCurrency,
-                rate = 1f,
-                isCustom = true
-            )
-        }
-
-        return CurrencyRate(
-            name = currency,
-            from = fromCurrency,
-            rate = fromCurrencyRate / toCurrencyRate,
-            isCustom = false
-        )
     }
 }
 

@@ -123,4 +123,14 @@
     <string name="login_identity_verified_success">Identity verified success!</string>
     <string name="login_success">Login Success!</string>
     <string name="login_redirect_subtitle">Redirecting you now, please wait...</string>
+    <string name="primary_transaction_amount">Amount in primary currency</string>
+    <string name="primary_transaction_amount_hint">The amount in primary currency to calculate total spending/income</string>
+    <string name="primary_currency_rate_label">Primary currency rate</string>
+    <string name="primary_currency_rate_hint">"Conversion rate to primary currency. "</string>
+    <string name="account_amount_label">Account amount</string>
+    <string name="account_amount_hint">The amount of the account</string>
+    <string name="transfer_amount_label">Transfer amount</string>
+    <string name="transfer_amount_hint">Enter transfer amount (source bank)</string>
+    <string name="income_amount_label">Income amount</string>
+    <string name="income_amount_hint">Income amount</string>
 </resources>

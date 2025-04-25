@@ -8,7 +8,8 @@ internal data class FEField(
     val hintId: Int,
     val valueItem: Value = Value(),
     val type: FieldType,
-    val allowClear: Boolean = false
+    val allowClear: Boolean = false,
+    val supportingText: String? = null
 ) {
     data class Value(
         val id: String = "",

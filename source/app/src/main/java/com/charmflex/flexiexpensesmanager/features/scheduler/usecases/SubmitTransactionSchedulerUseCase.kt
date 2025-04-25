@@ -1,6 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.scheduler.usecases
 
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
 import com.charmflex.flexiexpensesmanager.features.scheduler.ScheduledTransactionHandler
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.repository.TransactionSchedulerRepository
@@ -11,6 +12,7 @@ import javax.inject.Inject
 internal class SubmitTransactionSchedulerUseCase @Inject constructor(
     private val transactionSchedulerRepository: TransactionSchedulerRepository,
     private val scheduledTransactionHandler: ScheduledTransactionHandler,
+    private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
 ) {
     suspend fun submitExpenses(
         id: Long?,
@@ -25,6 +27,9 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         tagIds: List<Int>,
         schedulerPeriod: SchedulerPeriod
     ): Result<Unit> {
+        val primaryCurrencyRate =
+            getCurrencyRateUseCase.getPrimaryCurrencyRate(currency, false)?.rate
+                ?: throw Exception("Primary currency rate was failed to obtain!")
         return resultOf {
             id?.let {
                 transactionSchedulerRepository.updateScheduler(
@@ -39,6 +44,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     nextUpdateDate = nextUpdateDate,
                     currency = currency,
                     rate = rate,
+                    primaryCurrencyRate = primaryCurrencyRate,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )
@@ -53,6 +59,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     startUpdateDate = startUpdateDate,
                     currency = currency,
                     rate = rate,
+                    primaryCurrencyRate = primaryCurrencyRate,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )
@@ -74,6 +81,9 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         tagIds: List<Int>,
         schedulerPeriod: SchedulerPeriod
     ): Result<Unit> {
+        val primaryCurrencyRate =
+            getCurrencyRateUseCase.getPrimaryCurrencyRate(currency, false)?.rate
+                ?: throw Exception("Primary currency rate was failed to obtain!")
         return resultOf {
             id?.let {
                 transactionSchedulerRepository.updateScheduler(
@@ -88,6 +98,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     nextUpdateDate = nextUpdateDate,
                     currency = currency,
                     rate = rate,
+                    primaryCurrencyRate = primaryCurrencyRate,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )
@@ -102,6 +113,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     startUpdateDate = startUpdateDate,
                     currency = currency,
                     rate = rate,
+                    primaryCurrencyRate = primaryCurrencyRate,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )
@@ -138,6 +150,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     nextUpdateDate = nextUpdateDate,
                     currency = currency,
                     rate = rate,
+                    primaryCurrencyRate = null,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )
@@ -152,6 +165,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     startUpdateDate = startUpdateDate,
                     currency = currency,
                     rate = rate,
+                    primaryCurrencyRate = null,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )

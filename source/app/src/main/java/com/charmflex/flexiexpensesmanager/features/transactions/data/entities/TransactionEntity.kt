@@ -63,6 +63,8 @@ internal data class TransactionEntity(
     val currency: String,
     @ColumnInfo("rate")
     val rate: Float,
+    @ColumnInfo("primary_currency_rate")
+    val primaryCurrencyRate: Float?,
     @ColumnInfo("scheduler_id", index = true)
     val schedulerId: Long?
 )

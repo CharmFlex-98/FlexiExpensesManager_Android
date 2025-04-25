@@ -13,6 +13,7 @@ internal data class Transaction(
     val amountInCent: Long,
     val currency: String,
     val rate: Float,
+    val primaryCurrencyRate: Float?,
     val transactionDate: String,
     val transactionCategory: TransactionCategory?,
     val tags: List<Tag>

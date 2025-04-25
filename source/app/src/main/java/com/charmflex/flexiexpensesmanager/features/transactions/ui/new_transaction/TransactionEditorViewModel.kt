@@ -2,12 +2,16 @@ package com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transact
 
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
+import com.charmflex.flexiexpensesmanager.core.utils.RateExchangeManager
 import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.scheduler.di.modules.TransactionEditorProvider
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.currency.service.CurrencyService
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TransactionEditorContentProvider
@@ -26,7 +30,11 @@ internal class TransactionEditorViewModel @Inject constructor(
     transactionCategoryRepository: TransactionCategoryRepository,
     currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
     getCurrencyUseCase: GetCurrencyUseCase,
+    getCurrencyRateUseCase: GetCurrencyRateUseCase,
     tagRepository: TagRepository,
+    currencyService: CurrencyService,
+    currencyFormatter: CurrencyFormatter,
+    rateExchangeManager: RateExchangeManager,
     private val resourcesProvider: ResourcesProvider
 ) : TransactionEditorBaseViewModel(
     contentProvider,
@@ -36,6 +44,10 @@ internal class TransactionEditorViewModel @Inject constructor(
     currencyVisualTransformationBuilder,
     getCurrencyUseCase,
     tagRepository,
+    getCurrencyRateUseCase,
+    currencyService,
+    currencyFormatter,
+    rateExchangeManager,
     transactionId
 ) {
     class Factory @Inject constructor(
@@ -48,8 +60,12 @@ internal class TransactionEditorViewModel @Inject constructor(
         private val submitTransactionUseCase: SubmitTransactionUseCase,
         private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
         private val getCurrencyUseCase: GetCurrencyUseCase,
+        private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
         private val tagRepository: TagRepository,
-        private val resourcesProvider: ResourcesProvider
+        private val resourcesProvider: ResourcesProvider,
+        private val currencyService: CurrencyService,
+        private val currencyFormatter: CurrencyFormatter,
+        private val rateExchangeManager: RateExchangeManager
     ) {
         fun create(transactionId: Long?): TransactionEditorViewModel {
             return TransactionEditorViewModel(
@@ -62,8 +78,12 @@ internal class TransactionEditorViewModel @Inject constructor(
                 transactionCategoryRepository,
                 currencyVisualTransformationBuilder,
                 getCurrencyUseCase,
+                getCurrencyRateUseCase,
                 tagRepository,
-                resourcesProvider
+                currencyService,
+                currencyFormatter,
+                rateExchangeManager,
+                resourcesProvider,
             )
         }
     }
@@ -146,13 +166,11 @@ internal class TransactionEditorViewModel @Inject constructor(
         isIncrement: Boolean,
         amount: Long,
         transactionDate: String,
-        currency: String,
-        rate: Float
     ) : Result<Unit> {
         val hint = if (isIncrement) UpdateAccountType.INCREMENT.name else UpdateAccountType.DEDUCTION.name
         val name = resourcesProvider.getString(R.string.generic_update_account)
         return submitTransactionUseCase.submitUpdateAccount(
-            id, "$name ($hint)", accountId, isIncrement, amount, transactionDate, currency, rate
+            id, "$name ($hint)", accountId, isIncrement, amount, transactionDate
         )
     }
 

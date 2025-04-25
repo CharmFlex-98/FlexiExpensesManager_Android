@@ -60,6 +60,7 @@ internal class ScheduledTransactionHandlerImpl @Inject constructor(
                 nextUpdateDate = updateState.nextDate.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
                 currency = data.currency,
                 rate = data.rate,
+                primaryCurrencyRate = data.primaryCurrencyRate,
                 tagIds = data.tags.map { it.id },
                 schedulerPeriod = data.schedulerPeriod
             )

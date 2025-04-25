@@ -1,8 +1,12 @@
 package com.charmflex.flexiexpensesmanager.ui_common
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -10,6 +14,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,13 +28,23 @@ import com.charmflex.flexiexpensesmanager.core.utils.CurrencyTextFieldOutputForm
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
+enum class SupportingTextType {
+    ERROR, INFO
+}
+
+data class SupportingText(
+    val text: String,
+    val supportingTextType: SupportingTextType
+)
+
 @Composable
 fun SGTextField(
     modifier: Modifier,
     label: String,
     hint: String? = null,
     value: String,
-    errorText: String? = null,
+    supportingText: SupportingText? = null,
+    supportingTextOnClicked: (() -> Unit)? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     readOnly: Boolean = false,
     enable: Boolean = true,
@@ -39,6 +54,8 @@ fun SGTextField(
     trailingIcon: @Composable (() -> Unit)? = null,
     onClicked: (() -> Unit)? = null,
     outputFormatter: ((String) -> String)? = null,
+    suffixText: String? = null,
+    onSuffixTextClicked: (() -> Unit)? = null,
     onValueChange: (String) -> Unit,
 ) {
     val onClick by rememberUpdatedState(newValue = onClicked)
@@ -63,8 +80,8 @@ fun SGTextField(
             }
         }
     }
-    val supportingText = when {
-        errorText != null -> errorText
+    val spText = when {
+        supportingText != null -> supportingText.text
         maxLength != null -> "${value.length}/$maxLength"
         else -> null
     }
@@ -81,17 +98,25 @@ fun SGTextField(
         },
         label = { Text(text = label) },
         placeholder = hint?.let { { Text(text = hint) } },
-        supportingText = supportingText?.let {
-            { Text(text = supportingText) }
+        supportingText = spText?.let {
+            { Text(modifier = Modifier.clickable { supportingTextOnClicked?.invoke() }, text = it) }
         },
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         readOnly = readOnly,
         enabled = enable,
-        isError = errorText != null,
+        isError = supportingText?.supportingTextType == SupportingTextType.ERROR,
         interactionSource = interactionSource,
         singleLine = singleLine,
         trailingIcon = trailingIcon,
-        visualTransformation = visualTransformation
+        visualTransformation = visualTransformation,
+        suffix = suffixText?.let {
+            {
+                Text(
+                    modifier = Modifier.clickable { onSuffixTextClicked?.invoke() },
+                    text = it
+                )
+            }
+        }
     )
 }
 
@@ -117,7 +142,7 @@ fun SGAutoCompleteTextField(
             label = label,
             hint = hint,
             value = value,
-            errorText = null,
+            supportingText = null,
             readOnly = true,
             enable = true,
             onClicked = null,

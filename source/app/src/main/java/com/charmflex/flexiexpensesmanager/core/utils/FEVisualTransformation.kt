@@ -37,7 +37,7 @@ internal class CurrencyVisualTransformation(
         return TransformedText(AnnotatedString(formattedText), this)
     }
 
-    private fun getFormattedText(annotatedString: AnnotatedString): String {
+    fun getFormattedText(annotatedString: AnnotatedString): String {
         val text = annotatedString.text
         val trimmedText = outputFormatter.format(text)
         if (trimmedText.isEmpty()) return trimmedText

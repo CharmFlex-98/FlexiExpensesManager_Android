@@ -9,6 +9,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.charmflex.flexiexpensesmanager.db.migration.Migration_1_2
 import com.charmflex.flexiexpensesmanager.db.migration.Migration_2_3
+import com.charmflex.flexiexpensesmanager.db.migration.Migration_3_4
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountTransactionDao
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
@@ -92,7 +93,8 @@ internal abstract class AppDatabase : RoomDatabase() {
 private fun migrationList(): List<Migration> {
     return listOf(
 //        Migration_1_2,
-        Migration_2_3
+        Migration_2_3,
+//        Migration_3_4
     )
 }
 

@@ -28,6 +28,7 @@ internal class TransactionSchedulerRepositoryImpl @Inject constructor(
         startUpdateDate: String,
         currency: String,
         rate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
         schedulerPeriod: SchedulerPeriod
     ) : Long {
@@ -42,6 +43,7 @@ internal class TransactionSchedulerRepositoryImpl @Inject constructor(
             nextUpdateDate = startUpdateDate,
             currency = currency,
             rate = rate,
+            primaryCurrencyRate = primaryCurrencyRate,
             schedulerPeriod = schedulerPeriod.name
         )
         return scheduledTransactionTagDao.insertScheduledTransactionAndTags(scheduledTransaction, tagIds)
@@ -59,6 +61,7 @@ internal class TransactionSchedulerRepositoryImpl @Inject constructor(
         nextUpdateDate: String,
         currency: String,
         rate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
         schedulerPeriod: SchedulerPeriod
     ) {
@@ -74,6 +77,7 @@ internal class TransactionSchedulerRepositoryImpl @Inject constructor(
             nextUpdateDate = nextUpdateDate,
             currency = currency,
             rate = rate,
+            primaryCurrencyRate = primaryCurrencyRate,
             schedulerPeriod = schedulerPeriod.name
         )
         scheduledTransactionTagDao.updateScheduledTransactionAndTags(scheduledTransaction, tagIds)

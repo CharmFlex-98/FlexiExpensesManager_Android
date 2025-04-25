@@ -2,7 +2,9 @@ package com.charmflex.flexiexpensesmanager.features.scheduler.ui.scheduler_edito
 
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
+import com.charmflex.flexiexpensesmanager.core.utils.RateExchangeManager
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.scheduler.di.modules.TransactionEditorProvider
@@ -11,6 +13,8 @@ import com.charmflex.flexiexpensesmanager.features.scheduler.domain.repository.T
 import com.charmflex.flexiexpensesmanager.features.scheduler.usecases.SubmitTransactionSchedulerUseCase
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.currency.service.CurrencyService
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_SCHEDULER_PERIOD
 import com.charmflex.flexiexpensesmanager.features.transactions.provider.TransactionEditorContentProvider
@@ -31,6 +35,10 @@ internal class SchedulerEditorViewModel(
     transactionCategoryRepository: TransactionCategoryRepository,
     currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
     getCurrencyUseCase: GetCurrencyUseCase,
+    getCurrencyRateUseCase: GetCurrencyRateUseCase,
+    currencyService: CurrencyService,
+    currencyFormatter: CurrencyFormatter,
+    rateExchangeManager: RateExchangeManager,
     tagRepository: TagRepository,
 ) : TransactionEditorBaseViewModel(
     contentProvider,
@@ -40,6 +48,10 @@ internal class SchedulerEditorViewModel(
     currencyVisualTransformationBuilder,
     getCurrencyUseCase,
     tagRepository,
+    getCurrencyRateUseCase,
+    currencyService,
+    currencyFormatter,
+    rateExchangeManager,
     schedulerId
 ) {
 
@@ -53,6 +65,10 @@ internal class SchedulerEditorViewModel(
         private val transactionCategoryRepository: TransactionCategoryRepository,
         private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
         private val getCurrencyUseCase: GetCurrencyUseCase,
+        private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
+        private val currencyService: CurrencyService,
+        private val currencyFormatter: CurrencyFormatter,
+        private val rateExchangeManager: RateExchangeManager,
         private val tagRepository: TagRepository,
     ) {
         fun create(schedulerId: Long?): SchedulerEditorViewModel {
@@ -66,6 +82,10 @@ internal class SchedulerEditorViewModel(
                 transactionCategoryRepository,
                 currencyVisualTransformationBuilder,
                 getCurrencyUseCase,
+                getCurrencyRateUseCase,
+                currencyService,
+                currencyFormatter,
+                rateExchangeManager,
                 tagRepository,
             )
         }
@@ -180,8 +200,6 @@ internal class SchedulerEditorViewModel(
         isIncrement: Boolean,
         amount: Long,
         transactionDate: String,
-        currency: String,
-        rate: Float
     ): Result<Unit> {
         // Do nothing
         return Result.failure(Throwable("Should not be able to call here"))

@@ -149,6 +149,7 @@ internal class ImportDataChecker @Inject constructor(
                     transactionType = row.transactionType,
                     currency = row.currency,
                     currencyRate = row.currencyRate,
+                    primaryCurrencyRate = row.primaryCurrencyRate,
                     amount = row.amount,
                     date = row.date.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
                     categoryColumns = generateCategoryRequiredState(

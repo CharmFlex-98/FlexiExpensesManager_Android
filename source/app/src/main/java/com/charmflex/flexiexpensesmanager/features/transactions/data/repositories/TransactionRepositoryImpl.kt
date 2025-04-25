@@ -27,6 +27,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
         transactionDate: String,
         currency: String,
         rate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
         schedulerId: Int?
     ) {
@@ -40,6 +41,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
             categoryId = categoryId,
             currency = currency,
             rate = rate,
+            primaryCurrencyRate = primaryCurrencyRate,
             schedulerId = schedulerId?.toLong()
         )
         transactionTagDao.insertTransactionAndTransactionTag(transaction, tagIds)
@@ -56,6 +58,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
         transactionDate: String,
         currency: String,
         rate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
         schedulerId: Int?,
     ) {
@@ -70,6 +73,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
             categoryId = categoryId,
             currency = currency,
             rate = rate,
+            primaryCurrencyRate = primaryCurrencyRate,
             schedulerId = schedulerId?.toLong()
         )
         transactionTagDao.updateTransactionAndTransactionTags(transaction, tagIds)
@@ -90,6 +94,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
                 categoryId = it.transactionCategoryId,
                 currency = it.currency,
                 rate = it.rate,
+                primaryCurrencyRate = it.primaryCurrencyRate,
                 schedulerId = it.schedulerId?.toLong()
             )
         }

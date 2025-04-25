@@ -149,7 +149,7 @@ fun <T> SearchBottomSheet(
         ) {
             SGTextField(
                 modifier = Modifier.fillMaxWidth(), label = searchFieldLabel, hint = "search",
-                value = searchKey, errorText = errorText, onValueChange = {
+                value = searchKey, supportingText = errorText?.let { SupportingText(text = it, supportingTextType = SupportingTextType.ERROR) }, onValueChange = {
                     searchKey = it
                     onChanged(it)
                 }
@@ -174,7 +174,7 @@ fun PreviewSearch() {
         Column {
             SGTextField(
                 modifier = Modifier.fillMaxWidth(), label = "search", hint = "search",
-                value = "Hello", errorText = "", onValueChange = {}
+                value = "Hello", supportingText = SupportingText("", SupportingTextType.ERROR), onValueChange = {}
             )
             ListTable(items = items) { index, item ->
                 Card(

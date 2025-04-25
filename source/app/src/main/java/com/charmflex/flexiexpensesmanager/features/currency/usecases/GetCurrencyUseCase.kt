@@ -1,7 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.currency.usecases
 
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
-import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.CurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import javax.inject.Inject
 
@@ -14,20 +13,14 @@ internal class GetCurrencyUseCase @Inject constructor(
     suspend fun secondary(): Result<List<CurrencyRate>> {
         return resultOf {
             val rates = userCurrencyRepository.getSecondaryCurrency()
-            rates.mapNotNull { getCurrencyUseCase.getCurrency(it) }
+            rates.mapNotNull { getCurrencyUseCase.getPrimaryCurrencyRate(it) }
         }
     }
 
     suspend fun primary(): Result<CurrencyRate?> {
         return resultOf {
             val rate = userCurrencyRepository.getPrimaryCurrency()
-            getCurrencyUseCase.getCurrency(rate)
-        }
-    }
-
-    suspend fun getAll(): Result<List<CurrencyRate>> {
-        return resultOf {
-            getCurrencyUseCase.getAll()
+            getCurrencyUseCase.getPrimaryCurrencyRate(rate)
         }
     }
 }

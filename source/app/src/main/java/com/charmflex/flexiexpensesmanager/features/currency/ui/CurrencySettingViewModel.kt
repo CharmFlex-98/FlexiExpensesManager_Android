@@ -125,7 +125,7 @@ internal class CurrencySettingViewModel @Inject constructor(
 
     private fun onSecondaryCurrencySelected(newValue: String) {
         viewModelScope.launch {
-            val currencyRate = getCurrencyRateUseCase.getCurrency(newValue)
+            val currencyRate = getCurrencyRateUseCase.getPrimaryCurrencyRate(newValue)
             _viewState.update {
                 it.copy(
                     bottomSheetState = it.bottomSheetState.copy(isVisible = false),
@@ -196,7 +196,7 @@ internal class CurrencySettingViewModel @Inject constructor(
         val currency = _viewState.value.currencyName
         val isCustom = !_viewState.value.isCustom
         viewModelScope.launch {
-            val currencyRate = getCurrencyRateUseCase.getCurrency(currency, customFirst = isCustom)
+            val currencyRate = getCurrencyRateUseCase.getPrimaryCurrencyRate(currency, customFirst = isCustom)
             _viewState.update {
                 it.copy(
                     isCustom = currencyRate?.isCustom ?: false,

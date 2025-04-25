@@ -12,7 +12,7 @@ internal class AccountHomeUIMapper @Inject constructor(
 ) {
      suspend fun map(from: Pair<List<AccountGroupSummary>, String>): List<AccountHomeViewState.AccountGroupSummaryUI> {
         val mainCurrency = from.second
-        val rate = currencyRateUseCase.getCurrency(mainCurrency)?.rate ?: 1f
+        val rate = currencyRateUseCase.getPrimaryCurrencyRate(mainCurrency)?.rate ?: 1f
         return from.first.map {
             val mainCurrencyBalance = it.getPrimaryBalanceCent(rate , currencyRateUseCase)
             AccountHomeViewState.AccountGroupSummaryUI(

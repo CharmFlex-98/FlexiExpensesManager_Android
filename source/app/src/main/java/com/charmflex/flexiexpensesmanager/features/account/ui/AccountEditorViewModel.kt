@@ -12,7 +12,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
-import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
+import com.charmflex.flexiexpensesmanager.features.currency.service.CurrencyService
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
@@ -29,7 +29,7 @@ internal class AccountEditorViewModel @Inject constructor(
     private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
     private val currencyUseCase: GetCurrencyUseCase,
     private val resourcesProvider: ResourcesProvider,
-    private val currencyRateUseCase: GetCurrencyRateUseCase,
+    private val currencyService: CurrencyService
 ) : ViewModel() {
     private lateinit var _flowType: AccountEditorFlow
 
@@ -210,11 +210,11 @@ internal class AccountEditorViewModel @Inject constructor(
         when (tapFieldType) {
             TapFieldType.CurrencyField -> {
                 viewModelScope.launch {
-                    val currencyCodes = unwrapResult(currencyUseCase.getAll())
+                    val currencyCodes = currencyService.getAllCurrencies()
                     _viewState.update {
                         it.copy(
                             bottomSheetState = BottomSheetState.CurrencySelectionState(
-                                currencyCodes = currencyCodes.map { it.name }.toSet()
+                                currencyCodes = currencyCodes.toSet()
                             )
                         )
                     }
@@ -269,14 +269,12 @@ internal class AccountEditorViewModel @Inject constructor(
         val currency = accountEditorState.currency;
 
         viewModelScope.launch {
-            val currencyRate = currencyRateUseCase.getCurrency(currency, false)?.rate ?: 1f
             resultOf {
                 accountRepository.addAccount(
                     accountEditorState.accountName,
                     selectedAccountGroupId,
                     accountEditorState.amount.toLong(),
                     currency,
-                    currencyRate
                 )
             }.fold(
                 onSuccess = {

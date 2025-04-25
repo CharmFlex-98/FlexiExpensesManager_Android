@@ -43,8 +43,6 @@ internal interface TransactionRecordable {
         isIncrement: Boolean,
         amount: Long,
         transactionDate: String,
-        currency: String,
-        rate: Float,
     ) : Result<Unit>
     fun getType(): TransactionRecordableType
 }

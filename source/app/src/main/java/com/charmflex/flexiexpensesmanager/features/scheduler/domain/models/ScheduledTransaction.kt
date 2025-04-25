@@ -20,6 +20,7 @@ internal data class ScheduledTransaction(
     val category: Transaction.TransactionCategory?,
     val currency: String,
     val rate: Float,
+    val primaryCurrencyRate: Float?,
     val schedulerPeriod: SchedulerPeriod,
     val tags: List<Tag>
 ) : SchedulerDomainModel {
@@ -34,6 +35,7 @@ internal data class ScheduledTransaction(
             transactionDate = transactionDate,
             currency = currency,
             rate = rate,
+            primaryCurrencyRate = primaryCurrencyRate,
             tagIds = tags.map { it.id },
             schedulerId = schedulerId
         )

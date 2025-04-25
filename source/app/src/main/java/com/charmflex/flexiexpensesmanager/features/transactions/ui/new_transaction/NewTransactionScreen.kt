@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -50,6 +53,8 @@ import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.models.TransactionCategories
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_AMOUNT
+import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_FROM_ACCOUNT
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody2
 import com.charmflex.flexiexpensesmanager.ui_common.FEBody3
 import com.charmflex.flexiexpensesmanager.ui_common.FEHeading2
@@ -58,18 +63,23 @@ import com.charmflex.flexiexpensesmanager.ui_common.SGActionDialog
 import com.charmflex.flexiexpensesmanager.ui_common.SGAutoCompleteTextField
 import com.charmflex.flexiexpensesmanager.ui_common.SGButtonGroupVertical
 import com.charmflex.flexiexpensesmanager.ui_common.SGDatePicker
+import com.charmflex.flexiexpensesmanager.ui_common.SGDialog
 import com.charmflex.flexiexpensesmanager.ui_common.SGIcons
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGLargeSecondaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGModalBottomSheet
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
+import com.charmflex.flexiexpensesmanager.ui_common.SGSmallPrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGSnackBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarType
+import com.charmflex.flexiexpensesmanager.ui_common.SupportingText
+import com.charmflex.flexiexpensesmanager.ui_common.SupportingTextType
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x20
+import com.charmflex.flexiexpensesmanager.ui_common.grid_x4
 import com.charmflex.flexiexpensesmanager.ui_common.showSnackBarImmediately
 import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import kotlinx.coroutines.delay
@@ -80,6 +90,7 @@ internal fun TransactionEditorScreen(
     viewModel: TransactionEditorBaseViewModel
 ) {
     val viewState by viewModel.viewState.collectAsState()
+    val currencyExchangeViewState by viewModel.combinedCurrencyExchangeViewState.collectAsState()
     val currentTransactionType by viewModel.currentTransactionType.collectAsState()
     val datePickerState = UseCaseState()
     val showCalendar = viewState.calendarState != null
@@ -112,6 +123,7 @@ internal fun TransactionEditorScreen(
         TransactionRecordableType.EDIT_SCHEDULER -> stringResource(id = R.string.edit_new_scheduler_success_dialog_subtitle)
     }
     var initLoader by remember { mutableStateOf(true) }
+    val showDialogCurrencyState = currencyExchangeViewState.showDialogState
 
     LaunchedEffect(key1 = Unit) {
         delay(500)
@@ -178,6 +190,43 @@ internal fun TransactionEditorScreen(
                     }
                 }
                 viewState.fields.forEach { feField ->
+                    val suffixText: String? = when (feField.id) {
+                        TRANSACTION_AMOUNT -> {
+                            currencyExchangeViewState.transactionCurrencyViewState?.toCurrencyAmountFormatted
+                        }
+
+                        TRANSACTION_FROM_ACCOUNT -> {
+                            currencyExchangeViewState.accountCurrencyViewState?.toCurrencyAmountFormatted
+                        }
+
+                        else -> null
+                    }
+                    val supportingText = when (feField.id) {
+                        TRANSACTION_AMOUNT -> {
+                            currencyExchangeViewState.transactionCurrencyViewState?.rate
+
+                        }
+
+
+                        TRANSACTION_FROM_ACCOUNT -> {
+                            currencyExchangeViewState.accountCurrencyViewState?.rate
+                        }
+
+                        else -> null
+                    }
+                    val onSuffixTextClicked = {
+                        when (feField.id) {
+                            TRANSACTION_AMOUNT -> {
+                                viewModel.onCurrencyViewTapped(currencyExchangeViewState.transactionCurrencyViewState)
+                            }
+
+                            TRANSACTION_FROM_ACCOUNT -> {
+                                viewModel.onCurrencyViewTapped(currencyExchangeViewState.accountCurrencyViewState)
+                            }
+
+                            else -> {}
+                        }
+                    }
                     when (val type = feField.type) {
                         is FEField.FieldType.SingleItemSelection -> {
                             SGAutoCompleteTextField(
@@ -188,7 +237,7 @@ internal fun TransactionEditorScreen(
                                 value = feField.valueItem.value,
                                 suggestions = type.options.map { it.title }
                             ) { newValue ->
-                                viewModel.onFieldValueChanged(feField, newValue)
+                                viewModel.onFieldValueChanged(feField, newValue, firstUpdate = true)
                             }
                         }
 
@@ -212,7 +261,15 @@ internal fun TransactionEditorScreen(
                                             SGIcons.Close()
                                         }
                                     }
-                                } else null
+                                } else null,
+                                suffixText = suffixText,
+                                onSuffixTextClicked = onSuffixTextClicked,
+                                supportingText = supportingText?.let {
+                                    SupportingText(
+                                        it,
+                                        SupportingTextType.INFO
+                                    )
+                                }
                             )
                         }
 
@@ -231,9 +288,17 @@ internal fun TransactionEditorScreen(
                                 keyboardType = if (type is FEField.FieldType.Number || type is FEField.FieldType.Currency) KeyboardType.Number else KeyboardType.Text,
                                 outputFormatter = if (feField.type is FEField.FieldType.Currency) {
                                     { outputCurrencyFormatter.format(it) }
-                                } else null
+                                } else null,
+                                suffixText = suffixText,
+                                onSuffixTextClicked = onSuffixTextClicked,
+                                supportingText = supportingText?.let {
+                                    SupportingText(
+                                        it,
+                                        SupportingTextType.INFO
+                                    )
+                                }
                             ) { newValue ->
-                                viewModel.onFieldValueChanged(feField, newValue)
+                                viewModel.onFieldValueChanged(feField, newValue, firstUpdate = true)
                             }
                         }
                     }
@@ -263,7 +328,8 @@ internal fun TransactionEditorScreen(
         onConfirm = {
             viewModel.onFieldValueChanged(
                 viewState.calendarState?.targetField,
-                it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN)
+                it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
+                firstUpdate = true
             )
             viewModel.onToggleCalendar(null)
         },
@@ -282,6 +348,41 @@ internal fun TransactionEditorScreen(
             primaryButtonText = stringResource(id = R.string.generic_back_to_home)
         ) {
             viewModel.onBack()
+        }
+    }
+
+    if (showDialogCurrencyState != null) {
+        val currencyVisualTransformation2 = remember(showDialogCurrencyState.toCurrency) {
+            viewModel.currencyVisualTransformationBuilder().create(showDialogCurrencyState.toCurrency)
+        }
+        SGDialog(
+            title = "Exchange Rate",
+            subtitle = "",
+            onDismissRequest = {}
+        ) {
+            Column(
+                modifier = Modifier.wrapContentSize(),
+                horizontalAlignment = Alignment.End
+            ) {
+                SGTextField(
+                    modifier = Modifier,
+                    keyboardType = KeyboardType.Number,
+                    value = showDialogCurrencyState.toCurrencyAmount,
+                    label = "Amount",
+                    hint = "Amount",
+                    visualTransformation = currencyVisualTransformation2,
+                    outputFormatter = { outputCurrencyFormatter.format(it) },
+                    onValueChange = {
+                        viewModel.onCurrencyExchangeAmountChanged(it, showDialogCurrencyState)
+                    })
+                TextField(value = showDialogCurrencyState.rate, onValueChange = {
+                    viewModel.onCurrencyExchangeRateChanged(it, showDialogCurrencyState)
+                })
+                Spacer(modifier = Modifier.size(grid_x4))
+                SGSmallPrimaryButton(text = "DONE") {
+                    viewModel.onCurrencyViewClosed(showDialogCurrencyState)
+                }
+            }
         }
     }
 
@@ -313,7 +414,7 @@ internal fun TransactionEditorScreen(
                     GeneralSelectionBottomSheet(
                         title = stringResource(id = R.string.currency_selection_bottomsheet_title),
                         items = viewState.currencyList,
-                        name = { it.name }) {
+                        name = { it }) {
                         viewModel.onCurrencySelected(it, bs.feField)
                         viewModel.toggleBottomSheet(null)
                     }
@@ -344,7 +445,7 @@ internal fun TransactionEditorScreen(
                         title = stringResource(id = R.string.update_account_type_selection_bottomsheet_title),
                         items = viewModel.updateAccountType,
                         name = { it.name }) { selected ->
-                        viewModel.onFieldValueChanged(bs.feField, selected.name)
+                        viewModel.onFieldValueChanged(bs.feField, selected.name, firstUpdate = true)
                         viewModel.toggleBottomSheet(null)
                     }
                 }

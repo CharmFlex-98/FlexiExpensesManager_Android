@@ -17,7 +17,7 @@ internal interface AccountRepository {
 
     suspend fun deleteAccountGroup(accountGroupId: Int)
 
-    suspend fun addAccount(accountName: String, accountGroupId: Int, accountAmount: Long, currency: String, rate: Float)
+    suspend fun addAccount(accountName: String, accountGroupId: Int, accountAmount: Long, currency: String)
 
     suspend fun deleteAccount(accountId: Int)
 

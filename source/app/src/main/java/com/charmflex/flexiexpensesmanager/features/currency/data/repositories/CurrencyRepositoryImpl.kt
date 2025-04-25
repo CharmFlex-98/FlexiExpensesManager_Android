@@ -8,6 +8,7 @@ import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.time.LocalDateTime
+import java.util.Currency
 import javax.inject.Inject
 
 internal class CurrencyRepositoryImpl @Inject constructor(
@@ -22,9 +23,16 @@ internal class CurrencyRepositoryImpl @Inject constructor(
             timestamp = res.timestamp,
             date = res.date,
             base = res.base,
-            currencyRates = res.rates.mapValues {
-                it.value.toFloat()
-            }
+            currencyRates = res.rates
+                .filter { it.key.length == 3 }
+                .mapValues {
+                    val currency = Currency.getInstance(it.key)
+                    CurrencyData.Currency(
+                        it.key,
+                        currency.defaultFractionDigits,
+                        it.value.toFloat()
+                    )
+                }
         )
         setLatestCurrencyRates(item)
         return item

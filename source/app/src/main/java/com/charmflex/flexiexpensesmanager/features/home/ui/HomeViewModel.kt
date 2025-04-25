@@ -19,11 +19,13 @@ internal class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            resultOf {
-                updateCurrencyRateUseCase()
-            }.fold(
-                onSuccess = {},
-                onFailure = {}
+            updateCurrencyRateUseCase().fold(
+                onSuccess = {
+                    println("Success")
+                },
+                onFailure = {
+                    println(it.message)
+                }
             )
         }
 
