@@ -38,11 +38,11 @@ internal class TransactionSchedulerRepositoryImpl @Inject constructor(
             accountToId = toAccountId,
             categoryId = categoryId,
             transactionType = transactionType.name,
-            amountInCent = amount,
+            minorUnitAmount = amount,
             startUpdateDate = startUpdateDate,
             nextUpdateDate = startUpdateDate,
             currency = currency,
-            rate = rate,
+            accountCurrencyRate = rate,
             primaryCurrencyRate = primaryCurrencyRate,
             schedulerPeriod = schedulerPeriod.name
         )
@@ -72,11 +72,11 @@ internal class TransactionSchedulerRepositoryImpl @Inject constructor(
             accountToId = toAccountId,
             categoryId = categoryId,
             transactionType = transactionType.name,
-            amountInCent = amount,
+            minorUnitAmount = amount,
             startUpdateDate = startUpdateDate,
             nextUpdateDate = nextUpdateDate,
             currency = currency,
-            rate = rate,
+            accountCurrencyRate = rate,
             primaryCurrencyRate = primaryCurrencyRate,
             schedulerPeriod = schedulerPeriod.name
         )

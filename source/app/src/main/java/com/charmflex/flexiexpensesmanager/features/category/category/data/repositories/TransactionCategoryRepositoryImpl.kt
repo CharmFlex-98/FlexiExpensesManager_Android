@@ -40,7 +40,7 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
                                 categoryName = it.categoryName,
                                 parentCategoryId = it.parentCategoryId,
                                 level = level,
-                                expensesAmountInCent = it.expensesAmountInCent
+                                expensesAmountInCent = it.minorUnitExpensesAmount
                             )
                         }
                     }

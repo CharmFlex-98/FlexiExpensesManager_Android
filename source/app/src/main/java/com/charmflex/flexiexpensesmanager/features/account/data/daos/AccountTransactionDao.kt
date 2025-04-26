@@ -15,7 +15,7 @@ internal interface AccountTransactionDao : TransactionDao, AccountDao {
     ) {
         val accountId = insertAccount(accountEntity)
         val updatedTransaction =
-            if (transaction.amountInCent < 0) transaction.copy(accountFromId = accountId.toInt())
+            if (transaction.minorUnitAmount < 0) transaction.copy(accountFromId = accountId.toInt())
             else transaction.copy(accountToId = accountId.toInt())
         insertTransaction(updatedTransaction)
     }

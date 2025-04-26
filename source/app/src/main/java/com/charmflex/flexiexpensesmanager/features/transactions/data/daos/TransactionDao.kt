@@ -31,12 +31,12 @@ internal interface TransactionDao {
             "t.account_to_id as account_to_id," +
             "ato.name as account_to_name," +
             "t.transaction_type_code," +
-            "t.amount_in_cent," +
+            "t.minor_unit_amount," +
             "t.transaction_date," +
             "t.category_id," +
             "tc.name as category_name," +
             "t.currency," +
-            "t.rate, " +
+            "t.account_currency_rate, " +
             "GROUP_CONCAT(tt.tagId, ', ') as tag_ids, " +
             "GROUP_CONCAT(tg.tag_name, ', ') as tag_names " +
             "FROM TransactionEntity t" +
@@ -73,12 +73,12 @@ internal interface TransactionDao {
                 "ato.name as account_to_name," +
                 "ato.currency as account_to_currency," +
                 "t.transaction_type_code," +
-                "t.amount_in_cent," +
+                "t.minor_unit_amount," +
                 "t.transaction_date," +
                 "t.category_id," +
                 "tc.name as category_name, " +
                 "t.currency," +
-                "t.rate, " +
+                "t.account_currency_rate, " +
                 "GROUP_CONCAT(tt.tagId, ', ') as tag_ids, " +
                 "GROUP_CONCAT(tg.tag_name, ', ') as tag_names " +
                 "FROM TransactionEntity t" +

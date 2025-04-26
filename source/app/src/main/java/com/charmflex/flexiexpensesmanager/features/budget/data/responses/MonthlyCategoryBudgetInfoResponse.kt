@@ -10,8 +10,8 @@ internal data class MonthlyCategoryBudgetInfoResponse(
     val categoryName: String,
     @ColumnInfo("category_parent_id")
     val categoryParentId: Int,
-    @ColumnInfo("expenses_amount_in_cent")
-    val expensesAmountInCent: Long,
+    @ColumnInfo("minor_unit_expenses_amount")
+    val minorUnitExpensesAmount: Long,
     @Embedded
     val budget: Budget?,
 ) {

@@ -22,13 +22,13 @@ internal interface ScheduledTransactionDao {
                 "st.scheduled_account_to_id," +
                 "ato.name as account_to_name," +
                 "st.transaction_type_code," +
-                "st.amount_in_cent," +
+                "st.minor_unit_amount," +
                 "st.start_update_date," +
                 "st.next_update_date," +
                 "st.category_id," +
                 "tc.name as category_name," +
                 "st.currency," +
-                "st.rate, " +
+                "st.account_currency_rate, " +
                 "st.primary_currency_rate, " +
                 "GROUP_CONCAT(stt.tagId, ', ') as tag_ids, " +
                 "GROUP_CONCAT(tg.tag_name, ', ') as tag_names, " +
@@ -54,13 +54,13 @@ internal interface ScheduledTransactionDao {
                 "st.scheduled_account_to_id," +
                 "ato.name as account_to_name," +
                 "st.transaction_type_code," +
-                "st.amount_in_cent," +
+                "st.minor_unit_amount," +
                 "st.start_update_date," +
                 "st.next_update_date," +
                 "st.category_id," +
                 "tc.name as category_name," +
                 "st.currency," +
-                "st.rate, " +
+                "st.account_currency_rate, " +
                 "GROUP_CONCAT(stt.tagId, ', ') as tag_ids, " +
                 "GROUP_CONCAT(tg.tag_name, ', ') as tag_names, " +
                 "st.scheduler_period " +

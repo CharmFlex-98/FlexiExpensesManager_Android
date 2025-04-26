@@ -59,16 +59,16 @@ internal data class TransactionEntity(
     val accountToId: Int?,
     @ColumnInfo("transaction_type_code", index = true)
     val transactionTypeCode: String,
-    @ColumnInfo("amount_in_cent")
-    val amountInCent: Long,
+    @ColumnInfo("minor_unit_amount")
+    val minorUnitAmount: Long,
     @ColumnInfo("transaction_date")
     val transactionDate: String,
     @ColumnInfo("category_id", index = true)
     val categoryId: Int?,
     @ColumnInfo("currency")
     val currency: String,
-    @ColumnInfo("rate")
-    val rate: Float,
+    @ColumnInfo("account_currency_rate")
+    val accountCurrencyRate: Float,
     @ColumnInfo("primary_currency_rate")
     val primaryCurrencyRate: Float?,
     @ColumnInfo("scheduler_id", index = true)

@@ -21,8 +21,8 @@ internal data class TransactionResponse(
     val accountToCurrency: String?,
     @ColumnInfo("transaction_type_code")
     val transactionTypeCode: String,
-    @ColumnInfo("amount_in_cent")
-    val amountInCent: Long,
+    @ColumnInfo("minor_unit_amount")
+    val minorUnitAmount: Long,
     @ColumnInfo("transaction_date")
     val transactionDate: String,
     @ColumnInfo("category_id")
@@ -31,8 +31,8 @@ internal data class TransactionResponse(
     val categoryName: String?,
     @ColumnInfo("currency")
     val currency: String,
-    @ColumnInfo("rate")
-    val rate: Float,
+    @ColumnInfo("account_currency_rate")
+    val accountCurrencyRate: Float,
     @ColumnInfo("primary_currency_rate")
     val primaryCurrencyRate: Float?,
     @ColumnInfo("tag_ids")

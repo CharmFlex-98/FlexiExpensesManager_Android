@@ -33,14 +33,14 @@ internal class TransactionRepositoryImpl @Inject constructor(
     ) {
         val transaction = TransactionEntity(
             transactionName = name,
-            amountInCent = amount,
+            minorUnitAmount = amount,
             transactionDate = transactionDate,
             transactionTypeCode = transactionType.name,
             accountToId = toAccountId,
             accountFromId = fromAccountId,
             categoryId = categoryId,
             currency = currency,
-            rate = accountCurrencyRate,
+            accountCurrencyRate = accountCurrencyRate,
             primaryCurrencyRate = primaryCurrencyRate,
             schedulerId = schedulerId?.toLong()
         )
@@ -65,14 +65,14 @@ internal class TransactionRepositoryImpl @Inject constructor(
         val transaction = TransactionEntity(
             id = id,
             transactionName = name,
-            amountInCent = amount,
+            minorUnitAmount = amount,
             transactionDate = transactionDate,
             transactionTypeCode = transactionType.name,
             accountToId = toAccountId,
             accountFromId = fromAccountId,
             categoryId = categoryId,
             currency = currency,
-            rate = accountCurrencyRate,
+            accountCurrencyRate = accountCurrencyRate,
             primaryCurrencyRate = primaryCurrencyRate,
             schedulerId = schedulerId?.toLong()
         )
@@ -89,11 +89,11 @@ internal class TransactionRepositoryImpl @Inject constructor(
                 accountFromId = it.transactionAccountFrom,
                 accountToId = it.transactionAccountTo,
                 transactionTypeCode = it.transactionTypeCode,
-                amountInCent = it.amountInCent,
+                minorUnitAmount = it.amountInCent,
                 transactionDate = it.transactionDate,
                 categoryId = it.transactionCategoryId,
                 currency = it.currency,
-                rate = it.rate,
+                accountCurrencyRate = it.rate,
                 primaryCurrencyRate = it.primaryCurrencyRate,
                 schedulerId = it.schedulerId?.toLong()
             )

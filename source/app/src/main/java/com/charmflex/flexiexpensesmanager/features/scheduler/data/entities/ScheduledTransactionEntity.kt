@@ -30,8 +30,8 @@ internal data class ScheduledTransactionEntity(
     val accountToId: Int?,
     @ColumnInfo("transaction_type_code")
     val transactionType: String,
-    @ColumnInfo("amount_in_cent")
-    val amountInCent: Long,
+    @ColumnInfo("minor_unit_amount")
+    val minorUnitAmount: Long,
     @ColumnInfo("start_update_date")
     val startUpdateDate: String,
     @ColumnInfo("next_update_date")
@@ -40,8 +40,8 @@ internal data class ScheduledTransactionEntity(
     val categoryId: Int?,
     @ColumnInfo("currency")
     val currency: String,
-    @ColumnInfo("rate")
-    val rate: Float,
+    @ColumnInfo("account_currency_rate")
+    val accountCurrencyRate: Float,
     @ColumnInfo("primary_currency_rate")
     val primaryCurrencyRate: Float?,
     @ColumnInfo("scheduler_period")

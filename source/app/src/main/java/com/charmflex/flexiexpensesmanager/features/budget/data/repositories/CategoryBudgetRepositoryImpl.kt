@@ -46,7 +46,7 @@ internal class CategoryBudgetRepositoryImpl @Inject constructor(
                         categoryName = entity.categoryName,
                         parentCategoryId = entity.categoryParentId,
                         defaultBudgetInCent = entity.budget?.defaultBudgetInCent ?: 0,
-                        expensesInCent = entity.expensesAmountInCent
+                        expensesInCent = entity.minorUnitExpensesAmount
                     )
                 }
             }

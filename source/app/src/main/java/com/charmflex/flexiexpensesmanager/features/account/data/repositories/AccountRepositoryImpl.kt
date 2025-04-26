@@ -115,11 +115,11 @@ internal class AccountRepositoryImpl @Inject constructor(
                 accountFromId = null,
                 accountToId = null,
                 transactionTypeCode = "UPDATE_ACCOUNT",
-                amountInCent = accountAmount,
+                minorUnitAmount = accountAmount,
                 transactionDate = LocalDate.now().toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
                 categoryId = null,
                 currency = currency,
-                rate = 1f,
+                accountCurrencyRate = 1f,
                 primaryCurrencyRate = null,
                 schedulerId = null
             )

@@ -21,8 +21,8 @@ internal data class ScheduledTransactionResponse(
     val scheduledAccountToCurrency: String?,
     @ColumnInfo("transaction_type_code")
     val transactionTypeCode: String,
-    @ColumnInfo("amount_in_cent")
-    val amountInCent: Long,
+    @ColumnInfo("minor_unit_amount")
+    val minorUnitAmount: Long,
     @ColumnInfo("start_update_date")
     val startUpdateDate: String,
     @ColumnInfo("next_update_date")
@@ -33,8 +33,8 @@ internal data class ScheduledTransactionResponse(
     val categoryName: String?,
     @ColumnInfo("currency")
     val currency: String,
-    @ColumnInfo("rate")
-    val rate: Float,
+    @ColumnInfo("account_currency_rate")
+    val accountCurrencyRate: Float,
     @ColumnInfo("primary_currency_rate")
     val primaryCurrencyRate: Float?,
     @ColumnInfo("tag_ids")

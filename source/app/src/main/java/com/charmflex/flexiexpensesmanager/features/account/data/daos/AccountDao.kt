@@ -37,11 +37,11 @@ internal interface AccountDao {
                 "COALESCE(in_amount, 0) as in_amount FROM (SELECT * FROM AccountGroupEntity WHERE is_deleted = 0) ag" +
                 " LEFT JOIN AccountEntity a on a.account_group_id = ag.id" +
                 " LEFT JOIN (" +
-                " SELECT account_from_id, SUM(t.amount_in_cent) as out_amount FROM TransactionEntity t" +
+                " SELECT account_from_id, SUM(t.minor_unit_amount) as out_amount FROM TransactionEntity t" +
                 " WHERE ((:startDate IS NULL) OR (date(transaction_date) >= date(:startDate))) AND ((:endDate IS NULL) OR date(transaction_date) <= date(:endDate))" +
                 " Group by account_from_id) as out_amount_subquery on out_amount_subquery.account_from_id = a.id" +
                 " LEFT JOIN (" +
-                " SELECT account_to_id, SUM(t.amount_in_cent) as in_amount FROM TransactionEntity t" +
+                " SELECT account_to_id, SUM(t.minor_unit_amount) as in_amount FROM TransactionEntity t" +
                 " WHERE ((:startDate IS NULL) OR (date(transaction_date) >= date(:startDate))) AND ((:endDate IS NULL) OR date(transaction_date) <= date(:endDate))" +
                 " Group by account_to_id) as in_amount_subquery on  in_amount_subquery.account_to_id = a.id"
     )
