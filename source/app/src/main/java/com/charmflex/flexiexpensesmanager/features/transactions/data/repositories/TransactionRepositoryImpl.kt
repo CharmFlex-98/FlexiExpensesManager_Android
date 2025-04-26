@@ -26,7 +26,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
         amount: Long,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
         primaryCurrencyRate: Float?,
         tagIds: List<Int>,
         schedulerId: Int?
@@ -40,7 +40,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
             accountFromId = fromAccountId,
             categoryId = categoryId,
             currency = currency,
-            rate = rate,
+            rate = accountCurrencyRate,
             primaryCurrencyRate = primaryCurrencyRate,
             schedulerId = schedulerId?.toLong()
         )
@@ -57,7 +57,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
         amount: Long,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
         primaryCurrencyRate: Float?,
         tagIds: List<Int>,
         schedulerId: Int?,
@@ -72,7 +72,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
             accountFromId = fromAccountId,
             categoryId = categoryId,
             currency = currency,
-            rate = rate,
+            rate = accountCurrencyRate,
             primaryCurrencyRate = primaryCurrencyRate,
             schedulerId = schedulerId?.toLong()
         )

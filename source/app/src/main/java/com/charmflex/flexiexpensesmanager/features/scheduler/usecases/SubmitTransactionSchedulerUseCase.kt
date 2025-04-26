@@ -12,7 +12,6 @@ import javax.inject.Inject
 internal class SubmitTransactionSchedulerUseCase @Inject constructor(
     private val transactionSchedulerRepository: TransactionSchedulerRepository,
     private val scheduledTransactionHandler: ScheduledTransactionHandler,
-    private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
 ) {
     suspend fun submitExpenses(
         id: Long?,
@@ -23,13 +22,11 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         startUpdateDate: String,
         nextUpdateDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
         schedulerPeriod: SchedulerPeriod
     ): Result<Unit> {
-        val primaryCurrencyRate =
-            getCurrencyRateUseCase.getPrimaryCurrencyRate(currency, false)?.rate
-                ?: throw Exception("Primary currency rate was failed to obtain!")
         return resultOf {
             id?.let {
                 transactionSchedulerRepository.updateScheduler(
@@ -43,7 +40,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     startUpdateDate = startUpdateDate,
                     nextUpdateDate = nextUpdateDate,
                     currency = currency,
-                    rate = rate,
+                    rate = accountCurrencyRate,
                     primaryCurrencyRate = primaryCurrencyRate,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
@@ -58,7 +55,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     categoryId = categoryId,
                     startUpdateDate = startUpdateDate,
                     currency = currency,
-                    rate = rate,
+                    rate = accountCurrencyRate,
                     primaryCurrencyRate = primaryCurrencyRate,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
@@ -77,13 +74,10 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         startUpdateDate: String,
         nextUpdateDate: String,
         currency: String,
-        rate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
         schedulerPeriod: SchedulerPeriod
     ): Result<Unit> {
-        val primaryCurrencyRate =
-            getCurrencyRateUseCase.getPrimaryCurrencyRate(currency, false)?.rate
-                ?: throw Exception("Primary currency rate was failed to obtain!")
         return resultOf {
             id?.let {
                 transactionSchedulerRepository.updateScheduler(
@@ -97,7 +91,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     startUpdateDate = startUpdateDate,
                     nextUpdateDate = nextUpdateDate,
                     currency = currency,
-                    rate = rate,
+                    rate = 1f,
                     primaryCurrencyRate = primaryCurrencyRate,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
@@ -112,7 +106,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     categoryId = categoryId,
                     startUpdateDate = startUpdateDate,
                     currency = currency,
-                    rate = rate,
+                    rate = 1f,
                     primaryCurrencyRate = primaryCurrencyRate,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
@@ -132,7 +126,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         startUpdateDate: String,
         nextUpdateDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
         schedulerPeriod: SchedulerPeriod,
         tagIds: List<Int>
     ): Result<Unit> {
@@ -149,7 +143,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     startUpdateDate = startUpdateDate,
                     nextUpdateDate = nextUpdateDate,
                     currency = currency,
-                    rate = rate,
+                    rate = accountCurrencyRate,
                     primaryCurrencyRate = null,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
@@ -164,7 +158,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     categoryId = null,
                     startUpdateDate = startUpdateDate,
                     currency = currency,
-                    rate = rate,
+                    rate = accountCurrencyRate,
                     primaryCurrencyRate = null,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod

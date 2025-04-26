@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 4,
-    "identityHash": "651bee35285a825318ba1cde2c66d174",
+    "version": 5,
+    "identityHash": "8c9df894dcac1beb150a84e0c701499e",
     "entities": [
       {
         "tableName": "AccountEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `account_group_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `currency` TEXT NOT NULL, `is_deleted` INTEGER NOT NULL DEFAULT false, `remarks` TEXT, FOREIGN KEY(`account_group_id`) REFERENCES `AccountGroupEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `account_group_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `currency` TEXT NOT NULL, `is_deleted` INTEGER NOT NULL DEFAULT false, `remarks` TEXT, FOREIGN KEY(`account_group_id`) REFERENCES `AccountGroupEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`currency`) REFERENCES `CurrencyMetaDataEntity`(`currencyCode`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -73,6 +73,17 @@
             ],
             "referencedColumns": [
               "id"
+            ]
+          },
+          {
+            "table": "CurrencyMetaDataEntity",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "currency"
+            ],
+            "referencedColumns": [
+              "currencyCode"
             ]
           }
         ]
@@ -216,7 +227,7 @@
       },
       {
         "tableName": "TransactionEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transaction_name` TEXT NOT NULL, `account_from_id` INTEGER, `account_to_id` INTEGER, `transaction_type_code` TEXT NOT NULL, `amount_in_cent` INTEGER NOT NULL, `transaction_date` TEXT NOT NULL, `category_id` INTEGER, `currency` TEXT NOT NULL, `rate` REAL NOT NULL, `primary_currency_rate` REAL, `scheduler_id` INTEGER, FOREIGN KEY(`account_from_id`) REFERENCES `AccountEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`account_to_id`) REFERENCES `AccountEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`transaction_type_code`) REFERENCES `TransactionTypeEntity`(`code`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`category_id`) REFERENCES `TransactionCategoryEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`scheduler_id`) REFERENCES `ScheduledTransactionEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `transaction_name` TEXT NOT NULL, `account_from_id` INTEGER, `account_to_id` INTEGER, `transaction_type_code` TEXT NOT NULL, `amount_in_cent` INTEGER NOT NULL, `transaction_date` TEXT NOT NULL, `category_id` INTEGER, `currency` TEXT NOT NULL, `rate` REAL NOT NULL, `primary_currency_rate` REAL, `scheduler_id` INTEGER, FOREIGN KEY(`account_from_id`) REFERENCES `AccountEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`account_to_id`) REFERENCES `AccountEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`transaction_type_code`) REFERENCES `TransactionTypeEntity`(`code`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`category_id`) REFERENCES `TransactionCategoryEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`scheduler_id`) REFERENCES `ScheduledTransactionEntity`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , FOREIGN KEY(`currency`) REFERENCES `CurrencyMetaDataEntity`(`currencyCode`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -399,6 +410,17 @@
             "referencedColumns": [
               "id"
             ]
+          },
+          {
+            "table": "CurrencyMetaDataEntity",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "currency"
+            ],
+            "referencedColumns": [
+              "currencyCode"
+            ]
           }
         ]
       },
@@ -540,7 +562,7 @@
       },
       {
         "tableName": "ScheduledTransactionEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scheduled_transaction_name` TEXT NOT NULL, `scheduled_account_from_id` INTEGER, `scheduled_account_to_id` INTEGER, `transaction_type_code` TEXT NOT NULL, `amount_in_cent` INTEGER NOT NULL, `start_update_date` TEXT NOT NULL, `next_update_date` TEXT NOT NULL, `category_id` INTEGER, `currency` TEXT NOT NULL, `rate` REAL NOT NULL, `primary_currency_rate` REAL, `scheduler_period` TEXT NOT NULL, `is_deleted` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scheduled_transaction_name` TEXT NOT NULL, `scheduled_account_from_id` INTEGER, `scheduled_account_to_id` INTEGER, `transaction_type_code` TEXT NOT NULL, `amount_in_cent` INTEGER NOT NULL, `start_update_date` TEXT NOT NULL, `next_update_date` TEXT NOT NULL, `category_id` INTEGER, `currency` TEXT NOT NULL, `rate` REAL NOT NULL, `primary_currency_rate` REAL, `scheduler_period` TEXT NOT NULL, `is_deleted` INTEGER NOT NULL, FOREIGN KEY(`currency`) REFERENCES `CurrencyMetaDataEntity`(`currencyCode`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -645,7 +667,19 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_ScheduledTransactionEntity_id_is_deleted` ON `${TABLE_NAME}` (`id`, `is_deleted`)"
           }
         ],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "CurrencyMetaDataEntity",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "currency"
+            ],
+            "referencedColumns": [
+              "currencyCode"
+            ]
+          }
+        ]
       },
       {
         "tableName": "ScheduledTransactionTagEntity",
@@ -847,7 +881,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '651bee35285a825318ba1cde2c66d174')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8c9df894dcac1beb150a84e0c701499e')"
     ]
   }
 }

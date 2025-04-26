@@ -124,7 +124,8 @@ internal class SchedulerEditorViewModel(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionSchedulerUseCase.submitExpenses(
@@ -136,7 +137,8 @@ internal class SchedulerEditorViewModel(
             transactionDate,
             transactionDate,
             currency,
-            rate,
+            accountCurrencyRate,
+            primaryCurrencyRate,
             tagIds,
             selectedPeriod.value
         )
@@ -150,7 +152,7 @@ internal class SchedulerEditorViewModel(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionSchedulerUseCase.submitIncome(
@@ -162,7 +164,7 @@ internal class SchedulerEditorViewModel(
             transactionDate,
             transactionDate,
             currency,
-            rate,
+            primaryCurrencyRate,
             tagIds,
             selectedPeriod.value,
         )
@@ -176,7 +178,7 @@ internal class SchedulerEditorViewModel(
         amount: Long,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionSchedulerUseCase.submitTransfer(
@@ -188,7 +190,7 @@ internal class SchedulerEditorViewModel(
             transactionDate,
             transactionDate,
             currency,
-            rate,
+            accountCurrencyRate,
             selectedPeriod.value,
             tagIds
         )

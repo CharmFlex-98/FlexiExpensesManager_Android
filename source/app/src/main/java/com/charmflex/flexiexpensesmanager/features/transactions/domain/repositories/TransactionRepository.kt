@@ -17,7 +17,7 @@ internal interface TransactionRepository {
         amount: Long,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
         primaryCurrencyRate: Float?,
         tagIds: List<Int>,
         schedulerId: Int?
@@ -33,7 +33,7 @@ internal interface TransactionRepository {
         amount: Long,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
         primaryCurrencyRate: Float?,
         tagIds: List<Int>,
         schedulerId: Int?

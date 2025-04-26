@@ -1,17 +1,14 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.usecases
 
-import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
-import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
 import javax.inject.Inject
 
 internal class SubmitTransactionUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository,
-    private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
     private val accountRepository: AccountRepository
 ) {
     suspend fun submitExpenses(
@@ -22,13 +19,11 @@ internal class SubmitTransactionUseCase @Inject constructor(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
     ): Result<Unit> {
         return resultOf {
-            val primaryCurrencyRate =
-                getCurrencyRateUseCase.getPrimaryCurrencyRate(currency, false)?.rate
-                    ?: throw Exception("Primary currency rate was failed to obtain!")
             id?.let {
                 transactionRepository.editTransaction(
                     id = it,
@@ -40,7 +35,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
                     categoryId = categoryId,
                     transactionDate = transactionDate,
                     currency = currency,
-                    rate = rate,
+                    accountCurrencyRate = accountCurrencyRate,
                     primaryCurrencyRate = primaryCurrencyRate,
                     tagIds = tagIds,
                     schedulerId = null
@@ -54,7 +49,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 categoryId = categoryId,
                 transactionDate = transactionDate,
                 currency = currency,
-                rate = rate,
+                accountCurrencyRate = accountCurrencyRate,
                 primaryCurrencyRate = primaryCurrencyRate,
                 tagIds = tagIds,
                 schedulerId = null
@@ -70,7 +65,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        rate: Float
+        primaryCurrencyRate: Float?
     ): Result<Unit> {
         return resultOf {
             id?.let {
@@ -84,8 +79,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                     categoryId = categoryId,
                     transactionDate = transactionDate,
                     currency = currency,
-                    primaryCurrencyRate = null,
-                    rate = rate,
+                    primaryCurrencyRate = primaryCurrencyRate,
+                    accountCurrencyRate = 1f,
                     tagIds = listOf(),
                     schedulerId = null
                 )
@@ -98,8 +93,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 categoryId = categoryId,
                 transactionDate = transactionDate,
                 currency = currency,
-                primaryCurrencyRate = null,
-                rate = rate,
+                primaryCurrencyRate = primaryCurrencyRate,
+                accountCurrencyRate = 1f,
                 tagIds = listOf(),
                 schedulerId = null
             )
@@ -115,12 +110,9 @@ internal class SubmitTransactionUseCase @Inject constructor(
         amount: Long,
         transactionDate: String,
         currency: String,
-        rate: Float
+        accountCurrencyRate: Float,
     ): Result<Unit> {
         return resultOf {
-            val primaryCurrencyRate =
-                getCurrencyRateUseCase.getPrimaryCurrencyRate(currency, false)?.rate
-                    ?: throw Exception("Primary currency rate was failed to obtain!")
             id?.let {
                 transactionRepository.editTransaction(
                     id = it,
@@ -132,8 +124,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                     categoryId = null,
                     transactionDate = transactionDate,
                     currency = currency,
-                    primaryCurrencyRate = primaryCurrencyRate,
-                    rate = rate,
+                    primaryCurrencyRate = null,
+                    accountCurrencyRate = accountCurrencyRate,
                     tagIds = listOf(),
                     schedulerId = null
                 )
@@ -146,8 +138,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 categoryId = null,
                 transactionDate = transactionDate,
                 currency = currency,
-                rate = rate,
-                primaryCurrencyRate = primaryCurrencyRate,
+                accountCurrencyRate = accountCurrencyRate,
+                primaryCurrencyRate = null,
                 tagIds = listOf(),
                 schedulerId = null
             )
@@ -160,7 +152,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
         accountId: Int,
         isIncrement: Boolean,
         amount: Long,
-        transactionDate: String,
+        transactionDate: String
     ): Result<Unit> {
         return resultOf {
             val accountCurrency = accountRepository.getAccountById(accountId).currency
@@ -175,7 +167,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
                     categoryId = null,
                     transactionDate = transactionDate,
                     currency = accountCurrency,
-                    rate = 1f,
+                    accountCurrencyRate = 1f,
                     primaryCurrencyRate = null,
                     tagIds = listOf(),
                     schedulerId = null
@@ -190,7 +182,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 transactionDate = transactionDate,
                 currency = accountCurrency,
                 primaryCurrencyRate = null,
-                rate = 1f,
+                accountCurrencyRate = 1f,
                 tagIds = listOf(),
                 schedulerId = null
             )

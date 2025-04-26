@@ -29,9 +29,15 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.Transa
 import com.charmflex.flexiexpensesmanager.features.tag.data.entities.TagEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.daos.TransactionTagDao
 import com.charmflex.flexiexpensesmanager.features.category.category.data.entities.TransactionCategoryEntity
+import com.charmflex.flexiexpensesmanager.features.currency.data.entities.CurrencyMetaDataEntity
+import com.charmflex.flexiexpensesmanager.features.currency.data.utils.SQLQueryBuilder
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTagEntity
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionTypeEntity
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonBuilder
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
 
 @Database(
     entities = [
@@ -46,11 +52,14 @@ import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.Tr
         ScheduledTransactionEntity::class,
         ScheduledTransactionTagEntity::class,
         CategoryBudgetEntity::class,
-        MonthlyCategoryBudgetEntity::class
+        MonthlyCategoryBudgetEntity::class,
+        CurrencyMetaDataEntity::class
     ],
-    version = 3,
+    version = 5,
     autoMigrations = [
-        AutoMigration(from = 1, to = 2)
+        AutoMigration(from = 1, to = 2),
+        AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5)
     ],
     exportSchema = true
 )
@@ -67,9 +76,21 @@ internal abstract class AppDatabase : RoomDatabase() {
     abstract fun getCategoryBudgetDao(): CategoryBudgetDao
 
     class Builder(
-        private val appContext: Context
+        private val appContext: Context,
+        private val sqlQueryBuilder: SQLQueryBuilder
     ) {
         fun build(): AppDatabase {
+            val currencyMetadataString = appContext.assets.open("currency_metadata.json")
+                .bufferedReader().use { it.readText() }
+            val currencyMetadataJson =
+                Json.parseToJsonElement(currencyMetadataString) as? JsonObject
+
+            val initCurrencyMetadataScript = String.format(
+                INIT_CURRENCY_METADATA_SCRIPT,
+                sqlQueryBuilder.build(currencyMetadataJson as JsonObject)
+            )
+
+
             return Room.databaseBuilder(
                 appContext,
                 AppDatabase::class.java,
@@ -83,6 +104,7 @@ internal abstract class AppDatabase : RoomDatabase() {
                         db.execSQL(INIT_ACCOUNT_SCRIPT)
                         db.execSQL(INIT_TRANSACTION_TYPE_SCRIPT)
                         db.execSQL(INIT_TRANSACTION_CATEGORY_SCRIPT)
+                        db.execSQL(initCurrencyMetadataScript)
                     }
                 })
                 .build()
@@ -106,3 +128,5 @@ private const val INIT_TRANSACTION_TYPE_SCRIPT =
     "INSERT INTO TransactionTypeEntity (code) VALUES ('INCOME'), ('EXPENSES'), ('TRANSFER'), ('UPDATE_ACCOUNT')"
 private const val INIT_TRANSACTION_CATEGORY_SCRIPT =
     "INSERT INTO TransactionCategoryEntity (id, transaction_type_code, name, parent_id) VALUES (1, 'EXPENSES', 'Food', 0), (2, 'INCOME', 'Salary', 0), (3, 'EXPENSES', 'Rental', 0), (4, 'EXPENSES', 'Lunch', 1)"
+private const val INIT_CURRENCY_METADATA_SCRIPT =
+    "INSERT INTO CurrencyMetaDataEntity (currencyCode, name, defaultFractionDigit) VALUES %s"

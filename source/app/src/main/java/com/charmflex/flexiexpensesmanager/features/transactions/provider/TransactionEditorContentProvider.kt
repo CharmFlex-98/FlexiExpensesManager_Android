@@ -38,14 +38,17 @@ internal abstract class TransactionEditorContentProvider {
             TransactionType.UPDATE_ACCOUNT -> updateFields()
         }.toMutableList()
 
-        res.add(
-            FEField(
-                id = TRANSACTION_DATE,
-                labelId = R.string.new_expenses_date,
-                hintId = R.string.new_expenses_date_hint,
-                type = FEField.FieldType.Callback
+        if (transactionType != TransactionType.UPDATE_ACCOUNT) {
+            res.add(
+                FEField(
+                    id = TRANSACTION_DATE,
+                    labelId = R.string.new_expenses_date,
+                    hintId = R.string.new_expenses_date_hint,
+                    type = FEField.FieldType.Callback
+                )
             )
-        )
+        }
+
         return res
     }
 
@@ -95,6 +98,13 @@ internal abstract class TransactionEditorContentProvider {
     private fun incomeFields(): List<FEField> {
         return listOf(
             FEField(
+                id = TRANSACTION_NAME,
+                labelId = R.string.new_expenses_name,
+                hintId = R.string.new_expenses_name_hint,
+                valueItem = FEField.Value(),
+                type = FEField.FieldType.Text
+            ),
+            FEField(
                 id = TRANSACTION_TO_ACCOUNT,
                 labelId = R.string.new_transaction_account,
                 hintId = R.string.new_income_account_hint,
@@ -117,6 +127,13 @@ internal abstract class TransactionEditorContentProvider {
 
     private fun transferFields(): List<FEField> {
         return listOf(
+            FEField(
+                id = TRANSACTION_NAME,
+                labelId = R.string.new_expenses_name,
+                hintId = R.string.new_expenses_name_hint,
+                valueItem = FEField.Value(),
+                type = FEField.FieldType.Text
+            ),
             FEField(
                 id = TRANSACTION_FROM_ACCOUNT,
                 labelId = R.string.new_transaction_from_account,

@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
 import com.charmflex.flexiexpensesmanager.features.category.category.data.entities.TransactionCategoryEntity
+import com.charmflex.flexiexpensesmanager.features.currency.data.entities.CurrencyMetaDataEntity
 import com.charmflex.flexiexpensesmanager.features.scheduler.data.entities.ScheduledTransactionEntity
 
 @Entity(
@@ -39,6 +40,11 @@ import com.charmflex.flexiexpensesmanager.features.scheduler.data.entities.Sched
             parentColumns = ["id"],
             childColumns = ["scheduler_id"],
             onDelete = ForeignKey.RESTRICT
+        ),
+        ForeignKey(
+            entity = CurrencyMetaDataEntity::class,
+            parentColumns = ["currencyCode"],
+            childColumns = ["currency"]
         )
     ]
 )

@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.charmflex.flexiexpensesmanager.features.currency.data.entities.CurrencyMetaDataEntity
 
 // Delete account should not real delete it, because transaction need a reference to it
 @Entity(
@@ -15,6 +16,11 @@ import androidx.room.PrimaryKey
             parentColumns = ["id"],
             childColumns = ["account_group_id"],
             onDelete = ForeignKey.RESTRICT
+        ),
+        ForeignKey(
+            entity = CurrencyMetaDataEntity::class,
+            parentColumns = ["currencyCode"],
+            childColumns = ["currency"]
         )
     ]
 )

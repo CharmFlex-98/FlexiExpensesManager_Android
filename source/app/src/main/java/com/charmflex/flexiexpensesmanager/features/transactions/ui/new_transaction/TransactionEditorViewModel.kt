@@ -120,11 +120,12 @@ internal class TransactionEditorViewModel @Inject constructor(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionUseCase.submitExpenses(
-            id, name, fromAccountId, amount, categoryId, transactionDate, currency, rate, tagIds
+            id, name, fromAccountId, amount, categoryId, transactionDate, currency, accountCurrencyRate, primaryCurrencyRate, tagIds
         )
     }
 
@@ -136,11 +137,11 @@ internal class TransactionEditorViewModel @Inject constructor(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        primaryCurrencyRate: Float?,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionUseCase.submitIncome(
-            id, name, toAccountId, amount, categoryId, transactionDate, currency, rate
+            id, name, toAccountId, amount, categoryId, transactionDate, currency, primaryCurrencyRate
         )
     }
 
@@ -152,11 +153,11 @@ internal class TransactionEditorViewModel @Inject constructor(
         amount: Long,
         transactionDate: String,
         currency: String,
-        rate: Float,
+        accountCurrencyRate: Float,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionUseCase.submitTransfer(
-            id, name, fromAccountId, toAccountId, amount, transactionDate, currency, rate
+            id, name, fromAccountId, toAccountId, amount, transactionDate, currency, accountCurrencyRate
         )
     }
 

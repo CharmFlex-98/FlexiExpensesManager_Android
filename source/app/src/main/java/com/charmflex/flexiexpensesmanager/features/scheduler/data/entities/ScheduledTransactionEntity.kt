@@ -2,12 +2,21 @@ package com.charmflex.flexiexpensesmanager.features.scheduler.data.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.charmflex.flexiexpensesmanager.features.currency.data.entities.CurrencyMetaDataEntity
 
 @Entity(
     indices = [
         Index("id", "is_deleted")
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = CurrencyMetaDataEntity::class,
+            parentColumns = ["currencyCode"],
+            childColumns = ["currency"]
+        )
     ]
 )
 internal data class ScheduledTransactionEntity(
