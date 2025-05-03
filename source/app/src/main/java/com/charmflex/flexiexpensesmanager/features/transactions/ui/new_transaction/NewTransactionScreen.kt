@@ -228,19 +228,6 @@ internal fun TransactionEditorScreen(
                         }
                     }
                     when (val type = feField.type) {
-                        is FEField.FieldType.SingleItemSelection -> {
-                            SGAutoCompleteTextField(
-                                modifier = Modifier
-                                    .padding(vertical = grid_x1)
-                                    .fillMaxWidth(),
-                                label = stringResource(id = feField.labelId),
-                                value = feField.valueItem.value,
-                                suggestions = type.options.map { it.title }
-                            ) { newValue ->
-                                viewModel.onFieldValueChanged(feField, newValue, firstUpdate = true)
-                            }
-                        }
-
                         is FEField.FieldType.Callback -> {
                             SGTextField(
                                 modifier = Modifier
@@ -298,7 +285,7 @@ internal fun TransactionEditorScreen(
                                     )
                                 }
                             ) { newValue ->
-                                viewModel.onFieldValueChanged(feField, newValue, firstUpdate = true)
+                                viewModel.onFieldValueChanged(feField, newValue, updateMonetary = feField.shouldResetMonetary())
                             }
                         }
                     }
@@ -329,7 +316,6 @@ internal fun TransactionEditorScreen(
             viewModel.onFieldValueChanged(
                 viewState.calendarState?.targetField,
                 it.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
-                firstUpdate = true
             )
             viewModel.onToggleCalendar(null)
         },
@@ -445,7 +431,7 @@ internal fun TransactionEditorScreen(
                         title = stringResource(id = R.string.update_account_type_selection_bottomsheet_title),
                         items = viewModel.updateAccountType,
                         name = { it.name }) { selected ->
-                        viewModel.onFieldValueChanged(bs.feField, selected.name, firstUpdate = true)
+                        viewModel.onFieldValueChanged(bs.feField, selected.name)
                         viewModel.toggleBottomSheet(null)
                     }
                 }

@@ -33,7 +33,7 @@ internal interface TransactionCategoryDao {
         "SELECT tc.id as category_id, " +
                 "tc.name as category_name, " +
                 "tc.parent_id as parent_category_id, " +
-                "COALESCE(SUM(t.minor_unit_amount * t.account_currency_rate), 0) as minor_unit_expenses_amount FROM " +
+                "COALESCE(SUM(t.primary_minor_unit_amount), 0) as minor_unit_amount FROM " +
                 " (SELECT * FROM TransactionCategoryEntity WHERE is_deleted = 0 AND transaction_type_code = :transactionTypeCode) tc " +
                 "LEFT JOIN (SELECT * FROM TransactionEntity " +
                 " WHERE (:startDate IS NULL OR date(transaction_date) >= date(:startDate))" +

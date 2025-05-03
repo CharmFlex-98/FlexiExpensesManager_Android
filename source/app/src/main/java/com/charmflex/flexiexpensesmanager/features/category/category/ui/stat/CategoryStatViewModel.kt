@@ -21,9 +21,9 @@ import kotlin.math.round
 
 internal class CategoryStatViewModel @Inject constructor(
     private val getEachRootCategoryAmountUseCase: GetEachRootCategoryAmountUseCase,
-    private val userCurrencyRepository: UserCurrencyRepository,
     private val currencyFormatter: CurrencyFormatter,
-    private val routeNavigator: RouteNavigator
+    private val routeNavigator: RouteNavigator,
+    val userCurrencyRepository: UserCurrencyRepository,
 ) : ViewModel() {
     private var job = SupervisorJob()
         get() {
@@ -37,8 +37,13 @@ internal class CategoryStatViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(CategoryStatViewState())
     val viewState = _viewState.asStateFlow()
 
+    private lateinit var _primaryCurrency: String
+
     init {
         observeDateFilter()
+        viewModelScope.launch {
+            _primaryCurrency = userCurrencyRepository.getPrimaryCurrency()
+        }
     }
 
     fun onNavigateCategoryTransactionDetailScreen(
@@ -71,19 +76,22 @@ internal class CategoryStatViewModel @Inject constructor(
         observeCategoryStats(TransactionType.INCOME)
     }
 
-    private suspend fun getNullContentState(): CategoryStatViewState.OverallCategoryData {
+    private fun getNullContentState(): CategoryStatViewState.OverallCategoryData {
         return CategoryStatViewState.OverallCategoryData(
             stats = listOf(),
             totalAmountInCent = 0,
-            amount = currencyFormatter.format(0, userCurrencyRepository.getPrimaryCurrency())
+            amount = currencyFormatter.format(0, _primaryCurrency)
         )
     }
 
-    private suspend fun updateCategoryContentState(amount: Long, stats: List<CategoryStatViewState.CategoryStat>): CategoryStatViewState.OverallCategoryData {
+    private fun updateCategoryContentState(
+        amount: Long,
+        stats: List<CategoryStatViewState.CategoryStat>
+    ): CategoryStatViewState.OverallCategoryData {
         return CategoryStatViewState.OverallCategoryData(
             stats = stats,
             totalAmountInCent = amount,
-            amount = currencyFormatter.format(amount, userCurrencyRepository.getPrimaryCurrency())
+            amount = currencyFormatter.format(amount, _primaryCurrency)
         )
     }
 
@@ -117,7 +125,7 @@ internal class CategoryStatViewModel @Inject constructor(
                         amount = "${sign}${
                             currencyFormatter.format(
                                 res.value,
-                                userCurrencyRepository.getPrimaryCurrency()
+                                _primaryCurrency
                             )
                         }",
                         percentage = "${
@@ -132,8 +140,14 @@ internal class CategoryStatViewModel @Inject constructor(
                 _viewState.update {
                     it.copy(
                         isLoading = false,
-                        expensesCategoryStats = if (type == TransactionType.EXPENSES) updateCategoryContentState(totalAmount, stats) else it.expensesCategoryStats,
-                        incomeCategoryStats = if (type == TransactionType.INCOME) updateCategoryContentState(totalAmount, stats) else it.incomeCategoryStats
+                        expensesCategoryStats = if (type == TransactionType.EXPENSES) updateCategoryContentState(
+                            totalAmount,
+                            stats
+                        ) else it.expensesCategoryStats,
+                        incomeCategoryStats = if (type == TransactionType.INCOME) updateCategoryContentState(
+                            totalAmount,
+                            stats
+                        ) else it.incomeCategoryStats
                     )
                 }
             }

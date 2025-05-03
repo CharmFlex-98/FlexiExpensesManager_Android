@@ -23,6 +23,10 @@ internal data class TransactionResponse(
     val transactionTypeCode: String,
     @ColumnInfo("minor_unit_amount")
     val minorUnitAmount: Long,
+    @ColumnInfo("account_minor_unit_amount")
+    val accountMinorUnitAmount: Long,
+    @ColumnInfo("primary_minor_unit_amount")
+    val primaryMinorUnitAmount: Long,
     @ColumnInfo("transaction_date")
     val transactionDate: String,
     @ColumnInfo("category_id")

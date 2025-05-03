@@ -30,6 +30,8 @@ internal interface ScheduledTransactionDao {
                 "st.currency," +
                 "st.account_currency_rate, " +
                 "st.primary_currency_rate, " +
+                "st.account_minor_unit_amount, " +
+                "st.primary_minor_unit_amount, " +
                 "GROUP_CONCAT(stt.tagId, ', ') as tag_ids, " +
                 "GROUP_CONCAT(tg.tag_name, ', ') as tag_names, " +
                 "st.scheduler_period " +
@@ -61,6 +63,8 @@ internal interface ScheduledTransactionDao {
                 "tc.name as category_name," +
                 "st.currency," +
                 "st.account_currency_rate, " +
+                "st.account_minor_unit_amount, " +
+                "st.primary_minor_unit_amount, " +
                 "GROUP_CONCAT(stt.tagId, ', ') as tag_ids, " +
                 "GROUP_CONCAT(tg.tag_name, ', ') as tag_names, " +
                 "st.scheduler_period " +

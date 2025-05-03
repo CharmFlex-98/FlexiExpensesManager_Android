@@ -33,15 +33,19 @@ internal interface AccountDao {
                 "ag.name as account_group_name," +
                 "a.name as account_name," +
                 "a.currency as currency," +
-                "COALESCE(out_amount, 0) as out_amount," +
+                "COALESCE(out_transfer, 0) + COALESCE(out_expenses, 0) as out_amount," +
                 "COALESCE(in_amount, 0) as in_amount FROM (SELECT * FROM AccountGroupEntity WHERE is_deleted = 0) ag" +
                 " LEFT JOIN AccountEntity a on a.account_group_id = ag.id" +
                 " LEFT JOIN (" +
-                " SELECT account_from_id, SUM(t.minor_unit_amount) as out_amount FROM TransactionEntity t" +
-                " WHERE ((:startDate IS NULL) OR (date(transaction_date) >= date(:startDate))) AND ((:endDate IS NULL) OR date(transaction_date) <= date(:endDate))" +
-                " Group by account_from_id) as out_amount_subquery on out_amount_subquery.account_from_id = a.id" +
+                " SELECT account_from_id, SUM(t.minor_unit_amount) as out_transfer FROM TransactionEntity t" +
+                " WHERE (t.transaction_type_code = 'TRANSFER') AND ((:startDate IS NULL) OR (date(transaction_date) >= date(:startDate))) AND ((:endDate IS NULL) OR date(transaction_date) <= date(:endDate))" +
+                " Group by account_from_id) as out_amount_subquery_transfer on out_amount_subquery_transfer.account_from_id = a.id" +
                 " LEFT JOIN (" +
-                " SELECT account_to_id, SUM(t.minor_unit_amount) as in_amount FROM TransactionEntity t" +
+                " SELECT account_from_id, SUM(t.account_minor_unit_amount) as out_expenses FROM TransactionEntity t" +
+                " WHERE (t.transaction_type_code = 'EXPENSES') AND ((:startDate IS NULL) OR (date(transaction_date) >= date(:startDate))) AND ((:endDate IS NULL) OR date(transaction_date) <= date(:endDate))" +
+                " Group by account_from_id) as out_amount_subquery_expenses on out_amount_subquery_expenses.account_from_id = a.id" +
+                " LEFT JOIN (" +
+                " SELECT account_to_id, SUM(t.account_minor_unit_amount) as in_amount FROM TransactionEntity t" +
                 " WHERE ((:startDate IS NULL) OR (date(transaction_date) >= date(:startDate))) AND ((:endDate IS NULL) OR date(transaction_date) <= date(:endDate))" +
                 " Group by account_to_id) as in_amount_subquery on  in_amount_subquery.account_to_id = a.id"
     )

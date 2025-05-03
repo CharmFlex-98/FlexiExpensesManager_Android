@@ -11,28 +11,24 @@ internal data class AccountGroupSummary(
         val accountId: Int,
         val accountName: String,
         val balance: Long,
-        val currency: String
-    ) {
-        suspend fun getPrimaryBalanceInCent(primaryCurrencyRate: Float, currencyRateUseCase: GetCurrencyRateUseCase): Long {
-            val rate = currencyRateUseCase.getPrimaryCurrencyRate(currency, false)?.rate ?: primaryCurrencyRate
-            return (balance * rate).toLong()
-        }
-    }
+        val balanceInPrimaryCurrency: Long,
+        val currency: String,
+        val hasError: Boolean = false
+    )
 
-    suspend fun getPrimaryBalanceCent(primaryCurrencyRate: Float, currencyRateUseCase: GetCurrencyRateUseCase): Long {
+    fun getPrimaryBalance(): Long {
         return accountsSummary.map {
-            it.getPrimaryBalanceInCent(primaryCurrencyRate, currencyRateUseCase)
-        }
-            .reduceOrNull { acc, i -> acc + i }?.toLong() ?: 0
+            it.balanceInPrimaryCurrency
+        }.reduceOrNull { acc, i -> acc + i }?.toLong() ?: 0
     }
-    val balance get() = accountsSummary.map { it.balance }.reduceOrNull { acc, i -> acc + i } ?: 0
 }
 
 
 interface I1
 interface I2
 open class C1 : I1
-class C3: C1(), I2
+class C3 : C1(), I2
+
 fun testing() {
     val res1: I1 = C3();
     val res2: I2 = res1 as I2

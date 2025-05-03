@@ -40,7 +40,7 @@ internal class TransactionCategoryRepositoryImpl @Inject constructor(
                                 categoryName = it.categoryName,
                                 parentCategoryId = it.parentCategoryId,
                                 level = level,
-                                expensesAmountInCent = it.minorUnitExpensesAmount
+                                minorUnitAmount = it.minorUnitAmount
                             )
                         }
                     }
@@ -139,12 +139,12 @@ internal data class CategoryAmountNode(
     override val categoryName: String,
     override val parentCategoryId: Int,
     val level: Int,
-    private val expensesAmountInCent: Long
+    private val minorUnitAmount: Long
 ) : CategoryNode<CategoryAmountNode> {
-    val adjustedExpensesAmountInCent: Long
+    val adjustedExpensesAmountInMinorUnit: Long
         get() {
-            return expensesAmountInCent + (children
-                .map { it.adjustedExpensesAmountInCent }
+            return minorUnitAmount + (children
+                .map { it.adjustedExpensesAmountInMinorUnit }
                 .reduceOrNull { acc, l -> acc + l } ?: 0)
         }
     private val _children = mutableListOf<CategoryAmountNode>()

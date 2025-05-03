@@ -1,19 +1,7 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui
 
-import androidx.compose.ui.text.AnnotatedString
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
-import com.charmflex.flexiexpensesmanager.core.utils.CurrencyTextFieldOutputFormatter
-import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
-import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
-import com.charmflex.flexiexpensesmanager.features.currency.service.CurrencyService
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
-import com.charmflex.flexiexpensesmanager.features.transactions.provider.ACCOUNT_TRANSACTION_AMOUNT
-import com.charmflex.flexiexpensesmanager.features.transactions.provider.PRIMARY_TRANSACTION_AMOUNT
-import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_AMOUNT
-import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_CURRENCY
-import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_FROM_ACCOUNT
-import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_RATE
-import com.charmflex.flexiexpensesmanager.features.transactions.provider.TRANSACTION_TO_ACCOUNT
 import com.charmflex.flexiexpensesmanager.features.transactions.ui.new_transaction.TransactionEditorViewState
 
 internal interface AmountRateTextFieldHandler {

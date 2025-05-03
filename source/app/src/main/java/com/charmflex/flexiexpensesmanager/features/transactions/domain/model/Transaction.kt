@@ -10,10 +10,12 @@ internal data class Transaction(
     val transactionAccountFrom: AccountGroup.Account?,
     val transactionAccountTo: AccountGroup.Account?,
     val transactionTypeCode: String,
-    val amountInCent: Long,
+    val minorUnitAmount: Long,
     val currency: String,
     val rate: Float,
     val primaryCurrencyRate: Float?,
+    val accountMinorUnitAmount: Long,
+    val primaryMinorUnitAmount: Long,
     val transactionDate: String,
     val transactionCategory: TransactionCategory?,
     val tags: List<Tag>

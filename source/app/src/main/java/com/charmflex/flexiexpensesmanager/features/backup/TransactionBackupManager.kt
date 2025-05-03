@@ -77,6 +77,8 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                     val tags = row.safeGetCell(12).stringCellValue.split("#").map {
                         it.trim()
                     }
+                    val accountMinorUnitAmount = row.safeGetCell(13).numericCellValue
+                    val primaryMinorUnitAmount = row.safeGetCell(14).numericCellValue
 
                     // Break if there is no value anymore.
                     if (date == null) break
@@ -90,6 +92,8 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                             currency = currency,
                             currencyRate = currencyRate,
                             primaryCurrencyRate = primaryCurrencyRate,
+                            accountMinorUnitAmount = accountMinorUnitAmount,
+                            primaryMinorUnitAmount = primaryMinorUnitAmount, // TODO: To update
                             amount = amount,
                             date = date,
                             categoryColumns = categoryColumns.filter { it.isNotBlank() },
@@ -227,6 +231,8 @@ internal data class TransactionBackupData(
     val currency: String,
     val currencyRate: Double,
     val primaryCurrencyRate: Double?,
+    val accountMinorUnitAmount: Double,
+    val primaryMinorUnitAmount: Double,
     val amount: Double,
     val date: LocalDate,
     val categoryColumns: List<String>,

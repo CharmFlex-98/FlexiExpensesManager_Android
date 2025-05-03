@@ -129,7 +129,7 @@ internal class CategoryDetailViewModel(
         // We don't need to take care of getting next transactions.
         if (clearOldList.not()) return
 
-        val totalAmount = data.map { it.amountInCent }.reduceOrNull { acc, l -> acc + l } ?: 0
+        val totalAmount = data.map { it.minorUnitAmount }.reduceOrNull { acc, l -> acc + l } ?: 0
         val startDate =
             _dateFilter.value.getStartDate()?.toLocalDate(DATE_ONLY_DEFAULT_PATTERN) ?: return
         val endDate =
@@ -140,7 +140,7 @@ internal class CategoryDetailViewModel(
         val dayToTotalAmountMap = data.groupBy {
             it.transactionDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN)
         }.mapValues {
-            it.value.map { it.amountInCent }.reduceOrNull { acc, l -> acc + l } ?: 0
+            it.value.map { it.minorUnitAmount }.reduceOrNull { acc, l -> acc + l } ?: 0
         }
         val newEntries = dates.map { localDate ->
             val dayWithAmount = dayToTotalAmountMap[localDate]

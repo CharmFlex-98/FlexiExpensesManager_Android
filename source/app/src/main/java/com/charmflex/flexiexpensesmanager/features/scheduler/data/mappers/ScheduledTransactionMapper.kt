@@ -21,12 +21,14 @@ internal class ScheduledTransactionMapper :
             startUpdateDate = from.startUpdateDate,
             nextUpdateDate = from.nextUpdateDate,
             category = getCategory(from.categoryId, from.categoryName),
-            amountInCent = from.minorUnitAmount,
+            minorUnitAmount = from.minorUnitAmount,
             schedulerPeriod = SchedulerPeriod.fromString(from.schedulerPeriod),
             tags = getTags(from.tagIds?.split(", "), from.tagNames?.split(", ")),
             currency = from.currency,
             rate = from.accountCurrencyRate,
-            primaryCurrencyRate = from.primaryCurrencyRate
+            primaryCurrencyRate = from.primaryCurrencyRate,
+            accountMinorUnitAmount = from.accountMinorUnitAmount,
+            primaryMinorUnitAmount = from.primaryMinorUnitAmount
         )
     }
 }

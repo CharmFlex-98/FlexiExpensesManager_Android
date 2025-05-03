@@ -10,6 +10,7 @@ import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.A
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.scheduler.di.modules.TransactionEditorProvider
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.currency.service.CurrencyService
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
@@ -29,11 +30,10 @@ internal class TransactionEditorViewModel @Inject constructor(
     routeNavigator: RouteNavigator,
     transactionCategoryRepository: TransactionCategoryRepository,
     currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
-    getCurrencyUseCase: GetCurrencyUseCase,
-    getCurrencyRateUseCase: GetCurrencyRateUseCase,
     tagRepository: TagRepository,
     currencyService: CurrencyService,
     currencyFormatter: CurrencyFormatter,
+    userCurrencyRepository: UserCurrencyRepository,
     rateExchangeManager: RateExchangeManager,
     private val resourcesProvider: ResourcesProvider
 ) : TransactionEditorBaseViewModel(
@@ -42,13 +42,12 @@ internal class TransactionEditorViewModel @Inject constructor(
     routeNavigator,
     transactionCategoryRepository,
     currencyVisualTransformationBuilder,
-    getCurrencyUseCase,
     tagRepository,
-    getCurrencyRateUseCase,
     currencyService,
     currencyFormatter,
     rateExchangeManager,
-    transactionId
+    userCurrencyRepository,
+    transactionId,
 ) {
     class Factory @Inject constructor(
         @TransactionEditorProvider(TransactionEditorProvider.Type.DEFAULT)
@@ -59,12 +58,11 @@ internal class TransactionEditorViewModel @Inject constructor(
         private val transactionCategoryRepository: TransactionCategoryRepository,
         private val submitTransactionUseCase: SubmitTransactionUseCase,
         private val currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
-        private val getCurrencyUseCase: GetCurrencyUseCase,
-        private val getCurrencyRateUseCase: GetCurrencyRateUseCase,
         private val tagRepository: TagRepository,
         private val resourcesProvider: ResourcesProvider,
         private val currencyService: CurrencyService,
         private val currencyFormatter: CurrencyFormatter,
+        private val userCurrencyRepository: UserCurrencyRepository,
         private val rateExchangeManager: RateExchangeManager
     ) {
         fun create(transactionId: Long?): TransactionEditorViewModel {
@@ -77,11 +75,10 @@ internal class TransactionEditorViewModel @Inject constructor(
                 routeNavigator,
                 transactionCategoryRepository,
                 currencyVisualTransformationBuilder,
-                getCurrencyUseCase,
-                getCurrencyRateUseCase,
                 tagRepository,
                 currencyService,
                 currencyFormatter,
+                userCurrencyRepository,
                 rateExchangeManager,
                 resourcesProvider,
             )
@@ -103,7 +100,9 @@ internal class TransactionEditorViewModel @Inject constructor(
             res.transactionAccountFrom,
             res.transactionAccountTo,
             res.transactionTypeCode,
-            res.amountInCent,
+            res.minorUnitAmount,
+            res.accountMinorUnitAmount,
+            res.primaryMinorUnitAmount,
             res.currency,
             res.rate,
             res.transactionDate,
@@ -122,10 +121,23 @@ internal class TransactionEditorViewModel @Inject constructor(
         currency: String,
         accountCurrencyRate: Float,
         primaryCurrencyRate: Float?,
+        accountMinorUnitAmount: Long,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionUseCase.submitExpenses(
-            id, name, fromAccountId, amount, categoryId, transactionDate, currency, accountCurrencyRate, primaryCurrencyRate, tagIds
+            id,
+            name,
+            fromAccountId,
+            amount,
+            categoryId,
+            transactionDate,
+            currency,
+            accountCurrencyRate,
+            primaryCurrencyRate,
+            accountMinorUnitAmount,
+            primaryMinorUnitAmount,
+            tagIds
         )
     }
 
@@ -138,10 +150,19 @@ internal class TransactionEditorViewModel @Inject constructor(
         transactionDate: String,
         currency: String,
         primaryCurrencyRate: Float?,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionUseCase.submitIncome(
-            id, name, toAccountId, amount, categoryId, transactionDate, currency, primaryCurrencyRate
+            id,
+            name,
+            toAccountId,
+            amount,
+            categoryId,
+            transactionDate,
+            currency,
+            primaryCurrencyRate,
+            primaryMinorUnitAmount
         )
     }
 
@@ -154,10 +175,19 @@ internal class TransactionEditorViewModel @Inject constructor(
         transactionDate: String,
         currency: String,
         accountCurrencyRate: Float,
+        accountMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionUseCase.submitTransfer(
-            id, name, fromAccountId, toAccountId, amount, transactionDate, currency, accountCurrencyRate
+            id,
+            name,
+            fromAccountId,
+            toAccountId,
+            amount,
+            transactionDate,
+            currency,
+            accountCurrencyRate,
+            accountMinorUnitAmount
         )
     }
 
@@ -167,8 +197,9 @@ internal class TransactionEditorViewModel @Inject constructor(
         isIncrement: Boolean,
         amount: Long,
         transactionDate: String,
-    ) : Result<Unit> {
-        val hint = if (isIncrement) UpdateAccountType.INCREMENT.name else UpdateAccountType.DEDUCTION.name
+    ): Result<Unit> {
+        val hint =
+            if (isIncrement) UpdateAccountType.INCREMENT.name else UpdateAccountType.DEDUCTION.name
         val name = resourcesProvider.getString(R.string.generic_update_account)
         return submitTransactionUseCase.submitUpdateAccount(
             id, "$name ($hint)", accountId, isIncrement, amount, transactionDate

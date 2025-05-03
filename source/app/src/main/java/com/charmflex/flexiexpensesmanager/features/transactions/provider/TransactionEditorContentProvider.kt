@@ -6,20 +6,17 @@ import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Tra
 import com.graphbuilder.struc.LinkedList
 import javax.inject.Inject
 
-internal const val TRANSACTION_NAME = "TRANSACTION_NAME"
 
 internal const val TRANSACTION_AMOUNT = "TRANSACTION_AMOUNT"
-internal const val ACCOUNT_TRANSACTION_AMOUNT = "ACCOUNT_TRANSACTION_AMOUNT"
 internal const val PRIMARY_TRANSACTION_AMOUNT = "PRIMARY_TRANSACTION_AMOUNT"
-
-internal const val TRANSACTION_RATE = "TRANSACTION_RATE"
 internal const val PRIMARY_CURRENCY_RATE = "PRIMARY_CURRENCY_RATE"
-
-internal const val TRANSACTION_DATE = "TRANSACTION_DATE"
 internal const val TRANSACTION_FROM_ACCOUNT = "TRANSACTION_FROM_ACC"
 internal const val TRANSACTION_TO_ACCOUNT = "TRANSACTION_TO_ACC"
-internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
 internal const val TRANSACTION_CURRENCY = "TRANSACTION_CURRENCY"
+
+internal const val TRANSACTION_NAME = "TRANSACTION_NAME"
+internal const val TRANSACTION_DATE = "TRANSACTION_DATE"
+internal const val TRANSACTION_CATEGORY = "TRANSACTION_CAT"
 internal const val TRANSACTION_TAG = "TRANSACTION_TAG"
 internal const val TRANSACTION_SCHEDULER_PERIOD = "SCHEDULER_PERIOD"
 internal const val TRANSACTION_UPDATE_ACCOUNT = "TRANSACTION_UPDATE_ACCOUNT"

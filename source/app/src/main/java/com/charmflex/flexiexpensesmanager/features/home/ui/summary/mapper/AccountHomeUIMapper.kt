@@ -2,23 +2,20 @@ package com.charmflex.flexiexpensesmanager.features.home.ui.summary.mapper
 
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroupSummary
-import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
 import com.charmflex.flexiexpensesmanager.features.home.ui.account.AccountHomeViewState
 import javax.inject.Inject
 
 internal class AccountHomeUIMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
-    private val currencyRateUseCase: GetCurrencyRateUseCase
 ) {
-     suspend fun map(from: Pair<List<AccountGroupSummary>, String>): List<AccountHomeViewState.AccountGroupSummaryUI> {
+    fun map(from: Pair<List<AccountGroupSummary>, String>): List<AccountHomeViewState.AccountGroupSummaryUI> {
         val mainCurrency = from.second
-        val rate = currencyRateUseCase.getPrimaryCurrencyRate(mainCurrency)?.rate ?: 1f
         return from.first.map {
-            val mainCurrencyBalance = it.getPrimaryBalanceCent(rate , currencyRateUseCase)
+            val mainCurrencyBalance = it.getPrimaryBalance()
             AccountHomeViewState.AccountGroupSummaryUI(
                 accountGroupName = it.accountGroupName,
                 accountsSummary = it.accountsSummary.map {
-                    val mainCurrencyBalanceChild = it.getPrimaryBalanceInCent(rate , currencyRateUseCase)
+                    val mainCurrencyBalanceChild = it.balanceInPrimaryCurrency
                     AccountHomeViewState.AccountGroupSummaryUI.AccountSummaryUI(
                         accountId = it.accountId,
                         accountName = it.accountName,
@@ -26,7 +23,7 @@ internal class AccountHomeUIMapper @Inject constructor(
                             it.balance,
                             it.currency
                         ),
-                        balanceInCent = it.balance,
+                        minorUnitBalance = it.balance,
                         currency = it.currency,
                         mainCurrencyBalanceInCent = mainCurrencyBalanceChild,
                         mainCurrencyBalance = currencyFormatter.format(

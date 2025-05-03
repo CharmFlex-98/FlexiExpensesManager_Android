@@ -9,6 +9,8 @@ internal data class TransactionDomainInput(
     val currency: String,
     val rate: Float,
     val primaryCurrencyRate: Float?,
+    val accountMinorUnitAmount: Long,
+    val primaryMinorUnitAmount: Long,
     val transactionDate: String,
     val transactionCategoryId: Int?,
     val tagIds: List<Int>,

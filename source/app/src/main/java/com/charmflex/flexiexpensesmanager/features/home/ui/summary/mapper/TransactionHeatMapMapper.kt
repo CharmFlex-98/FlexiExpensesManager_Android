@@ -25,7 +25,7 @@ internal class TransactionHeatMapMapper(
     }
     override fun map(from: List<DailyTransaction>): Map<LocalDate, Color> {
         val res = mutableMapOf<LocalDate, Color>()
-        val dailyTransactions = from.sortedBy { it.amountInCent }
+        val dailyTransactions = from.sortedBy { it.primaryMinorUnitAmount }
         val size = from.size
 
         if (size == 0) return mapOf()
@@ -33,14 +33,14 @@ internal class TransactionHeatMapMapper(
         val median = if (size % 2 == 0) {
             val left = dailyTransactions[size/2 - 1]
             val right = dailyTransactions[size/2]
-            (left.amountInCent + right.amountInCent)/2
+            (left.primaryMinorUnitAmount + right.primaryMinorUnitAmount)/2
         } else {
             val middle = dailyTransactions[size/2]
-            middle.amountInCent
+            middle.primaryMinorUnitAmount
         }
 
         dailyTransactions.forEach { dailyTransaction ->
-            val color = getColor(dailyTransaction.amountInCent/median.toFloat())
+            val color = getColor(dailyTransaction.primaryMinorUnitAmount/median.toFloat())
             res[dailyTransaction.date] = color
         }
 

@@ -21,6 +21,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
         currency: String,
         accountCurrencyRate: Float,
         primaryCurrencyRate: Float?,
+        accountMinorUnitAmount: Long,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
         return resultOf {
@@ -37,6 +39,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                     currency = currency,
                     accountCurrencyRate = accountCurrencyRate,
                     primaryCurrencyRate = primaryCurrencyRate,
+                    accountMinorUnitAmount = accountMinorUnitAmount,
+                    primaryMinorUnitAmount = primaryMinorUnitAmount,
                     tagIds = tagIds,
                     schedulerId = null
                 )
@@ -51,6 +55,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 currency = currency,
                 accountCurrencyRate = accountCurrencyRate,
                 primaryCurrencyRate = primaryCurrencyRate,
+                accountMinorUnitAmount = accountMinorUnitAmount,
+                primaryMinorUnitAmount = primaryMinorUnitAmount,
                 tagIds = tagIds,
                 schedulerId = null
             )
@@ -65,7 +71,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        primaryCurrencyRate: Float?
+        primaryCurrencyRate: Float?,
+        primaryMinorUnitAmount: Long
     ): Result<Unit> {
         return resultOf {
             id?.let {
@@ -81,6 +88,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                     currency = currency,
                     primaryCurrencyRate = primaryCurrencyRate,
                     accountCurrencyRate = 1f,
+                    accountMinorUnitAmount = amount,
+                    primaryMinorUnitAmount = primaryMinorUnitAmount,
                     tagIds = listOf(),
                     schedulerId = null
                 )
@@ -95,6 +104,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 currency = currency,
                 primaryCurrencyRate = primaryCurrencyRate,
                 accountCurrencyRate = 1f,
+                accountMinorUnitAmount = amount,
+                primaryMinorUnitAmount = primaryMinorUnitAmount,
                 tagIds = listOf(),
                 schedulerId = null
             )
@@ -111,6 +122,7 @@ internal class SubmitTransactionUseCase @Inject constructor(
         transactionDate: String,
         currency: String,
         accountCurrencyRate: Float,
+        accountMinorUnitAmount: Long
     ): Result<Unit> {
         return resultOf {
             id?.let {
@@ -126,6 +138,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                     currency = currency,
                     primaryCurrencyRate = null,
                     accountCurrencyRate = accountCurrencyRate,
+                    primaryMinorUnitAmount = 0,
+                    accountMinorUnitAmount = accountMinorUnitAmount,
                     tagIds = listOf(),
                     schedulerId = null
                 )
@@ -140,6 +154,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 currency = currency,
                 accountCurrencyRate = accountCurrencyRate,
                 primaryCurrencyRate = null,
+                primaryMinorUnitAmount = 0,
+                accountMinorUnitAmount = accountMinorUnitAmount,
                 tagIds = listOf(),
                 schedulerId = null
             )
@@ -169,6 +185,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                     currency = accountCurrency,
                     accountCurrencyRate = 1f,
                     primaryCurrencyRate = null,
+                    primaryMinorUnitAmount = 0,
+                    accountMinorUnitAmount = amount,
                     tagIds = listOf(),
                     schedulerId = null
                 )
@@ -183,6 +201,8 @@ internal class SubmitTransactionUseCase @Inject constructor(
                 currency = accountCurrency,
                 primaryCurrencyRate = null,
                 accountCurrencyRate = 1f,
+                primaryMinorUnitAmount = 0,
+                accountMinorUnitAmount = amount,
                 tagIds = listOf(),
                 schedulerId = null
             )

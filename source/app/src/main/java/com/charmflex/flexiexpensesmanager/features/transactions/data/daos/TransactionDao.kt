@@ -25,33 +25,36 @@ internal interface TransactionDao {
 
     @Query(
         "SELECT t.id as transaction_id," +
-            "t.transaction_name," +
-            "t.account_from_id as account_from_id," +
-            "afrom.name as account_from_name," +
-            "t.account_to_id as account_to_id," +
-            "ato.name as account_to_name," +
-            "t.transaction_type_code," +
-            "t.minor_unit_amount," +
-            "t.transaction_date," +
-            "t.category_id," +
-            "tc.name as category_name," +
-            "t.currency," +
-            "t.account_currency_rate, " +
-            "GROUP_CONCAT(tt.tagId, ', ') as tag_ids, " +
-            "GROUP_CONCAT(tg.tag_name, ', ') as tag_names " +
-            "FROM TransactionEntity t" +
-            " LEFT JOIN TransactionCategoryEntity tc ON t.category_id = tc.id" +
-            " LEFT JOIN AccountEntity afrom ON t.account_from_id = afrom.id" +
-            " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id" +
-            " LEFT JOIN TransactionTagEntity tt ON t.id = tt.transaction_id" +
-            " LEFT JOIN TagEntity tg ON tg.id = tt.tagId" +
-            " WHERE (:startDate IS NULL OR date(transaction_date) >= date(:startDate)) " +
+                "t.transaction_name," +
+                "t.account_from_id as account_from_id," +
+                "afrom.name as account_from_name," +
+                "t.account_to_id as account_to_id," +
+                "ato.name as account_to_name," +
+                "t.transaction_type_code," +
+                "t.minor_unit_amount," +
+                "t.account_minor_unit_amount," +
+                "t.primary_minor_unit_amount," +
+                "t.transaction_date," +
+                "t.category_id," +
+                "tc.name as category_name," +
+                "t.currency," +
+                "t.account_currency_rate, " +
+                "GROUP_CONCAT(tt.tagId, ', ') as tag_ids, " +
+                "GROUP_CONCAT(tg.tag_name, ', ') as tag_names " +
+                "FROM TransactionEntity t" +
+                " LEFT JOIN TransactionCategoryEntity tc ON t.category_id = tc.id" +
+                " LEFT JOIN AccountEntity afrom ON t.account_from_id = afrom.id" +
+                " LEFT JOIN AccountEntity ato ON t.account_to_id = ato.id" +
+                " LEFT JOIN TransactionTagEntity tt ON t.id = tt.transaction_id" +
+                " LEFT JOIN TagEntity tg ON tg.id = tt.tagId" +
+                " WHERE (:startDate IS NULL OR date(transaction_date) >= date(:startDate)) " +
                 "AND (:noTagSelected OR tt.tagId IN (:tagFilter)) " +
                 "AND (:noFilterByAccountId OR t.account_from_id = :accountIdFilter OR t.account_to_id =:accountIdFilter) " +
                 "AND (:endDate IS NULL OR date(transaction_date) <= date(:endDate))" +
                 " GROUP BY t.id" +
                 " ORDER BY transaction_date DESC" +
-            " LIMIT :limit OFFSET :offset")
+                " LIMIT :limit OFFSET :offset"
+    )
     fun getTransactions(
         startDate: String?,
         endDate: String?,
@@ -61,11 +64,11 @@ internal interface TransactionDao {
         noFilterByAccountId: Boolean = accountIdFilter == null,
         tagFilter: List<Int>,
         noTagSelected: Boolean = tagFilter.isEmpty()
-    ) : Flow<List<TransactionResponse>>
+    ): Flow<List<TransactionResponse>>
 
     @Query(
         "SELECT t.id as transaction_id," +
-        "t.transaction_name," +
+                "t.transaction_name," +
                 "t.account_from_id as account_from_id," +
                 "afrom.name as account_from_name," +
                 "afrom.currency as account_from_currency," +
@@ -74,6 +77,8 @@ internal interface TransactionDao {
                 "ato.currency as account_to_currency," +
                 "t.transaction_type_code," +
                 "t.minor_unit_amount," +
+                "t.account_minor_unit_amount," +
+                "t.primary_minor_unit_amount," +
                 "t.transaction_date," +
                 "t.category_id," +
                 "tc.name as category_name, " +

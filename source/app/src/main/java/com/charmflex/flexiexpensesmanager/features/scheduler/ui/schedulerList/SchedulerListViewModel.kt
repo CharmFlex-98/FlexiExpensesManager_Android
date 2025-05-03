@@ -1,8 +1,6 @@
 package com.charmflex.flexiexpensesmanager.features.scheduler.ui.schedulerList
 
-import android.util.Log
 import androidx.annotation.RawRes
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.R
@@ -11,8 +9,6 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.TransactionRout
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
-import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
-import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.ScheduledTransaction
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.repository.TransactionSchedulerRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +40,7 @@ internal class SchedulerListViewModel @Inject constructor(
                             ScheduledTransactionUIItem(
                                 id = it.id.toLong(),
                                 name = it.transactionName,
-                                amount = currencyFormatter.format(it.amountInCent, it.currency),
+                                amount = currencyFormatter.format(it.minorUnitAmount, it.currency),
                                 category = it.category?.name ?: kotlin.run {
                                     val value = if (it.transactionType == TransactionType.TRANSFER) R.string.generic_transfer_capital else R.string.generic_unknown_capital
                                     resourcesProvider.getString(value)

@@ -24,7 +24,9 @@ internal class TransactionBackupDataMapper @Inject constructor() : Mapper<Pair<L
                 currency = it.currency,
                 currencyRate = it.rate.toDouble(),
                 primaryCurrencyRate = it.primaryCurrencyRate?.toDouble(),
-                amount = it.amountInCent / 100.toDouble(),
+                accountMinorUnitAmount = it.accountMinorUnitAmount / 100.toDouble(), // TODO
+                primaryMinorUnitAmount = it.primaryMinorUnitAmount / 100.toDouble(), // TODO
+                amount = it.minorUnitAmount / 100.toDouble(), // TODO: Need to use default fraction
                 date = it.transactionDate.toLocalDate(DATE_ONLY_DEFAULT_PATTERN) ?: LocalDate.now(),
                 categoryColumns = generateCategoryColumns(currentCategory?.let { res -> mutableListOf(res.name) } ?: mutableListOf(),  transactionCategoryMap, currentCategory).reversed(),
                 tags = it.tags.map { it.name }

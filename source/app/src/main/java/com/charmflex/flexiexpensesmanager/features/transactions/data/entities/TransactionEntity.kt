@@ -71,6 +71,10 @@ internal data class TransactionEntity(
     val accountCurrencyRate: Float,
     @ColumnInfo("primary_currency_rate")
     val primaryCurrencyRate: Float?,
+    @ColumnInfo("account_minor_unit_amount", defaultValue = "0")
+    val accountMinorUnitAmount: Long,
+    @ColumnInfo("primary_minor_unit_amount", defaultValue = "0")
+    val primaryMinorUnitAmount: Long,
     @ColumnInfo("scheduler_id", index = true)
     val schedulerId: Long?
 )

@@ -3,10 +3,8 @@ package com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
-import com.charmflex.flexiexpensesmanager.core.utils.MONTH_ONLY_DEFAULT_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.MONTH_YEAR_PATTERN
 import com.charmflex.flexiexpensesmanager.core.utils.Mapper
-import com.charmflex.flexiexpensesmanager.core.utils.fromISOToStringWithPattern
 import com.charmflex.flexiexpensesmanager.core.utils.toLocalDate
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.Transaction
@@ -47,7 +45,7 @@ internal class TransactionHistoryMapper @Inject constructor(
                         TransactionHistorySection.SectionItem(
                             id = it.transactionId,
                             name = it.transactionName,
-                            amount = currencyFormatter.format(it.amountInCent, it.currency),
+                            amount = currencyFormatter.format(it.minorUnitAmount, it.currency),
                             type = it.transactionTypeCode,
                             category = it.transactionCategory?.name ?: "",
                             iconResId = it.transactionTypeCode.getTransactionIconResId()

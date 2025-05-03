@@ -1,6 +1,5 @@
 package com.charmflex.flexiexpensesmanager.features.transactions.ui.transaction_detail
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -75,7 +74,7 @@ internal class TransactionDetailViewModel(
                                 transactionAccountTo = transaction.transactionAccountTo,
                                 transactionTypeCode = transaction.transactionTypeCode,
                                 formattedAmount = currencyFormatter.format(
-                                    transaction.amountInCent,
+                                    transaction.minorUnitAmount,
                                     transaction.currency
                                 ),
                                 transactionDate = transaction.transactionDate,

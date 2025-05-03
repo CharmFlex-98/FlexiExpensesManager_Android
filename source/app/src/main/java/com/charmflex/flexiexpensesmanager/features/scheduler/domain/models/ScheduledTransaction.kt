@@ -14,13 +14,15 @@ internal data class ScheduledTransaction(
     val accountFrom: AccountGroup.Account?,
     val accountTo: AccountGroup.Account?,
     val transactionType: TransactionType,
-    val amountInCent: Long,
+    val minorUnitAmount: Long,
     val startUpdateDate: String,
     val nextUpdateDate: String,
     val category: Transaction.TransactionCategory?,
     val currency: String,
     val rate: Float,
     val primaryCurrencyRate: Float?,
+    val accountMinorUnitAmount: Long,
+    val primaryMinorUnitAmount: Long,
     val schedulerPeriod: SchedulerPeriod,
     val tags: List<Tag>
 ) : SchedulerDomainModel {
@@ -30,12 +32,14 @@ internal data class ScheduledTransaction(
             transactionAccountFrom = this.accountFrom?.accountId,
             transactionAccountTo = this.accountTo?.accountId,
             transactionTypeCode = transactionType.name,
-            amountInCent = amountInCent,
+            amountInCent = minorUnitAmount,
             transactionCategoryId = category?.id,
             transactionDate = transactionDate,
             currency = currency,
             rate = rate,
             primaryCurrencyRate = primaryCurrencyRate,
+            accountMinorUnitAmount = accountMinorUnitAmount,
+            primaryMinorUnitAmount = primaryMinorUnitAmount,
             tagIds = tags.map { it.id },
             schedulerId = schedulerId
         )

@@ -24,6 +24,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         currency: String,
         accountCurrencyRate: Float,
         primaryCurrencyRate: Float?,
+        accountMinorUnitAmount: Long,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
         schedulerPeriod: SchedulerPeriod
     ): Result<Unit> {
@@ -42,6 +44,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     currency = currency,
                     rate = accountCurrencyRate,
                     primaryCurrencyRate = primaryCurrencyRate,
+                    accountMinorUnitAmount = accountMinorUnitAmount,
+                    primaryMinorUnitAmount = primaryMinorUnitAmount,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )
@@ -57,6 +61,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     currency = currency,
                     rate = accountCurrencyRate,
                     primaryCurrencyRate = primaryCurrencyRate,
+                    accountMinorUnitAmount = accountMinorUnitAmount,
+                    primaryMinorUnitAmount = primaryMinorUnitAmount,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )
@@ -75,6 +81,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         nextUpdateDate: String,
         currency: String,
         primaryCurrencyRate: Float?,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
         schedulerPeriod: SchedulerPeriod
     ): Result<Unit> {
@@ -93,6 +100,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     currency = currency,
                     rate = 1f,
                     primaryCurrencyRate = primaryCurrencyRate,
+                    accountMinorUnitAmount = amount,
+                    primaryMinorUnitAmount = primaryMinorUnitAmount,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )
@@ -108,6 +117,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     currency = currency,
                     rate = 1f,
                     primaryCurrencyRate = primaryCurrencyRate,
+                    accountMinorUnitAmount = amount,
+                    primaryMinorUnitAmount = primaryMinorUnitAmount,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )
@@ -127,6 +138,7 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
         nextUpdateDate: String,
         currency: String,
         accountCurrencyRate: Float,
+        accountMinorUnitAmount: Long,
         schedulerPeriod: SchedulerPeriod,
         tagIds: List<Int>
     ): Result<Unit> {
@@ -145,6 +157,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     currency = currency,
                     rate = accountCurrencyRate,
                     primaryCurrencyRate = null,
+                    accountMinorUnitAmount = accountMinorUnitAmount,
+                    primaryMinorUnitAmount = 0,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )
@@ -160,6 +174,8 @@ internal class SubmitTransactionSchedulerUseCase @Inject constructor(
                     currency = currency,
                     rate = accountCurrencyRate,
                     primaryCurrencyRate = null,
+                    accountMinorUnitAmount = accountMinorUnitAmount,
+                    primaryMinorUnitAmount = 0,
                     tagIds = tagIds,
                     schedulerPeriod = schedulerPeriod
                 )

@@ -28,6 +28,8 @@ internal class TransactionRepositoryImpl @Inject constructor(
         currency: String,
         accountCurrencyRate: Float,
         primaryCurrencyRate: Float?,
+        accountMinorUnitAmount: Long,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
         schedulerId: Int?
     ) {
@@ -42,6 +44,8 @@ internal class TransactionRepositoryImpl @Inject constructor(
             currency = currency,
             accountCurrencyRate = accountCurrencyRate,
             primaryCurrencyRate = primaryCurrencyRate,
+            accountMinorUnitAmount = accountMinorUnitAmount,
+            primaryMinorUnitAmount = primaryMinorUnitAmount,
             schedulerId = schedulerId?.toLong()
         )
         transactionTagDao.insertTransactionAndTransactionTag(transaction, tagIds)
@@ -59,6 +63,8 @@ internal class TransactionRepositoryImpl @Inject constructor(
         currency: String,
         accountCurrencyRate: Float,
         primaryCurrencyRate: Float?,
+        accountMinorUnitAmount: Long,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
         schedulerId: Int?,
     ) {
@@ -74,6 +80,8 @@ internal class TransactionRepositoryImpl @Inject constructor(
             currency = currency,
             accountCurrencyRate = accountCurrencyRate,
             primaryCurrencyRate = primaryCurrencyRate,
+            accountMinorUnitAmount = accountMinorUnitAmount,
+            primaryMinorUnitAmount = primaryMinorUnitAmount,
             schedulerId = schedulerId?.toLong()
         )
         transactionTagDao.updateTransactionAndTransactionTags(transaction, tagIds)
@@ -95,6 +103,8 @@ internal class TransactionRepositoryImpl @Inject constructor(
                 currency = it.currency,
                 accountCurrencyRate = it.rate,
                 primaryCurrencyRate = it.primaryCurrencyRate,
+                accountMinorUnitAmount = it.accountMinorUnitAmount,
+                primaryMinorUnitAmount = it.primaryMinorUnitAmount,
                 schedulerId = it.schedulerId?.toLong()
             )
         }

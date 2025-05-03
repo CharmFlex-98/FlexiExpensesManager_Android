@@ -17,6 +17,8 @@ internal interface TransactionSchedulerRepository {
         currency: String,
         rate: Float,
         primaryCurrencyRate: Float?,
+        accountMinorUnitAmount: Long,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
         schedulerPeriod: SchedulerPeriod
     ) : Long
@@ -34,6 +36,8 @@ internal interface TransactionSchedulerRepository {
         currency: String,
         rate: Float,
         primaryCurrencyRate: Float?,
+        accountMinorUnitAmount: Long,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
         schedulerPeriod: SchedulerPeriod
     )

@@ -13,6 +13,7 @@ import com.charmflex.flexiexpensesmanager.features.scheduler.domain.repository.T
 import com.charmflex.flexiexpensesmanager.features.scheduler.usecases.SubmitTransactionSchedulerUseCase
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.repositories.TransactionCategoryRepository
+import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.currency.service.CurrencyService
 import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyRateUseCase
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
@@ -34,11 +35,10 @@ internal class SchedulerEditorViewModel(
     routeNavigator: RouteNavigator,
     transactionCategoryRepository: TransactionCategoryRepository,
     currencyVisualTransformationBuilder: CurrencyVisualTransformation.Builder,
-    getCurrencyUseCase: GetCurrencyUseCase,
-    getCurrencyRateUseCase: GetCurrencyRateUseCase,
     currencyService: CurrencyService,
     currencyFormatter: CurrencyFormatter,
     rateExchangeManager: RateExchangeManager,
+    userCurrencyRepository: UserCurrencyRepository,
     tagRepository: TagRepository,
 ) : TransactionEditorBaseViewModel(
     contentProvider,
@@ -46,12 +46,11 @@ internal class SchedulerEditorViewModel(
     routeNavigator,
     transactionCategoryRepository,
     currencyVisualTransformationBuilder,
-    getCurrencyUseCase,
     tagRepository,
-    getCurrencyRateUseCase,
     currencyService,
     currencyFormatter,
     rateExchangeManager,
+    userCurrencyRepository,
     schedulerId
 ) {
 
@@ -69,6 +68,7 @@ internal class SchedulerEditorViewModel(
         private val currencyService: CurrencyService,
         private val currencyFormatter: CurrencyFormatter,
         private val rateExchangeManager: RateExchangeManager,
+        private val userCurrencyRepository: UserCurrencyRepository,
         private val tagRepository: TagRepository,
     ) {
         fun create(schedulerId: Long?): SchedulerEditorViewModel {
@@ -81,11 +81,10 @@ internal class SchedulerEditorViewModel(
                 routeNavigator,
                 transactionCategoryRepository,
                 currencyVisualTransformationBuilder,
-                getCurrencyUseCase,
-                getCurrencyRateUseCase,
                 currencyService,
                 currencyFormatter,
                 rateExchangeManager,
+                userCurrencyRepository,
                 tagRepository,
             )
         }
@@ -107,7 +106,9 @@ internal class SchedulerEditorViewModel(
             res.accountFrom,
             res.accountTo,
             res.transactionType.name,
-            res.amountInCent,
+            res.minorUnitAmount,
+            res.accountMinorUnitAmount,
+            res.primaryMinorUnitAmount,
             res.currency,
             res.rate,
             res.startUpdateDate,
@@ -126,6 +127,8 @@ internal class SchedulerEditorViewModel(
         currency: String,
         accountCurrencyRate: Float,
         primaryCurrencyRate: Float?,
+        accountMinorUnitAmount: Long,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionSchedulerUseCase.submitExpenses(
@@ -139,6 +142,8 @@ internal class SchedulerEditorViewModel(
             currency,
             accountCurrencyRate,
             primaryCurrencyRate,
+            accountMinorUnitAmount,
+            primaryMinorUnitAmount,
             tagIds,
             selectedPeriod.value
         )
@@ -153,6 +158,7 @@ internal class SchedulerEditorViewModel(
         transactionDate: String,
         currency: String,
         primaryCurrencyRate: Float?,
+        primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionSchedulerUseCase.submitIncome(
@@ -165,6 +171,7 @@ internal class SchedulerEditorViewModel(
             transactionDate,
             currency,
             primaryCurrencyRate,
+            primaryMinorUnitAmount,
             tagIds,
             selectedPeriod.value,
         )
@@ -179,6 +186,7 @@ internal class SchedulerEditorViewModel(
         transactionDate: String,
         currency: String,
         accountCurrencyRate: Float,
+        accountMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
         return submitTransactionSchedulerUseCase.submitTransfer(
@@ -191,6 +199,7 @@ internal class SchedulerEditorViewModel(
             transactionDate,
             currency,
             accountCurrencyRate,
+            accountMinorUnitAmount,
             selectedPeriod.value,
             tagIds
         )

@@ -6,12 +6,12 @@ import javax.inject.Inject
 import kotlin.math.pow
 
 internal interface CurrencyFormatter {
-    fun format(amountInCent: Long, currencyCode: String): String
+    fun format(minorUnitAmount: Long, currencyCode: String): String
     fun formatTo(minorUnitAmount: Long, currencyCode: String, fromCurrencyCode: String, rate: Float): String
 }
 
 internal class CurrencyFormatterImpl @Inject constructor() : CurrencyFormatter{
-    override fun format(amountInCent: Long, currencyCode: String): String {
+    override fun format(minorUnitAmount: Long, currencyCode: String): String {
         val format = NumberFormat.getCurrencyInstance()
         val currencyInstance = Currency.getInstance(currencyCode)
         format.apply {
@@ -20,7 +20,7 @@ internal class CurrencyFormatterImpl @Inject constructor() : CurrencyFormatter{
         }
 
         val divFactor = 10.0.pow(currencyInstance.defaultFractionDigits.toDouble());
-        return format.format(amountInCent.toBigDecimal().divide(divFactor.toBigDecimal()))
+        return format.format(minorUnitAmount.toBigDecimal().divide(divFactor.toBigDecimal()))
     }
 
     override fun formatTo(minorUnitAmount: Long, currencyCode: String, fromCurrencyCode: String, rate: Float): String {

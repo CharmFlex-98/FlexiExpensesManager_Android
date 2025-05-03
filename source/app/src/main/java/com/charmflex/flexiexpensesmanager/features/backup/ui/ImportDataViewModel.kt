@@ -148,10 +148,12 @@ internal class ImportDataViewModel @Inject constructor(
                     transactionAccountFrom = fromAccount,
                     transactionAccountTo = toAccount,
                     transactionTypeCode = it.transactionType,
-                    amountInCent = (it.amount.toBigDecimal().times(100.toBigDecimal())).toLong(),
+                    amountInCent = (it.amount.toBigDecimal().times(100.toBigDecimal())).toLong(), // TODO
                     currency = it.currency,
                     rate = it.currencyRate.toFloat(),
                     primaryCurrencyRate = it.primaryCurrencyRate?.toFloat(),
+                    accountMinorUnitAmount = (it.accountMinorUnitAmount.toBigDecimal().times(100.toBigDecimal())).toLong(), // TODO
+                    primaryMinorUnitAmount = (it.primaryMinorUnitAmount.toBigDecimal().times(100.toBigDecimal())).toLong(), // TODO
                     transactionDate = it.date,
                     transactionCategoryId = category,
                     tagIds = tags,
@@ -196,6 +198,8 @@ internal data class ImportedData(
     val currency: String,
     val currencyRate: Double,
     val primaryCurrencyRate: Double?,
+    val accountMinorUnitAmount: Double,
+    val primaryMinorUnitAmount: Double,
     val amount: Double,
     val date: String,
     val categoryColumns: RequiredDataState?,

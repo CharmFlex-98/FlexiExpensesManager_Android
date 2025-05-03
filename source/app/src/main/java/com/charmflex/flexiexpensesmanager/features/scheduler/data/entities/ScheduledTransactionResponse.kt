@@ -37,6 +37,10 @@ internal data class ScheduledTransactionResponse(
     val accountCurrencyRate: Float,
     @ColumnInfo("primary_currency_rate")
     val primaryCurrencyRate: Float?,
+    @ColumnInfo("account_minor_unit_amount")
+    val accountMinorUnitAmount: Long,
+    @ColumnInfo("primary_minor_unit_amount")
+    val primaryMinorUnitAmount: Long,
     @ColumnInfo("tag_ids")
     val tagIds: String?,
     @ColumnInfo("tag_names")

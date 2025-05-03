@@ -23,7 +23,7 @@ internal class GetExpensesDailyMedianRatioUseCase @Inject constructor(
                     DailyTransaction(
                         it.key,
                         it.value.map { transaction ->
-                            transaction.amountInCent
+                            transaction.primaryMinorUnitAmount
                         }.reduce { acc, i ->
                             acc + i
                         }
@@ -35,5 +35,5 @@ internal class GetExpensesDailyMedianRatioUseCase @Inject constructor(
 
 internal data class DailyTransaction(
     val date: LocalDate,
-    val amountInCent: Long
+    val primaryMinorUnitAmount: Long
 )

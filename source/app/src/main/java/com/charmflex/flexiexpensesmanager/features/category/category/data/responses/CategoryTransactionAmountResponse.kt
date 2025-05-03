@@ -10,6 +10,6 @@ internal data class CategoryTransactionAmountResponse(
     val categoryName: String,
     @ColumnInfo("parent_category_id")
     val parentCategoryId: Int,
-    @ColumnInfo("minor_unit_expenses_amount")
-    val minorUnitExpensesAmount: Long
+    @ColumnInfo("minor_unit_amount")
+    val minorUnitAmount: Long
 )

@@ -1,7 +1,9 @@
 package com.charmflex.flexiexpensesmanager.features.account.data.repositories
 
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
+import com.charmflex.flexiexpensesmanager.core.utils.RateExchangeManager
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
+import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountTransactionDao
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
@@ -10,6 +12,9 @@ import com.charmflex.flexiexpensesmanager.features.account.data.responses.Accoun
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroupSummary
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
+import com.charmflex.flexiexpensesmanager.features.currency.constants.CurrencyDefaults
+import com.charmflex.flexiexpensesmanager.features.currency.service.CurrencyService
+import com.charmflex.flexiexpensesmanager.features.currency.usecases.GetCurrencyUseCase
 import com.charmflex.flexiexpensesmanager.features.transactions.data.entities.TransactionEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,7 +23,10 @@ import javax.inject.Inject
 
 internal class AccountRepositoryImpl @Inject constructor(
     private val accountDao: AccountDao,
-    private val accountTransactionDao: AccountTransactionDao
+    private val accountTransactionDao: AccountTransactionDao,
+    private val currencyService: CurrencyService,
+    private val rateExchangeManager: RateExchangeManager,
+    private val getCurrencyUseCase: GetCurrencyUseCase
 ) : AccountRepository {
     override suspend fun getAccountById(id: Int): AccountGroup.Account {
         val res = accountDao.getAccountById(id)
@@ -68,6 +76,7 @@ internal class AccountRepositoryImpl @Inject constructor(
     ): Flow<List<AccountGroupSummary>> {
         return accountDao.getAccountsSummary(startDate, endDate)
             .map {
+                val primaryCurrency = unwrapResult(getCurrencyUseCase.primary())?.name ?: CurrencyDefaults.DEFAULT_CURRENCY
                 it.groupBy { res -> res.accountGroupId to res.accountGroupName }
                     .map {
                         val groupName = it.key.second
@@ -77,11 +86,15 @@ internal class AccountRepositoryImpl @Inject constructor(
                             accountGroupName = groupName,
                             accountsSummary = it.value.filter { child -> child.accountId != null }
                                 .map { acc ->
+                                    val rate = currencyService.getCurrencyRate(primaryCurrency, acc.currency!!)?.rate
+                                    val balance = acc.inAmount - acc.outAmount
                                     AccountGroupSummary.AccountSummary(
                                         accountId = acc.accountId!!,
                                         accountName = acc.accountName!!,
-                                        balance = acc.inAmount - acc.outAmount,
-                                        currency = acc.currency!!
+                                        balance = balance,
+                                        balanceInPrimaryCurrency = rateExchangeManager.convertTo(balance, primaryCurrency, acc.currency, rate ?: 1f).toLong(),
+                                        currency = acc.currency,
+                                        hasError = rate == null
                                     )
                                 }
                         )
@@ -121,6 +134,8 @@ internal class AccountRepositoryImpl @Inject constructor(
                 currency = currency,
                 accountCurrencyRate = 1f,
                 primaryCurrencyRate = null,
+                accountMinorUnitAmount = accountAmount,
+                primaryMinorUnitAmount = 0,
                 schedulerId = null
             )
             accountTransactionDao.insertAccountAndAmountTransaction(entity, transactionEntity)
