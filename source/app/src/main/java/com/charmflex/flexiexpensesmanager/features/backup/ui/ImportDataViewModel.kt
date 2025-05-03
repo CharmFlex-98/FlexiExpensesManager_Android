@@ -10,6 +10,7 @@ import com.charmflex.flexiexpensesmanager.core.navigation.routes.TagRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
+import com.charmflex.flexiexpensesmanager.core.utils.unwrapResult
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupManager
 import com.charmflex.flexiexpensesmanager.features.backup.checker.ImportDataChecker
@@ -84,16 +85,24 @@ internal class ImportDataViewModel @Inject constructor(
             val currentTime = LocalDateTime.now()
             val fileName = "cache_import_file_${currentTime}"
             fileProvider.writeCacheFile(uri, fileName)
-            val backupData = backupManager.read(fileName = fileName)
-            val (importedData, missingData) = importDataChecker.checkRequiredData(backupData)
-            _viewState.update {
-                it.copy(
-                    importedData = importedData,
-                    missingData = missingData,
-                    isLoading = false,
-                    initialErrorCount = missingData.size
-                )
+            resultOf {
+                backupManager.read(fileName = fileName)
+            }.onSuccess {
+                val (importedData, missingData) = importDataChecker.checkRequiredData(it)
+                _viewState.update {
+                    it.copy(
+                        importedData = importedData,
+                        missingData = missingData,
+                        isLoading = false,
+                        initialErrorCount = missingData.size
+                    )
+                }
+            }.onFailure {
+                _snackbarState.update {
+                    it
+                }
             }
+
         }
     }
 
@@ -169,8 +178,6 @@ internal class ImportDataViewModel @Inject constructor(
                     transactionTypeCode = it.transactionType,
                     minorUnitAmount = currencyFormatter.from(it.amount, it.currency),
                     currency = it.currency,
-                    rate = it.currencyRate.toFloat(),
-                    primaryCurrencyRate = it.primaryCurrencyRate?.toFloat(),
                     accountMinorUnitAmount = currencyFormatter.from(it.accountAmount, accountCurrency),
                     primaryMinorUnitAmount = currencyFormatter.from(it.primaryAmount, primaryCurrency),
                     transactionDate = it.date,
@@ -215,8 +222,6 @@ internal data class ImportedData(
     val accountTo: RequiredDataState?,
     val transactionType: String,
     val currency: String,
-    val currencyRate: Double,
-    val primaryCurrencyRate: Double?,
     val accountAmount: Double,
     val primaryAmount: Double,
     val amount: Double,

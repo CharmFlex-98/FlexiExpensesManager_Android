@@ -104,7 +104,6 @@ internal class TransactionEditorViewModel @Inject constructor(
             res.accountMinorUnitAmount,
             res.primaryMinorUnitAmount,
             res.currency,
-            res.rate,
             res.transactionDate,
             res.transactionCategory,
             res.tags
@@ -119,8 +118,6 @@ internal class TransactionEditorViewModel @Inject constructor(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        accountCurrencyRate: Float,
-        primaryCurrencyRate: Float?,
         accountMinorUnitAmount: Long,
         primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
@@ -133,8 +130,6 @@ internal class TransactionEditorViewModel @Inject constructor(
             categoryId,
             transactionDate,
             currency,
-            accountCurrencyRate,
-            primaryCurrencyRate,
             accountMinorUnitAmount,
             primaryMinorUnitAmount,
             tagIds
@@ -149,7 +144,6 @@ internal class TransactionEditorViewModel @Inject constructor(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        primaryCurrencyRate: Float?,
         primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
@@ -161,7 +155,6 @@ internal class TransactionEditorViewModel @Inject constructor(
             categoryId,
             transactionDate,
             currency,
-            primaryCurrencyRate,
             primaryMinorUnitAmount
         )
     }
@@ -174,7 +167,6 @@ internal class TransactionEditorViewModel @Inject constructor(
         amount: Long,
         transactionDate: String,
         currency: String,
-        accountCurrencyRate: Float,
         accountMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
@@ -186,7 +178,6 @@ internal class TransactionEditorViewModel @Inject constructor(
             amount,
             transactionDate,
             currency,
-            accountCurrencyRate,
             accountMinorUnitAmount
         )
     }

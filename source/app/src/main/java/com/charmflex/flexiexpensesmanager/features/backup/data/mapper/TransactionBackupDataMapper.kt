@@ -40,8 +40,6 @@ internal class TransactionBackupDataMapper @Inject constructor(
                 accountTo = it.transactionAccountTo?.accountName,
                 transactionType = it.transactionTypeCode,
                 currency = it.currency,
-                currencyRate = it.rate.toDouble(),
-                primaryCurrencyRate = it.primaryCurrencyRate?.toDouble(),
                 accountAmount = currencyFormatter.formatWithoutSymbol(it.accountMinorUnitAmount, accountCurrency).toDouble(),
                 primaryAmount = currencyFormatter.formatWithoutSymbol(it.primaryMinorUnitAmount, primaryCurrency).toDouble(),
                 amount = currencyFormatter.formatWithoutSymbol(it.minorUnitAmount, it.currency).toDouble(), // TODO: Need to use default fraction

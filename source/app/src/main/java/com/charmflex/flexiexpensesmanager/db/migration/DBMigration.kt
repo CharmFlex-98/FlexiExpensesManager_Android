@@ -93,6 +93,8 @@ val Migration_5_6 = object  : Migration(5, 6) {
 
 @DeleteColumn.Entries (
     DeleteColumn("TransactionEntity", "account_currency_rate"),
-    DeleteColumn("TransactionEntity", "account_currency_rate")
+    DeleteColumn("TransactionEntity", "primary_currency_rate"),
+    DeleteColumn("ScheduledTransactionEntity", "account_currency_rate"),
+    DeleteColumn("ScheduledTransactionEntity", "primary_currency_rate")
 )
-class RemoveSomeColumnMigration: AutoMigrationSpec
+class RemoveAccountAndPrimaryCurrencyRateFromTransactionEntity: AutoMigrationSpec

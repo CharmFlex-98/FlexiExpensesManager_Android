@@ -68,8 +68,6 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                     val accountTo = row.safeGetCell(columnsItemsMap[ExcelColumns.ACCOUNT_TO]!!.index).stringCellValue
                     val transactionType = row.safeGetCell(columnsItemsMap[ExcelColumns.TRANSACTION_TYPE]!!.index).stringCellValue
                     val currency = row.safeGetCell(columnsItemsMap[ExcelColumns.CURRENCY]!!.index).stringCellValue
-                    val currencyRate = row.safeGetCell(columnsItemsMap[ExcelColumns.RATE]!!.index).numericCellValue
-                    val primaryCurrencyRate = row.safeGetCell(columnsItemsMap[ExcelColumns.PRIMARY_CURRENCY_RATE]!!.index).numericCellValue
                     val amount = row.safeGetCell(columnsItemsMap[ExcelColumns.AMOUNT]!!.index).numericCellValue
                     val accountMinorUnitAmount = row.safeGetCell(columnsItemsMap[ExcelColumns.ACCOUNT_AMOUNT]!!.index).numericCellValue
                     val primaryMinorUnitAmount = row.safeGetCell(columnsItemsMap[ExcelColumns.PRIMARY_AMOUNT]!!.index).numericCellValue
@@ -94,8 +92,6 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                             accountTo = accountTo?.ifBlank { null },
                             transactionType = transactionType,
                             currency = currency,
-                            currencyRate = currencyRate,
-                            primaryCurrencyRate = primaryCurrencyRate,
                             accountAmount = accountMinorUnitAmount,
                             primaryAmount = primaryMinorUnitAmount,
                             amount = amount,
@@ -137,8 +133,6 @@ internal class TransactionBackupManagerImpl @Inject constructor(
                                 accountTo = it.accountTo,
                                 transactionType = it.transactionType,
                                 currencyType = it.currency,
-                                currencyRate = it.currencyRate,
-                                primaryCurrencyRate = it.primaryCurrencyRate,
                                 amount = it.amount,
                                 accountAmount = it.accountAmount,
                                 primaryAmount = it.primaryAmount,
@@ -174,8 +168,6 @@ internal class TransactionBackupManagerImpl @Inject constructor(
         accountTo: String?,
         transactionType: String,
         currencyType: String,
-        currencyRate: Double,
-        primaryCurrencyRate: Double?,
         amount: Double,
         accountAmount: Double,
         primaryAmount: Double,
@@ -189,8 +181,6 @@ internal class TransactionBackupManagerImpl @Inject constructor(
             if (accountTo != null) stringCell(accountTo) else emptyCell()
             stringCell(transactionType)
             stringCell(currencyType)
-            doubleCell(currencyRate)
-            if (primaryCurrencyRate != null) doubleCell(primaryCurrencyRate) else emptyCell()
             doubleCell(amount)
             doubleCell(accountAmount)
             doubleCell(primaryAmount)
@@ -210,16 +200,14 @@ internal class TransactionBackupManagerImpl @Inject constructor(
             ExcelColumns.ACCOUNT_TO to ExcelColumn(2, ExcelColumns.ACCOUNT_TO),
             ExcelColumns.TRANSACTION_TYPE to ExcelColumn(3, ExcelColumns.TRANSACTION_TYPE),
             ExcelColumns.CURRENCY to ExcelColumn(4, ExcelColumns.CURRENCY),
-            ExcelColumns.RATE to ExcelColumn(5, ExcelColumns.RATE),
-            ExcelColumns.PRIMARY_CURRENCY_RATE to ExcelColumn(6, ExcelColumns.PRIMARY_CURRENCY_RATE),
-            ExcelColumns.AMOUNT to ExcelColumn(7, ExcelColumns.AMOUNT),
-            ExcelColumns.ACCOUNT_AMOUNT to ExcelColumn(8, ExcelColumns.ACCOUNT_AMOUNT),
-            ExcelColumns.PRIMARY_AMOUNT to ExcelColumn(9, ExcelColumns.PRIMARY_AMOUNT),
-            ExcelColumns.DATE to ExcelColumn(10, ExcelColumns.DATE),
-            ExcelColumns.CATEGORY1 to ExcelColumn(11, ExcelColumns.CATEGORY1),
-            ExcelColumns.CATEGORY2 to ExcelColumn(12, ExcelColumns.CATEGORY2),
-            ExcelColumns.CATEGORY3 to ExcelColumn(13, ExcelColumns.CATEGORY3),
-            ExcelColumns.TAGS to ExcelColumn(14, ExcelColumns.TAGS)
+            ExcelColumns.AMOUNT to ExcelColumn(5, ExcelColumns.AMOUNT),
+            ExcelColumns.ACCOUNT_AMOUNT to ExcelColumn(6, ExcelColumns.ACCOUNT_AMOUNT),
+            ExcelColumns.PRIMARY_AMOUNT to ExcelColumn(7, ExcelColumns.PRIMARY_AMOUNT),
+            ExcelColumns.DATE to ExcelColumn(8, ExcelColumns.DATE),
+            ExcelColumns.CATEGORY1 to ExcelColumn(9, ExcelColumns.CATEGORY1),
+            ExcelColumns.CATEGORY2 to ExcelColumn(10, ExcelColumns.CATEGORY2),
+            ExcelColumns.CATEGORY3 to ExcelColumn(11, ExcelColumns.CATEGORY3),
+            ExcelColumns.TAGS to ExcelColumn(12, ExcelColumns.TAGS)
         )
     }
 
@@ -244,8 +232,6 @@ internal data class TransactionBackupData(
     val accountTo: String?,
     val transactionType: String,
     val currency: String,
-    val currencyRate: Double,
-    val primaryCurrencyRate: Double?,
     val accountAmount: Double,
     val primaryAmount: Double,
     val amount: Double,

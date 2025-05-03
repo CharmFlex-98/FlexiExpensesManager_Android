@@ -33,10 +33,6 @@ internal data class ScheduledTransactionResponse(
     val categoryName: String?,
     @ColumnInfo("currency")
     val currency: String,
-    @ColumnInfo("account_currency_rate")
-    val accountCurrencyRate: Float,
-    @ColumnInfo("primary_currency_rate")
-    val primaryCurrencyRate: Float?,
     @ColumnInfo("account_minor_unit_amount")
     val accountMinorUnitAmount: Long,
     @ColumnInfo("primary_minor_unit_amount")

@@ -847,9 +847,7 @@ internal abstract class TransactionEditorBaseViewModel(
             fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.valueItem?.id
         val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.valueItem?.value
         val currency = fields.firstOrNull { it.id == TRANSACTION_CURRENCY }?.valueItem?.value
-        val transactionToPrimaryRate = transactionCurrencyViewState?.rate?.toFloatOrNull() ?: 1f
         val primaryAmount = transactionCurrencyViewState?.toCurrencyAmount ?: amount ?: "0"
-        val transactionToAccountRate = accountCurrencyViewState?.rate?.toFloatOrNull() ?: 1f
         val accountAmount = accountCurrencyViewState?.toCurrencyAmount ?: amount ?: "0"
 
         val tagIds = fields.firstOrNull { it.id == TRANSACTION_TAG }?.valueItem?.id
@@ -867,8 +865,6 @@ internal abstract class TransactionEditorBaseViewModel(
             categoryId = categoryId.toInt(),
             transactionDate = date,
             currency = currency,
-            accountCurrencyRate = transactionToAccountRate,
-            primaryCurrencyRate = transactionToPrimaryRate,
             accountMinorUnitAmount = accountAmount.toLong(),
             primaryMinorUnitAmount = primaryAmount.toLong(),
             tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ")
@@ -895,7 +891,6 @@ internal abstract class TransactionEditorBaseViewModel(
         val categoryId =
             fields.firstOrNull { it.id == TRANSACTION_CATEGORY }?.valueItem?.id
         val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.valueItem?.value
-        val transactionToPrimaryRate = transactionCurrencyViewState?.rate?.toFloatOrNull() ?: 1f
         val primaryAmount = transactionCurrencyViewState?.toCurrencyAmount ?: amount ?: "0"
         val tagIds = fields.firstOrNull { it.id == TRANSACTION_TAG }?.valueItem?.id
         if (name == null || amount == null || categoryId == null || date == null || toAccountId == null) {
@@ -912,7 +907,6 @@ internal abstract class TransactionEditorBaseViewModel(
             categoryId = categoryId.toInt(),
             transactionDate = date,
             currency = transactionCurrencyViewState?.fromCurrency ?: "",
-            primaryCurrencyRate = transactionToPrimaryRate,
             primaryMinorUnitAmount = primaryAmount.toLong(),
             tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ")
                 .map { it.toInt() },
@@ -938,8 +932,6 @@ internal abstract class TransactionEditorBaseViewModel(
             fields.firstOrNull { it.id == TRANSACTION_TO_ACCOUNT }?.valueItem?.id
         val amount = fields.firstOrNull { it.id == TRANSACTION_AMOUNT }?.valueItem?.value
         val date = fields.firstOrNull { it.id == TRANSACTION_DATE }?.valueItem?.value
-        val transactionToAccountRate =
-            transactionCurrencyExchangeViewState?.rate?.toFloatOrNull() ?: 1f
         val accountAmount = transactionCurrencyExchangeViewState?.toCurrencyAmount ?: amount ?: "0"
 
         val tagIds = fields.firstOrNull { it.id == TRANSACTION_TAG }?.valueItem?.id
@@ -957,7 +949,6 @@ internal abstract class TransactionEditorBaseViewModel(
             amount = amount.toLong(),
             transactionDate = date,
             currency = transactionCurrencyExchangeViewState?.fromCurrency ?: "",
-            accountCurrencyRate = transactionToAccountRate,
             accountMinorUnitAmount = accountAmount.toLong(),
             tagIds = if (tagIds.isNullOrBlank()) listOf() else tagIds.split(", ")
                 .map { it.toInt() },
@@ -1019,7 +1010,6 @@ internal data class TransactionEditorDataUI(
     val accountMinorUnitAmount: Long,
     val primaryMinorUnitAmount: Long,
     val currency: String,
-    val rate: Float,
     val transactionDate: String,
     val transactionCategory: Transaction.TransactionCategory?,
     val tags: List<Tag>

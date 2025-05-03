@@ -132,8 +132,6 @@ internal class AccountRepositoryImpl @Inject constructor(
                 transactionDate = LocalDate.now().toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
                 categoryId = null,
                 currency = currency,
-                accountCurrencyRate = 1f,
-                primaryCurrencyRate = null,
                 accountMinorUnitAmount = accountAmount,
                 primaryMinorUnitAmount = 0,
                 schedulerId = null

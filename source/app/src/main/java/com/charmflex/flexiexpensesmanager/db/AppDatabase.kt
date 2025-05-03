@@ -11,6 +11,7 @@ import com.charmflex.flexiexpensesmanager.db.migration.Migration_1_2
 import com.charmflex.flexiexpensesmanager.db.migration.Migration_2_3
 import com.charmflex.flexiexpensesmanager.db.migration.Migration_3_4
 import com.charmflex.flexiexpensesmanager.db.migration.Migration_5_6
+import com.charmflex.flexiexpensesmanager.db.migration.RemoveAccountAndPrimaryCurrencyRateFromTransactionEntity
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountDao
 import com.charmflex.flexiexpensesmanager.features.account.data.daos.AccountTransactionDao
 import com.charmflex.flexiexpensesmanager.features.account.data.entities.AccountEntity
@@ -56,12 +57,13 @@ import kotlinx.serialization.json.buildJsonObject
         MonthlyCategoryBudgetEntity::class,
         CurrencyMetaDataEntity::class
     ],
-    version = 7,
+    version = 8,
     autoMigrations = [
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 6, to = 7),
+        AutoMigration(from = 7, 8, spec = RemoveAccountAndPrimaryCurrencyRateFromTransactionEntity::class),
     ],
     exportSchema = true
 )

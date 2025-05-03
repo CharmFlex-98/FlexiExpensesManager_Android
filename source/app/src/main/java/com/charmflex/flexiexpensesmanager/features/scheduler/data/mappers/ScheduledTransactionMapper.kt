@@ -25,8 +25,6 @@ internal class ScheduledTransactionMapper :
             schedulerPeriod = SchedulerPeriod.fromString(from.schedulerPeriod),
             tags = getTags(from.tagIds?.split(", "), from.tagNames?.split(", ")),
             currency = from.currency,
-            rate = from.accountCurrencyRate,
-            primaryCurrencyRate = from.primaryCurrencyRate,
             accountMinorUnitAmount = from.accountMinorUnitAmount,
             primaryMinorUnitAmount = from.primaryMinorUnitAmount
         )

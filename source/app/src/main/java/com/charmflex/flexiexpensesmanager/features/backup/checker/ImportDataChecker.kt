@@ -148,8 +148,6 @@ internal class ImportDataChecker @Inject constructor(
                     accountTo = null,
                     transactionType = row.transactionType,
                     currency = row.currency,
-                    currencyRate = row.currencyRate,
-                    primaryCurrencyRate = row.primaryCurrencyRate,
                     accountAmount = row.accountAmount,
                     primaryAmount = row.primaryAmount,
                     amount = row.amount,

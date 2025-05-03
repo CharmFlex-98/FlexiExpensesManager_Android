@@ -110,7 +110,6 @@ internal class SchedulerEditorViewModel(
             res.accountMinorUnitAmount,
             res.primaryMinorUnitAmount,
             res.currency,
-            res.rate,
             res.startUpdateDate,
             res.category,
             res.tags
@@ -125,8 +124,6 @@ internal class SchedulerEditorViewModel(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        accountCurrencyRate: Float,
-        primaryCurrencyRate: Float?,
         accountMinorUnitAmount: Long,
         primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
@@ -140,8 +137,6 @@ internal class SchedulerEditorViewModel(
             transactionDate,
             transactionDate,
             currency,
-            accountCurrencyRate,
-            primaryCurrencyRate,
             accountMinorUnitAmount,
             primaryMinorUnitAmount,
             tagIds,
@@ -157,7 +152,6 @@ internal class SchedulerEditorViewModel(
         categoryId: Int,
         transactionDate: String,
         currency: String,
-        primaryCurrencyRate: Float?,
         primaryMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
@@ -170,7 +164,6 @@ internal class SchedulerEditorViewModel(
             transactionDate,
             transactionDate,
             currency,
-            primaryCurrencyRate,
             primaryMinorUnitAmount,
             tagIds,
             selectedPeriod.value,
@@ -185,7 +178,6 @@ internal class SchedulerEditorViewModel(
         amount: Long,
         transactionDate: String,
         currency: String,
-        accountCurrencyRate: Float,
         accountMinorUnitAmount: Long,
         tagIds: List<Int>,
     ): Result<Unit> {
@@ -198,7 +190,6 @@ internal class SchedulerEditorViewModel(
             transactionDate,
             transactionDate,
             currency,
-            accountCurrencyRate,
             accountMinorUnitAmount,
             selectedPeriod.value,
             tagIds

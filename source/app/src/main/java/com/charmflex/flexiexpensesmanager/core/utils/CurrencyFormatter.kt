@@ -15,44 +15,46 @@ internal interface CurrencyFormatter {
 
 internal class CurrencyFormatterImpl @Inject constructor() : CurrencyFormatter{
     override fun format(minorUnitAmount: Long, currencyCode: String): String {
-        val data = formatToAmount(minorUnitAmount, currencyCode)
-        val format = NumberFormat.getCurrencyInstance()
-        return format.format(data)
+        val amount = minorToMajor(minorUnitAmount, currencyCode)
+        return getCurrencyFormatter(currencyCode).format(amount)
     }
 
     override fun formatWithoutSymbol(minorUnitAmount: Long, currencyCode: String): String {
-        return formatToAmount(minorUnitAmount, currencyCode).toPlainString()
+        return minorToMajor(minorUnitAmount, currencyCode).toPlainString()
     }
 
-    private fun formatToAmount(minorUnitAmount: Long, currencyCode: String): BigDecimal {
-        val divFactor = getFactor(currencyCode)
-        return minorUnitAmount.toBigDecimal().divide(divFactor.toBigDecimal())
-    }
-
-    private fun getFactor(currencyCode: String): Double {
-        val currencyInstance = Currency.getInstance(currencyCode)
-        val divFactor = 10.0.pow(currencyInstance.defaultFractionDigits.toDouble())
-
-        return divFactor;
-    }
-
-
-    override fun formatTo(minorUnitAmount: Long, currencyCode: String, fromCurrencyCode: String, rate: Float): String {
-        val format = NumberFormat.getCurrencyInstance()
-        val currencyInstance = Currency.getInstance(currencyCode)
-        val fromCurrencyInstance = Currency.getInstance(fromCurrencyCode)
-        format.apply {
-            maximumFractionDigits = currencyInstance.defaultFractionDigits
-            currency = currencyInstance
-        }
-
-        val divFactor = 10.0.pow(fromCurrencyInstance.defaultFractionDigits.toDouble());
-        return format.format(minorUnitAmount.toBigDecimal().divide(divFactor.toBigDecimal()).multiply(rate.toBigDecimal()))
+    override fun formatTo(
+        minorUnitAmount: Long,
+        currencyCode: String,
+        fromCurrencyCode: String,
+        rate: Float
+    ): String {
+        val fromAmount = minorToMajor(minorUnitAmount, fromCurrencyCode)
+        val converted = fromAmount.multiply(rate.toBigDecimal())
+        return getCurrencyFormatter(currencyCode).format(converted)
     }
 
     override fun from(amountValue: Double, currencyCode: String): Long {
-        val timesFactor = getFactor(currencyCode)
-        return amountValue.times(timesFactor).toLong()
+        val factor = getFactor(currencyCode)
+        return (amountValue * factor).toLong()
+    }
+
+    private fun minorToMajor(minorUnitAmount: Long, currencyCode: String): BigDecimal {
+        val factor = getFactor(currencyCode)
+        return minorUnitAmount.toBigDecimal().divide(BigDecimal.valueOf(factor))
+    }
+
+    private fun getFactor(currencyCode: String): Double {
+        val fractionDigits = Currency.getInstance(currencyCode).defaultFractionDigits
+        return 10.0.pow(fractionDigits)
+    }
+
+    private fun getCurrencyFormatter(currencyCode: String): NumberFormat {
+        return NumberFormat.getCurrencyInstance().apply {
+            val currency = Currency.getInstance(currencyCode)
+            maximumFractionDigits = currency.defaultFractionDigits
+            this.currency = currency
+        }
     }
 }
 

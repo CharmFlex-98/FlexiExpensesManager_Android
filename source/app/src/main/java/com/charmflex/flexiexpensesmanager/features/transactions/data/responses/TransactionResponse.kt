@@ -35,10 +35,6 @@ internal data class TransactionResponse(
     val categoryName: String?,
     @ColumnInfo("currency")
     val currency: String,
-    @ColumnInfo("account_currency_rate")
-    val accountCurrencyRate: Float,
-    @ColumnInfo("primary_currency_rate")
-    val primaryCurrencyRate: Float?,
     @ColumnInfo("tag_ids")
     val tagIds: String?,
     @ColumnInfo("tag_names")

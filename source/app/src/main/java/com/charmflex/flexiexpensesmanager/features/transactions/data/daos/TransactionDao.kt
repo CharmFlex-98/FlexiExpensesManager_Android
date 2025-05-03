@@ -40,7 +40,6 @@ internal interface TransactionDao {
                 "t.category_id," +
                 "tc.name as category_name," +
                 "t.currency," +
-                "t.account_currency_rate, " +
                 "GROUP_CONCAT(tt.tagId, ', ') as tag_ids, " +
                 "GROUP_CONCAT(tg.tag_name, ', ') as tag_names " +
                 "FROM TransactionEntity t" +
@@ -85,7 +84,6 @@ internal interface TransactionDao {
                 "t.category_id," +
                 "tc.name as category_name, " +
                 "t.currency," +
-                "t.account_currency_rate, " +
                 "GROUP_CONCAT(tt.tagId, ', ') as tag_ids, " +
                 "GROUP_CONCAT(tg.tag_name, ', ') as tag_names " +
                 "FROM TransactionEntity t" +
