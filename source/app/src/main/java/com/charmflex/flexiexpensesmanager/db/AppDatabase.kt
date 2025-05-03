@@ -104,11 +104,11 @@ internal abstract class AppDatabase : RoomDatabase() {
                 .addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
+                        db.execSQL(initCurrencyMetadataScript)
                         db.execSQL(INIT_ACCOUNT_GROUP_SCRIPT)
                         db.execSQL(INIT_ACCOUNT_SCRIPT)
                         db.execSQL(INIT_TRANSACTION_TYPE_SCRIPT)
                         db.execSQL(INIT_TRANSACTION_CATEGORY_SCRIPT)
-                        db.execSQL(initCurrencyMetadataScript)
                     }
                 })
                 .build()
