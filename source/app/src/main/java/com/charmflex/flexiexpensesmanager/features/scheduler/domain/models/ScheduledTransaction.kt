@@ -32,7 +32,7 @@ internal data class ScheduledTransaction(
             transactionAccountFrom = this.accountFrom?.accountId,
             transactionAccountTo = this.accountTo?.accountId,
             transactionTypeCode = transactionType.name,
-            amountInCent = minorUnitAmount,
+            minorUnitAmount = minorUnitAmount,
             transactionCategoryId = category?.id,
             transactionDate = transactionDate,
             currency = currency,

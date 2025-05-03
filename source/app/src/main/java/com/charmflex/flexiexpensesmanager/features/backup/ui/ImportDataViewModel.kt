@@ -1,18 +1,19 @@
 package com.charmflex.flexiexpensesmanager.features.backup.ui
 
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.TagRoutes
+import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
+import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupManager
 import com.charmflex.flexiexpensesmanager.features.backup.checker.ImportDataChecker
+import com.charmflex.flexiexpensesmanager.features.currency.domain.repositories.UserCurrencyRepository
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionDomainInput
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.model.TransactionType
 import com.charmflex.flexiexpensesmanager.features.transactions.domain.repositories.TransactionRepository
@@ -29,7 +30,10 @@ internal class ImportDataViewModel @Inject constructor(
     private val fileProvider: FEFileProvider,
     private val importDataChecker: ImportDataChecker,
     private val routeNavigator: RouteNavigator,
-    private val transactionTagRepository: TransactionRepository
+    private val transactionTagRepository: TransactionRepository,
+    private val currencyFormatter: CurrencyFormatter,
+    private val userCurrencyRepository: UserCurrencyRepository,
+    private val accountRepository: AccountRepository
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(ImportDataViewState())
     val viewState = _viewState.asStateFlow()
@@ -135,6 +139,7 @@ internal class ImportDataViewModel @Inject constructor(
     fun saveData() {
         viewModelScope.launch {
             toggleLoader(true)
+            val primaryCurrency = userCurrencyRepository.getPrimaryCurrency()
             val validImportedData = _viewState.value.importedData.filter { it.isValid }
             val importedTransaction = validImportedData.map {
                 val fromAccount = (it.accountFrom as? ImportedData.RequiredDataState.Acquired)?.id
@@ -143,17 +148,31 @@ internal class ImportDataViewModel @Inject constructor(
                 val tags = it.tags.mapNotNull {
                     (it as? ImportedData.RequiredDataState.Acquired)?.id
                 }
+                val accountCurrency = when (TransactionType.fromString(it.transactionType)) {
+                    TransactionType.EXPENSES -> {
+                        fromAccount?.let { accountRepository.getAccountById(it) }?.currency
+                    }
+                    TransactionType.INCOME, TransactionType.TRANSFER -> {
+                        toAccount?.let { accountRepository.getAccountById(it) }?.currency
+                    }
+                    else -> it.currency
+                } ?: kotlin.run {
+                    toggleLoader(false)
+                    _snackbarState.value = "Something went wrong. Could not obtain account currency when it should able to."
+                    return@launch
+                }
+
                 TransactionDomainInput(
                     transactionName = it.transactionName,
                     transactionAccountFrom = fromAccount,
                     transactionAccountTo = toAccount,
                     transactionTypeCode = it.transactionType,
-                    amountInCent = (it.amount.toBigDecimal().times(100.toBigDecimal())).toLong(), // TODO
+                    minorUnitAmount = currencyFormatter.from(it.amount, it.currency),
                     currency = it.currency,
                     rate = it.currencyRate.toFloat(),
                     primaryCurrencyRate = it.primaryCurrencyRate?.toFloat(),
-                    accountMinorUnitAmount = (it.accountMinorUnitAmount.toBigDecimal().times(100.toBigDecimal())).toLong(), // TODO
-                    primaryMinorUnitAmount = (it.primaryMinorUnitAmount.toBigDecimal().times(100.toBigDecimal())).toLong(), // TODO
+                    accountMinorUnitAmount = currencyFormatter.from(it.accountAmount, accountCurrency),
+                    primaryMinorUnitAmount = currencyFormatter.from(it.primaryAmount, primaryCurrency),
                     transactionDate = it.date,
                     transactionCategoryId = category,
                     tagIds = tags,
@@ -198,8 +217,8 @@ internal data class ImportedData(
     val currency: String,
     val currencyRate: Double,
     val primaryCurrencyRate: Double?,
-    val accountMinorUnitAmount: Double,
-    val primaryMinorUnitAmount: Double,
+    val accountAmount: Double,
+    val primaryAmount: Double,
     val amount: Double,
     val date: String,
     val categoryColumns: RequiredDataState?,

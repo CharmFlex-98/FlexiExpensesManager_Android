@@ -42,8 +42,6 @@ internal class TransactionRepositoryImpl @Inject constructor(
             accountFromId = fromAccountId,
             categoryId = categoryId,
             currency = currency,
-            accountCurrencyRate = accountCurrencyRate,
-            primaryCurrencyRate = primaryCurrencyRate,
             accountMinorUnitAmount = accountMinorUnitAmount,
             primaryMinorUnitAmount = primaryMinorUnitAmount,
             schedulerId = schedulerId?.toLong()
@@ -97,7 +95,7 @@ internal class TransactionRepositoryImpl @Inject constructor(
                 accountFromId = it.transactionAccountFrom,
                 accountToId = it.transactionAccountTo,
                 transactionTypeCode = it.transactionTypeCode,
-                minorUnitAmount = it.amountInCent,
+                minorUnitAmount = it.minorUnitAmount,
                 transactionDate = it.transactionDate,
                 categoryId = it.transactionCategoryId,
                 currency = it.currency,

@@ -20,10 +20,6 @@ internal data class Transaction(
     val transactionCategory: TransactionCategory?,
     val tags: List<Tag>
 ) {
-    data class TransactionAccount(
-        val id: Int,
-        val name: String
-    )
 
     @Serializable
     data class TransactionCategory(

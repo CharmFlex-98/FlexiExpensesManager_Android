@@ -5,7 +5,7 @@ internal data class TransactionDomainInput(
     val transactionAccountFrom: Int?,
     val transactionAccountTo: Int?,
     val transactionTypeCode: String,
-    val amountInCent: Long,
+    val minorUnitAmount: Long,
     val currency: String,
     val rate: Float,
     val primaryCurrencyRate: Float?,

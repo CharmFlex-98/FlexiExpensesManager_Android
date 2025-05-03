@@ -150,8 +150,8 @@ internal class ImportDataChecker @Inject constructor(
                     currency = row.currency,
                     currencyRate = row.currencyRate,
                     primaryCurrencyRate = row.primaryCurrencyRate,
-                    accountMinorUnitAmount = row.accountMinorUnitAmount,
-                    primaryMinorUnitAmount = row.primaryMinorUnitAmount,
+                    accountAmount = row.accountAmount,
+                    primaryAmount = row.primaryAmount,
                     amount = row.amount,
                     date = row.date.toStringWithPattern(DATE_ONLY_DEFAULT_PATTERN),
                     categoryColumns = generateCategoryRequiredState(

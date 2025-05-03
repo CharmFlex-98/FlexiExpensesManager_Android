@@ -67,10 +67,6 @@ internal data class TransactionEntity(
     val categoryId: Int?,
     @ColumnInfo("currency")
     val currency: String,
-    @ColumnInfo("account_currency_rate")
-    val accountCurrencyRate: Float,
-    @ColumnInfo("primary_currency_rate")
-    val primaryCurrencyRate: Float?,
     @ColumnInfo("account_minor_unit_amount", defaultValue = "0")
     val accountMinorUnitAmount: Long,
     @ColumnInfo("primary_minor_unit_amount", defaultValue = "0")
