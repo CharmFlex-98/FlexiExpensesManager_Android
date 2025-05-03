@@ -57,14 +57,14 @@ import kotlinx.serialization.json.buildJsonObject
         MonthlyCategoryBudgetEntity::class,
         CurrencyMetaDataEntity::class
     ],
-    version = 8,
-    autoMigrations = [
-        AutoMigration(from = 1, to = 2),
-        AutoMigration(from = 3, to = 4),
-        AutoMigration(from = 4, to = 5),
-        AutoMigration(from = 6, to = 7),
-        AutoMigration(from = 7, 8, spec = RemoveAccountAndPrimaryCurrencyRateFromTransactionEntity::class),
-    ],
+    version = 1,
+//    autoMigrations = [
+//        AutoMigration(from = 1, to = 2),
+//        AutoMigration(from = 3, to = 4),
+//        AutoMigration(from = 4, to = 5),
+//        AutoMigration(from = 6, to = 7),
+//        AutoMigration(from = 7, 8, spec = RemoveAccountAndPrimaryCurrencyRateFromTransactionEntity::class),
+//    ],
     exportSchema = true
 )
 internal abstract class AppDatabase : RoomDatabase() {
@@ -106,9 +106,9 @@ internal abstract class AppDatabase : RoomDatabase() {
                         super.onCreate(db)
                         db.execSQL(initCurrencyMetadataScript)
                         db.execSQL(INIT_ACCOUNT_GROUP_SCRIPT)
-                        db.execSQL(INIT_ACCOUNT_SCRIPT)
+//                        db.execSQL(INIT_ACCOUNT_SCRIPT)
                         db.execSQL(INIT_TRANSACTION_TYPE_SCRIPT)
-                        db.execSQL(INIT_TRANSACTION_CATEGORY_SCRIPT)
+//                        db.execSQL(INIT_TRANSACTION_CATEGORY_SCRIPT)
                     }
                 })
                 .build()

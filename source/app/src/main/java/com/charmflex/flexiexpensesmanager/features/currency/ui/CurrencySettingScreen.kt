@@ -27,6 +27,7 @@ import com.charmflex.flexiexpensesmanager.ui_common.SGLargePrimaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
 import com.charmflex.flexiexpensesmanager.ui_common.SearchBottomSheet
+import com.charmflex.flexiexpensesmanager.ui_common.SearchItem
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x1
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x2
 
@@ -96,14 +97,16 @@ internal fun CurrencySettingScreen(
         sheetState = sheetState,
         onDismiss = { viewModel.onCloseCurrencySelectionBottomSheet() },
         searchFieldLabel = "Search currency",
-        items = bs.items,
-        onChanged = { viewModel.onSearchValueChanged(it) }
+        items = bs.items.map { object : SearchItem {
+            override val key: String
+                get() = it
+        } },
     ) { _, item ->
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { viewModel.onCurrencySelected(item) }) {
-            Text(text = item)
+                .clickable { viewModel.onCurrencySelected(item.key) }) {
+            Text(text = item.key)
         }
     }
 }

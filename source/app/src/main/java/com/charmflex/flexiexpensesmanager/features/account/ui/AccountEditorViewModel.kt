@@ -236,6 +236,7 @@ internal class AccountEditorViewModel @Inject constructor(
                 }
             }
         }
+        resetBottomSheetState()
     }
 
 

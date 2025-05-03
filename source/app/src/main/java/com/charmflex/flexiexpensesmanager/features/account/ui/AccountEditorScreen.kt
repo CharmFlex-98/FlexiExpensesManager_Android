@@ -2,6 +2,7 @@ package com.charmflex.flexiexpensesmanager.features.account.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.horizontalScroll
@@ -20,11 +21,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,8 +39,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import com.airbnb.lottie.model.content.RectangleShape
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyTextFieldOutputFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
@@ -50,6 +59,8 @@ import com.charmflex.flexiexpensesmanager.ui_common.SGModalBottomSheet
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.SGSnackBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
+import com.charmflex.flexiexpensesmanager.ui_common.SearchBottomSheet
+import com.charmflex.flexiexpensesmanager.ui_common.SearchItem
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarType
 import com.charmflex.flexiexpensesmanager.ui_common.grid_x0_25
@@ -220,20 +231,35 @@ internal fun AccountEditorScreen(
     }
 
     bottomSheetState?.let {
-        SGModalBottomSheet(
-            modifier = Modifier.padding(grid_x2),
-            onDismiss = { viewModel.resetBottomSheetState() },
-            sheetState = modalBottomSheetState
-        ) {
-            when (it) {
-                is BottomSheetState.CurrencySelectionState -> {
-                    FEGeneralSelectionBottomSheet(
-                        title = it.title,
-                        items = it.currencyCodes.toList(),
-                        { it }
+        when (it) {
+            is BottomSheetState.CurrencySelectionState -> {
+                SearchBottomSheet(
+                    sheetState = modalBottomSheetState,
+                    onDismiss = { viewModel.resetBottomSheetState() },
+                    searchFieldLabel = "Select currency",
+                    items = it.currencyCodes.map {
+                        object : SearchItem {
+                            override val key: String
+                                get() = it
+                        }
+                    },
+                ) { index, item ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.onBottomSheetItemSelected(item.key)
+                            }
+                            .padding(grid_x0_25),
+                        shape = RectangleShape,
+                        elevation = CardDefaults.cardElevation(grid_x1),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
                     ) {
-                        viewModel.onBottomSheetItemSelected(it)
-                        viewModel.resetBottomSheetState()
+                        Box(modifier = Modifier.fillMaxWidth().padding(grid_x2), contentAlignment = Alignment.Center) {
+                            Text(text = item.key)
+                        }
                     }
                 }
             }

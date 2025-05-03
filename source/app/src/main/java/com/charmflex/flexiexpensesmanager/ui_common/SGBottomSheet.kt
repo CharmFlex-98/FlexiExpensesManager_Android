@@ -18,10 +18,12 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.ui_common.theme.FlexiExpensesManagerTheme
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,33 +136,50 @@ fun SGModalBottomSheet(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+internal interface SearchItem {
+    val key: String
+}
+
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
-fun <T> SearchBottomSheet(
+internal fun SearchBottomSheet(
     modifier: Modifier = Modifier,
     sheetState: SheetState,
     onDismiss: () -> Unit,
     searchFieldLabel: String,
-    items: List<T>,
+    items: List<SearchItem>,
     errorText: String? = null,
-    onChanged: (String) -> Unit,
-    itemLayout: @Composable (index: Int, item: T) -> Unit,
+    itemLayout: @Composable (index: Int, item: SearchItem) -> Unit,
 ) {
-    var searchKey by remember { mutableStateOf("") }
     SGModalBottomSheet(modifier = modifier, onDismiss = onDismiss, sheetState = sheetState) {
         Column(
             modifier = Modifier.fillMaxHeight(0.5f)
         ) {
+            var searchKey by remember { mutableStateOf("") }
+            var filteredItems by remember {
+                mutableStateOf(items)
+            }
+            // 🔁 Debounce the search key input
+            LaunchedEffect(Unit) {
+                snapshotFlow { searchKey }
+                    .debounce(300) // Wait 100ms before applying search
+                    .distinctUntilChanged()
+                    .collectLatest { query ->
+                        filteredItems = items.filter {
+                            it.key.contains(query, ignoreCase = true)
+                        }
+                    }
+            }
+
             SGTextField(
                 modifier = Modifier.fillMaxWidth(), label = searchFieldLabel, hint = "search",
                 value = searchKey, supportingText = errorText?.let { SupportingText(text = it, supportingTextType = SupportingTextType.ERROR) }, onValueChange = {
                     searchKey = it
-                    onChanged(it)
                 }
             )
             Spacer(modifier = Modifier.height(grid_x1))
             Box(modifier = Modifier.wrapContentSize()) {
-                ListTable(items = items) { index, item ->
+                ListTable(items = filteredItems) { index, item ->
                     itemLayout(index, item)
                 }
             }
