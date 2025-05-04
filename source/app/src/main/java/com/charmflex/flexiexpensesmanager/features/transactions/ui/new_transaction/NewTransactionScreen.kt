@@ -285,7 +285,11 @@ internal fun TransactionEditorScreen(
                                     )
                                 }
                             ) { newValue ->
-                                viewModel.onFieldValueChanged(feField, newValue, updateMonetary = feField.shouldResetMonetary())
+                                viewModel.onFieldValueChanged(
+                                    feField,
+                                    newValue,
+                                    updateMonetary = feField.shouldResetMonetary()
+                                )
                             }
                         }
                     }
@@ -339,7 +343,8 @@ internal fun TransactionEditorScreen(
 
     if (showDialogCurrencyState != null) {
         val currencyVisualTransformation2 = remember(showDialogCurrencyState.toCurrency) {
-            viewModel.currencyVisualTransformationBuilder().create(showDialogCurrencyState.toCurrency)
+            viewModel.currencyVisualTransformationBuilder()
+                .create(showDialogCurrencyState.toCurrency)
         }
         SGDialog(
             title = "Exchange Rate",
@@ -361,9 +366,15 @@ internal fun TransactionEditorScreen(
                     onValueChange = {
                         viewModel.onCurrencyExchangeAmountChanged(it, showDialogCurrencyState)
                     })
-                TextField(value = showDialogCurrencyState.rate, onValueChange = {
-                    viewModel.onCurrencyExchangeRateChanged(it, showDialogCurrencyState)
-                })
+                SGTextField(
+                    modifier = Modifier,
+                    value = showDialogCurrencyState.rate,
+                    label = "Rate",
+                    hint = "Rate",
+                    keyboardType = KeyboardType.Number,
+                    onValueChange = {
+                        viewModel.onCurrencyExchangeRateChanged(it, showDialogCurrencyState)
+                    })
                 Spacer(modifier = Modifier.size(grid_x4))
                 SGSmallPrimaryButton(text = "DONE") {
                     viewModel.onCurrencyViewClosed(showDialogCurrencyState)

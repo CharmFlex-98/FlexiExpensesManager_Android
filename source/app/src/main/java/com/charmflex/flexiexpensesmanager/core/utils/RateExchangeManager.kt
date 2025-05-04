@@ -22,4 +22,18 @@ internal class RateExchangeManager @Inject constructor() {
 
         return minorAmount
     }
+
+    fun getRate(fromCurrency: String, minorUnitAmountFrom: Long, toCurrency: String, minorUnitAmountTo: Long): Float {
+        val fromCurrencyInstance = Currency.getInstance(fromCurrency)
+        val toCurrencyInstance = Currency.getInstance(toCurrency)
+
+        val fromDivFactor = 10.0.pow(fromCurrencyInstance.defaultFractionDigits.toDouble())
+        val fromMajorAmount = minorUnitAmountFrom.toBigDecimal().divide(fromDivFactor.toBigDecimal())
+
+        val toDivFactor = 10.0.pow(toCurrencyInstance.defaultFractionDigits.toDouble())
+        val toMajorAmount = minorUnitAmountTo.toBigDecimal().divide(toDivFactor.toBigDecimal())
+
+        return toMajorAmount.divide(fromMajorAmount, 9, RoundingMode.HALF_EVEN)
+            .toFloat()
+    }
 }

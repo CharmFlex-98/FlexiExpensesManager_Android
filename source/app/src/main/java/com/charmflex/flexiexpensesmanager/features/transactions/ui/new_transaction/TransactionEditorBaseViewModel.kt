@@ -344,7 +344,7 @@ internal abstract class TransactionEditorBaseViewModel(
 
         val newCurrencyViewState: CurrencyViewState
         if (newRate.isBlank()) {
-            newCurrencyViewState = currencyViewState.copy(toCurrencyAmountFormatted = "", rate = "")
+            newCurrencyViewState = currencyViewState.copy(toCurrencyAmount = "", toCurrencyAmountFormatted = "", rate = "")
         } else {
             val newAmount = rateExchangeManager.convertTo(
                 transactionAmount.toLong(),
@@ -368,14 +368,24 @@ internal abstract class TransactionEditorBaseViewModel(
 
         when (currencyViewState.type) {
             CurrencyViewState.Type.ACCOUNT -> {
-                val res =
+                var res =
                     combinedCurrencyExchangeViewState.value.copy(accountCurrencyViewState = newCurrencyViewState)
+                val transactionViewState = combinedCurrencyExchangeViewState.value.transactionCurrencyViewState
+                val newTransactionCurrencyViewState = syncCurrencyExchangeAmount(newRate, newCurrencyViewState, transactionViewState)
+                newTransactionCurrencyViewState?.let {
+                    res = res.copy(transactionCurrencyViewState = it)
+                }
                 _currencyExchangeViewState.tryEmit(res)
             }
 
             CurrencyViewState.Type.TRANSACTION -> {
-                val res =
+                var res =
                     combinedCurrencyExchangeViewState.value.copy(transactionCurrencyViewState = newCurrencyViewState)
+                val accountCurrencyViewState = combinedCurrencyExchangeViewState.value.accountCurrencyViewState
+                val newAccountCurrencyViewState = syncCurrencyExchangeAmount(newRate, newCurrencyViewState, accountCurrencyViewState)
+                newAccountCurrencyViewState?.let {
+                    res = res.copy(accountCurrencyViewState = it)
+                }
                 _currencyExchangeViewState.tryEmit(res)
             }
         }
@@ -394,7 +404,7 @@ internal abstract class TransactionEditorBaseViewModel(
                 rate = ""
             )
         } else {
-            val newRate = newAmount.toFloat() / transactionAmount.toFloat()
+            val newRate = rateExchangeManager.getRate(currencyViewState.fromCurrency, currencyViewState.fromCurrencyAmount.toLong(), currencyViewState.toCurrency, newAmount.toLong())
             val toCurrencyAmountFormatted =
                 currencyFormatter.format(newAmount.toLong(), currencyViewState.toCurrency)
             newCurrencyViewState = currencyViewState.copy(
@@ -406,17 +416,47 @@ internal abstract class TransactionEditorBaseViewModel(
 
         when (currencyViewState.type) {
             CurrencyViewState.Type.ACCOUNT -> {
-                val res =
+                var res =
                     combinedCurrencyExchangeViewState.value.copy(accountCurrencyViewState = newCurrencyViewState)
+                val transactionViewState = combinedCurrencyExchangeViewState.value.transactionCurrencyViewState
+                val newTransactionCurrencyViewState = syncCurrencyExchangeAmount(newAmount, newCurrencyViewState, transactionViewState)
+                newTransactionCurrencyViewState?.let {
+                    res = res.copy(transactionCurrencyViewState = it)
+                }
                 _currencyExchangeViewState.tryEmit(res)
             }
 
             CurrencyViewState.Type.TRANSACTION -> {
-                val res =
+                var res =
                     combinedCurrencyExchangeViewState.value.copy(transactionCurrencyViewState = newCurrencyViewState)
+                val accountCurrencyViewState = combinedCurrencyExchangeViewState.value.accountCurrencyViewState
+                val newAccountCurrencyViewState = syncCurrencyExchangeAmount(newAmount, newCurrencyViewState, accountCurrencyViewState)
+                newAccountCurrencyViewState?.let {
+                    res = res.copy(accountCurrencyViewState = it)
+                }
                 _currencyExchangeViewState.tryEmit(res)
             }
         }
+    }
+
+    private fun syncCurrencyExchangeAmount(newValue: String, newCurrencyViewState: CurrencyViewState, toSync: CurrencyViewState?): CurrencyViewState? {
+        toSync?.let {
+            if (newValue.isNotBlank() && it.toCurrency == newCurrencyViewState.toCurrency) {
+                val accountCurrencyNewAmount = newCurrencyViewState.toCurrencyAmount
+                val accountCurrencyNewRate = rateExchangeManager.getRate(it.fromCurrency, it.fromCurrencyAmount.toLong(), it.toCurrency, accountCurrencyNewAmount.toLong())
+                val toCurrencyAmountFormatted =
+                    currencyFormatter.format(accountCurrencyNewAmount.toLong(), newCurrencyViewState.toCurrency)
+                val newAccountCurrencyViewState = it.copy(
+                    toCurrencyAmount = accountCurrencyNewAmount,
+                    toCurrencyAmountFormatted = toCurrencyAmountFormatted,
+                    rate = accountCurrencyNewRate.toString()
+                )
+
+                return newAccountCurrencyViewState;
+            }
+        }
+
+        return null
     }
 
     private fun onCurrencyViewToggle(show: Boolean, state: CurrencyViewState?) {
