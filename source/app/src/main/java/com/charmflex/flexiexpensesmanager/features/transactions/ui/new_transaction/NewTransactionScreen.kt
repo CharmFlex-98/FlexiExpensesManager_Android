@@ -70,6 +70,7 @@ import com.charmflex.flexiexpensesmanager.ui_common.SGLargeSecondaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGModalBottomSheet
 import com.charmflex.flexiexpensesmanager.ui_common.SGScaffold
 import com.charmflex.flexiexpensesmanager.ui_common.SGSmallPrimaryButton
+import com.charmflex.flexiexpensesmanager.ui_common.SGSmallSecondaryButton
 import com.charmflex.flexiexpensesmanager.ui_common.SGSnackBar
 import com.charmflex.flexiexpensesmanager.ui_common.SGTextField
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
@@ -128,6 +129,10 @@ internal fun TransactionEditorScreen(
     LaunchedEffect(key1 = Unit) {
         delay(500)
         initLoader = false
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.onRefreshOptions()
     }
 
     LaunchedEffect(snackBarState) {
@@ -389,66 +394,80 @@ internal fun TransactionEditorScreen(
             sheetState = bottomSheetState,
             onDismiss = { viewModel.toggleBottomSheet(null) }
         ) {
-            when (val bs = viewState.bottomSheetState) {
-                is TransactionEditorViewState.CategorySelectionBottomSheetState -> {
-                    CategorySelectionBottomSheet(
-                        onSelected = { id, name ->
-                            viewModel.onCategorySelected(id, name, bs.feField)
+            Column {
+                viewState.bottomSheetState?.takeIf { it.editable }?.let {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        SGSmallPrimaryButton(text = "EDIT") {
+                            viewModel.onBottomSheetOptionsEdit(it)
+                        }
+                    }
+                }
+
+                when (val bs = viewState.bottomSheetState) {
+                    is TransactionEditorViewState.CategorySelectionBottomSheetState -> {
+                        CategorySelectionBottomSheet(
+                            onSelected = { id, name ->
+                                viewModel.onCategorySelected(id, name, bs.feField)
+                                viewModel.toggleBottomSheet(null)
+                            },
+                            transactionCategories = viewState.transactionCategories
+                        )
+                    }
+
+                    is TransactionEditorViewState.AccountSelectionBottomSheetState -> {
+                        AccountSelectionBottomSheet(accountGroups = viewState.accountGroups) {
+                            viewModel.onSelectAccount(it, bs.feField)
                             viewModel.toggleBottomSheet(null)
-                        },
-                        transactionCategories = viewState.transactionCategories
-                    )
-                }
-
-                is TransactionEditorViewState.AccountSelectionBottomSheetState -> {
-                    AccountSelectionBottomSheet(accountGroups = viewState.accountGroups) {
-                        viewModel.onSelectAccount(it, bs.feField)
-                        viewModel.toggleBottomSheet(null)
+                        }
                     }
-                }
 
-                is TransactionEditorViewState.CurrencySelectionBottomSheetState -> {
-                    GeneralSelectionBottomSheet(
-                        title = stringResource(id = R.string.currency_selection_bottomsheet_title),
-                        items = viewState.currencyList,
-                        name = { it }) {
-                        viewModel.onCurrencySelected(it, bs.feField)
-                        viewModel.toggleBottomSheet(null)
+                    is TransactionEditorViewState.CurrencySelectionBottomSheetState -> {
+                        GeneralSelectionBottomSheet(
+                            title = stringResource(id = R.string.currency_selection_bottomsheet_title),
+                            items = viewState.currencyList,
+                            name = { it }) {
+                            viewModel.onCurrencySelected(it, bs.feField)
+                            viewModel.toggleBottomSheet(null)
+                        }
                     }
-                }
 
-                is TransactionEditorViewState.TagSelectionBottomSheetState -> {
-                    GeneralSelectionBottomSheet(
-                        title = stringResource(id = R.string.tag_selection_bottomsheet_title),
-                        items = viewState.tagList,
-                        name = { "#${it.name}" }) {
-                        viewModel.onTagSelected(it, bs.feField)
-                        viewModel.toggleBottomSheet(null)
+                    is TransactionEditorViewState.TagSelectionBottomSheetState -> {
+                        GeneralSelectionBottomSheet(
+                            title = stringResource(id = R.string.tag_selection_bottomsheet_title),
+                            items = viewState.tagList,
+                            name = { "#${it.name}" }) {
+                            viewModel.onTagSelected(it, bs.feField)
+                            viewModel.toggleBottomSheet(null)
+                        }
                     }
-                }
 
-                is TransactionEditorViewState.PeriodSelectionBottomSheetState -> {
-                    GeneralSelectionBottomSheet(
-                        title = stringResource(id = R.string.scheduler_period_selection_bottomsheet_title),
-                        items = viewModel.scheduledPeriodType,
-                        name = { it.name }) { res ->
-                        viewModel.onPeriodSelected(res, bs.feField)
-                        viewModel.toggleBottomSheet(null)
+                    is TransactionEditorViewState.PeriodSelectionBottomSheetState -> {
+                        GeneralSelectionBottomSheet(
+                            title = stringResource(id = R.string.scheduler_period_selection_bottomsheet_title),
+                            items = viewModel.scheduledPeriodType,
+                            name = { it.name }) { res ->
+                            viewModel.onPeriodSelected(res, bs.feField)
+                            viewModel.toggleBottomSheet(null)
+                        }
                     }
-                }
 
-                is TransactionEditorViewState.UpdateTypeSelectionBottomSheetState -> {
-                    GeneralSelectionBottomSheet(
-                        title = stringResource(id = R.string.update_account_type_selection_bottomsheet_title),
-                        items = viewModel.updateAccountType,
-                        name = { it.name }) { selected ->
-                        viewModel.onFieldValueChanged(bs.feField, selected.name)
-                        viewModel.toggleBottomSheet(null)
+                    is TransactionEditorViewState.UpdateTypeSelectionBottomSheetState -> {
+                        GeneralSelectionBottomSheet(
+                            title = stringResource(id = R.string.update_account_type_selection_bottomsheet_title),
+                            items = viewModel.updateAccountType,
+                            name = { it.name }) { selected ->
+                            viewModel.onFieldValueChanged(bs.feField, selected.name)
+                            viewModel.toggleBottomSheet(null)
+                        }
                     }
-                }
 
-                else -> {}
+                    else -> {}
+                }
             }
+
         }
     }
     SGSnackBar(snackBarHostState = snackbarHostState, snackBarType = SnackBarType.Error)
@@ -457,7 +476,7 @@ internal fun TransactionEditorScreen(
 @Composable
 internal fun CategorySelectionBottomSheet(
     onSelected: (String, String) -> Unit,
-    transactionCategories: TransactionCategories?
+    transactionCategories: TransactionCategories?,
 ) {
     val list = remember {
         mutableStateListOf(transactionCategories?.items)

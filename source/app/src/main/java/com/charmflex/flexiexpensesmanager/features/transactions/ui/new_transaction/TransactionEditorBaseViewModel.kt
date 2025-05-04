@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.core.domain.FEField
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.AccountRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.CategoryRoutes
+import com.charmflex.flexiexpensesmanager.core.navigation.routes.TagRoutes
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyFormatter
 import com.charmflex.flexiexpensesmanager.core.utils.CurrencyVisualTransformation
 import com.charmflex.flexiexpensesmanager.core.utils.DATE_ONLY_DEFAULT_PATTERN
@@ -12,6 +15,7 @@ import com.charmflex.flexiexpensesmanager.core.utils.RateExchangeManager
 import com.charmflex.flexiexpensesmanager.core.utils.toStringWithPattern
 import com.charmflex.flexiexpensesmanager.features.account.domain.model.AccountGroup
 import com.charmflex.flexiexpensesmanager.features.account.domain.repositories.AccountRepository
+import com.charmflex.flexiexpensesmanager.features.account.ui.BottomSheetState
 import com.charmflex.flexiexpensesmanager.features.scheduler.domain.models.SchedulerPeriod
 import com.charmflex.flexiexpensesmanager.features.tag.domain.model.Tag
 import com.charmflex.flexiexpensesmanager.features.tag.domain.repositories.TagRepository
@@ -94,6 +98,7 @@ internal abstract class TransactionEditorBaseViewModel(
                 CurrencyExchangeViewState.empty()
             )
     private lateinit var _primaryCurrency: String
+    private var currentEditingOptions: EditingOptions? = null
 
 
     // Must be called by child
@@ -107,6 +112,17 @@ internal abstract class TransactionEditorBaseViewModel(
             loadData(dataId)
         } else {
             onTransactionTypeChanged(_currentTransactionType.value)
+        }
+    }
+
+    fun onRefreshOptions() {
+        when (currentEditingOptions) {
+            EditingOptions.CATEGORY -> {
+                viewModelScope.launch {
+                    updateCategories(_currentTransactionType.value)
+                }
+            }
+            else -> {}
         }
     }
 
@@ -769,14 +785,12 @@ internal abstract class TransactionEditorBaseViewModel(
     }
 
     private suspend fun updateCategories(transactionType: TransactionType) {
-        coroutineScope {
-            val categories =
-                transactionCategoryRepository.getCategories(transactionType.name).firstOrNull()
-            _viewState.update {
-                it.copy(
-                    transactionCategories = categories
-                )
-            }
+        val categories =
+            transactionCategoryRepository.getCategories(transactionType.name).firstOrNull()
+        _viewState.update {
+            it.copy(
+                transactionCategories = categories
+            )
         }
     }
 
@@ -1039,6 +1053,29 @@ internal abstract class TransactionEditorBaseViewModel(
             .filter { it.id != TRANSACTION_TAG }
             .firstOrNull { it.valueItem.value.isEmpty() } == null && _viewState.value.errors == null
     }
+
+    fun onBottomSheetOptionsEdit(bottomSheetState: TransactionEditorViewState.BottomSheetState) {
+        _viewState.update {
+            it.copy(
+                bottomSheetState = null
+            )
+        }
+        when (bottomSheetState) {
+            is TransactionEditorViewState.CategorySelectionBottomSheetState -> {
+                currentEditingOptions = EditingOptions.CATEGORY
+                routeNavigator.navigateTo(CategoryRoutes.editorDestination(_currentTransactionType.value))
+            }
+            is TransactionEditorViewState.AccountSelectionBottomSheetState -> {
+                currentEditingOptions = EditingOptions.ACCOUNT
+                routeNavigator.navigateTo(AccountRoutes.editorDestination())
+            }
+            is TransactionEditorViewState.TagSelectionBottomSheetState -> {
+                currentEditingOptions = EditingOptions.TAG
+                routeNavigator.navigateTo(TagRoutes.addNewTagDestination())
+            }
+            else -> {}
+        }
+    }
 }
 
 internal data class TransactionEditorDataUI(
@@ -1109,31 +1146,50 @@ internal data class TransactionEditorViewState(
 
     sealed interface BottomSheetState {
         val feField: FEField
+        val editable: Boolean
     }
 
     data class CategorySelectionBottomSheetState(
-        override val feField: FEField
-    ) : BottomSheetState
+        override val feField: FEField,
+    ) : BottomSheetState {
+        override val editable: Boolean
+            get() = true
+    }
 
     data class AccountSelectionBottomSheetState(
         override val feField: FEField
-    ) : BottomSheetState
+    ) : BottomSheetState {
+        override val editable: Boolean
+            get() = true
+    }
 
     data class CurrencySelectionBottomSheetState(
         override val feField: FEField
-    ) : BottomSheetState
+    ) : BottomSheetState {
+        override val editable: Boolean
+            get() = false
+    }
 
     data class TagSelectionBottomSheetState(
         override val feField: FEField
-    ) : BottomSheetState
+    ) : BottomSheetState {
+        override val editable: Boolean
+            get() = true
+    }
 
     data class PeriodSelectionBottomSheetState(
         override val feField: FEField
-    ) : BottomSheetState
+    ) : BottomSheetState {
+        override val editable: Boolean
+            get() = false
+    }
 
     data class UpdateTypeSelectionBottomSheetState(
         override val feField: FEField
-    ) : BottomSheetState
+    ) : BottomSheetState {
+        override val editable: Boolean
+            get() = false
+    }
 }
 
 // TODO: Need to handle Locale
@@ -1171,3 +1227,7 @@ private data class TriggerCurrencyRateResponse(
     val primaryCurrencyRate: Float,
     val showPrimaryCurrencyRateFields: Boolean = false
 )
+
+private enum class EditingOptions {
+    TAG, ACCOUNT, CATEGORY
+}

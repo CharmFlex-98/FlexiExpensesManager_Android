@@ -2,7 +2,7 @@ package com.charmflex.flexiexpensesmanager.features.category.category.domain.mod
 
 import com.charmflex.flexiexpensesmanager.features.category.category.domain.CategoryNode
 
-internal data class TransactionCategories(
+internal class TransactionCategories(
     val items: List<BasicCategoryNode>
 ) {
     internal data class BasicCategoryNode(
