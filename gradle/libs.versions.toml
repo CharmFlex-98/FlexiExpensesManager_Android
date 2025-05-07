@@ -97,8 +97,12 @@ androidx_credential_version = "1.3.0"
 credentials-play-services-auth_version = "1.3.0"
 identity_google_id_version = "1.1.1"
 
+# posthog version
+posthog_version = "3.+"
+
 
 [libraries]
+posthog = { module = "com.posthog:posthog-android", version.ref = 'posthog_version'}
 # maxkeppper compose dialog
 compose-dialog-core = { module = 'com.maxkeppeler.sheets-compose-dialogs:core', version.ref = 'compose_dialog_version'}
 compose-dialog-calendar = { module = 'com.maxkeppeler.sheets-compose-dialogs:calendar', version.ref = 'compose_dialog_version'}

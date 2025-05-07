@@ -193,4 +193,7 @@ dependencies {
 
     // Google
 
+    // PostHog
+    implementation(libs.posthog)
+
 }

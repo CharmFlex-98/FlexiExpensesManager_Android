@@ -37,6 +37,7 @@ internal fun UserCurrencyScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(grid_x2),
+        screenName = "UserCurrencyScreen",
         horizontalAlignment = Alignment.CenterHorizontally,
         topBar = {
             BasicTopBar(

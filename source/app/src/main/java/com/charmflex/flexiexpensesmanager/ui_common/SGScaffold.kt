@@ -13,13 +13,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.posthog.PostHog
 
 @Composable
 fun SGScaffold(
     modifier: Modifier = Modifier,
+    screenName: String = "Undefined",
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     topBar: @Composable () -> Unit = {},
@@ -34,6 +37,9 @@ fun SGScaffold(
     isLoading: Boolean = false,
     content: @Composable ColumnScope.() -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        PostHog.screen(screenName)
+    }
     Box {
         Scaffold(
             Modifier.fillMaxSize(),

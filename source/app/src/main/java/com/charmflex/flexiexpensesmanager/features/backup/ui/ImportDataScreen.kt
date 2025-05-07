@@ -68,7 +68,8 @@ internal fun ImportDataScreen(importDataViewModel: ImportDataViewModel) {
 
 
     SGScaffold(
-        modifier = Modifier.padding(grid_x2)
+        modifier = Modifier.padding(grid_x2),
+        screenName = "ImportDataScreen"
     ) {
         if (viewState.importedData.isEmpty()) {
             PreLoadScreen(viewState = viewState) {

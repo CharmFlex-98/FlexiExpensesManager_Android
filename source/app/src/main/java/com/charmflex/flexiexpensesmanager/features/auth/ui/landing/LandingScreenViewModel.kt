@@ -1,16 +1,21 @@
 package com.charmflex.flexiexpensesmanager.features.auth.ui.landing
 
 import android.content.Context
+import android.media.metrics.Event
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.charmflex.flexiexpensesmanager.R
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigator
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AuthRoutes
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.HomeRoutes
+import com.charmflex.flexiexpensesmanager.core.tracker.EventData
+import com.charmflex.flexiexpensesmanager.core.tracker.EventTracker
+import com.charmflex.flexiexpensesmanager.core.tracker.UserData
 import com.charmflex.flexiexpensesmanager.core.utils.ResourcesProvider
 import com.charmflex.flexiexpensesmanager.core.utils.resultOf
 import com.charmflex.flexiexpensesmanager.features.auth.domain.model.UserInfo
 import com.charmflex.flexiexpensesmanager.features.auth.domain.repository.AuthRepository
+import com.charmflex.flexiexpensesmanager.features.auth.event.AuthEventName
 import com.charmflex.flexiexpensesmanager.features.auth.service.sign_in.SignInService
 import com.charmflex.flexiexpensesmanager.features.auth.service.sign_in.SignInState
 import com.charmflex.flexiexpensesmanager.ui_common.SnackBarState
@@ -25,7 +30,8 @@ internal class LandingScreenViewModel @Inject constructor(
     private val routeNavigator: RouteNavigator,
     private val signInService: SignInService,
     private val authRepository: AuthRepository,
-    private val resourcesProvider: ResourcesProvider
+    private val resourcesProvider: ResourcesProvider,
+    private val eventTracker: EventTracker
 ) : ViewModel() {
     val snackBarState: MutableStateFlow<SnackBarState> =
         MutableStateFlow(SnackBarState.None)
@@ -33,11 +39,13 @@ internal class LandingScreenViewModel @Inject constructor(
 
 
     fun onGuestLogin() {
+        eventTracker.track(EventData.simpleEvent(AuthEventName.USER_ON_GUEST_LOGIN))
         proceedToHome()
     }
 
 
     private fun proceedToHome() {
+        eventTracker.track(EventData.simpleEvent(AuthEventName.USER_NAVIGATE_HOME))
         routeNavigator.navigateAndPopUpTo(HomeRoutes.ROOT, AuthRoutes.LANDING)
     }
 
@@ -54,8 +62,12 @@ internal class LandingScreenViewModel @Inject constructor(
         viewModelScope.launch {
             val state = signInService.trySignIn(context)
             when (state) {
-                is SignInState.Success -> handleGoogleSignInSuccess(state, true)
+                is SignInState.Success -> {
+                    eventTracker.track(EventData.simpleEvent(AuthEventName.USER_TRY_SIGN_IN_SUCCEEDED))
+                    handleGoogleSignInSuccess(state, true)
+                }
                 else -> {
+                    eventTracker.track(EventData.simpleEvent(AuthEventName.USER_TRY_SIGN_IN_FAILED))
                     showLoading(false)
                 }
             }
@@ -67,10 +79,12 @@ internal class LandingScreenViewModel @Inject constructor(
         viewModelScope.launch {
             when (val signInState = signInService.signIn(context)) {
                 is SignInState.Success -> {
+                    eventTracker.track(EventData.simpleEvent(AuthEventName.USER_SIGN_IN_SUCCEEDED))
                     handleGoogleSignInSuccess(signInState, false)
                 }
 
                 is SignInState.Failure -> {
+                    eventTracker.track(EventData.simpleEvent(AuthEventName.USER_SIGN_IN_FAILED))
                     snackBarState.value =
                         SnackBarState.Error(signInState.message ?: "Generic login failure!")
                     showLoading(false)
@@ -93,14 +107,15 @@ internal class LandingScreenViewModel @Inject constructor(
                 signInState.email
             )
         }.onSuccess {
-            onLoginSuccess(autoLogin)
+            onLoginSuccess(autoLogin, signInState)
         }.onFailure { e ->
             snackBarState.value = SnackBarState.Error(e.message)
             showLoading(false)
         }
     }
 
-    private suspend fun onLoginSuccess(autoLogin: Boolean = false) {
+    private suspend fun onLoginSuccess(autoLogin: Boolean = false, signInState: SignInState.Success) {
+        eventTracker.registerUser(UserData(signInState.uid, signInState.username ?: "Unknown", signInState.email ?: "Unknown"))
         landingViewState.update {
             it.copy(
                 isLoading = false,

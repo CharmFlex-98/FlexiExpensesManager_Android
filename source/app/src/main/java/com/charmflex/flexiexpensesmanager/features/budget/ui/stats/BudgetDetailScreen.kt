@@ -61,7 +61,8 @@ internal fun BudgetDetailScreen(
             .padding(grid_x2),
         topBar = {
             BasicTopBar(title = stringResource(id = R.string.budget_detail_app_bar_title))
-        }
+        },
+        screenName = "BudgetDetailScreen"
     ) {
         DateFilterBar(
             modifier = Modifier.padding(vertical = grid_x2),

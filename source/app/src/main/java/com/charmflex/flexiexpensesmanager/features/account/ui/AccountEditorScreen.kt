@@ -123,6 +123,7 @@ internal fun AccountEditorScreen(
         topBar = {
             BasicTopBar(title = title)
         },
+        screenName = "AccountEditorScreen"
     ) {
         if (isEditorOpened) {
             EditorScreen(
@@ -257,7 +258,9 @@ internal fun AccountEditorScreen(
                             containerColor = MaterialTheme.colorScheme.surface
                         )
                     ) {
-                        Box(modifier = Modifier.fillMaxWidth().padding(grid_x2), contentAlignment = Alignment.Center) {
+                        Box(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(grid_x2), contentAlignment = Alignment.Center) {
                             Text(text = item.key)
                         }
                     }

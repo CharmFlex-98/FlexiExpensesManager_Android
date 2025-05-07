@@ -108,7 +108,8 @@ private fun HomeBody(
                 SGIcons.Add()
             }
         },
-        floatingActionButtonPosition = FabPosition.End
+        floatingActionButtonPosition = FabPosition.End,
+        screenName = "HomeScreen"
     ) {
         NavHost(
             navController = bottomNavController,

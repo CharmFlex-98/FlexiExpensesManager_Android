@@ -14,6 +14,7 @@ import com.charmflex.flexiexpensesmanager.app.di.AppComponentProvider
 import com.charmflex.flexiexpensesmanager.core.navigation.DestinationBuilder
 import com.charmflex.flexiexpensesmanager.core.navigation.RouteNavigatorListener
 import com.charmflex.flexiexpensesmanager.core.navigation.routes.AuthRoutes
+import com.charmflex.flexiexpensesmanager.core.tracker.EventData
 import com.charmflex.flexiexpensesmanager.features.account.destinations.AccountDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.auth.destination.AuthDestinationBuilder
 import com.charmflex.flexiexpensesmanager.features.backup.destination.BackupDestinationBuilder
@@ -35,9 +36,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val appComponent = (application as AppComponentProvider).getAppComponent()
         val routeNavigator = appComponent.routeNavigator()
-        appComponent.sessionManager().updateSessionState(SessionState.Start)
+        val eventTracker = appComponent.eventTracker()
+        val sessionManager = appComponent.sessionManager()
+
+        sessionManager.updateSessionState(SessionState.Start)
 
         // Test
+        eventTracker.track(EventData.simpleEvent("test-event"))
 
         setContent {
             val context = LocalContext.current

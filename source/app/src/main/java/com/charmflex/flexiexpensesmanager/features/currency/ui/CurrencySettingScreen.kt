@@ -49,7 +49,8 @@ internal fun CurrencySettingScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(grid_x2),
-        isLoading = viewState.isLoading
+        isLoading = viewState.isLoading,
+        screenName = "CurrencySettingScreen"
     ) {
         FeColumnContainer(
             modifier = Modifier

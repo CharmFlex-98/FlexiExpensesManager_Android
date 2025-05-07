@@ -39,7 +39,8 @@ internal fun SchedulerListScreen(transactionSchedulerListViewModel: SchedulerLis
                     }
                 }
             )
-        }
+        },
+        screenName = "SchedulerListScreen"
     ) {
         viewState.schedulerItems.forEach {
             ScheduledTransactionItem(

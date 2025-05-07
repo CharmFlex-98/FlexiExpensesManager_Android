@@ -1,11 +1,14 @@
 package com.charmflex.flexiexpensesmanager.core.di
 
+import android.content.Context
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupManager
 import com.charmflex.flexiexpensesmanager.features.backup.TransactionBackupManagerImpl
 import com.charmflex.flexiexpensesmanager.core.storage.FileStorage
 import com.charmflex.flexiexpensesmanager.core.storage.FileStorageImpl
 import com.charmflex.flexiexpensesmanager.core.storage.SharedPrefs
 import com.charmflex.flexiexpensesmanager.core.storage.SharedPrefsImpl
+import com.charmflex.flexiexpensesmanager.core.tracker.EventTracker
+import com.charmflex.flexiexpensesmanager.core.tracker.PostHogEventTracker
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProvider
 import com.charmflex.flexiexpensesmanager.core.utils.FEFileProviderImpl
 import dagger.Binds
@@ -36,6 +39,7 @@ internal interface MainModule {
     fun bindsBackupManager(transactionBackupManagerImpl: TransactionBackupManagerImpl): TransactionBackupManager
 
     @Binds
+    @Singleton
     fun bindsFEFileProvider(feFileProviderImpl: FEFileProviderImpl): FEFileProvider
 
     companion object {
@@ -43,6 +47,15 @@ internal interface MainModule {
         @Dispatcher(dispatcherType = Dispatcher.Type.IO)
         fun providesDispatcherIO(): CoroutineDispatcher {
             return Dispatchers.IO
+        }
+
+        @Provides
+        @Singleton
+        fun providesEventTracker(appContext: Context): EventTracker {
+            val res = PostHogEventTracker(appContext)
+            res.init()
+
+            return res;
         }
     }
 }

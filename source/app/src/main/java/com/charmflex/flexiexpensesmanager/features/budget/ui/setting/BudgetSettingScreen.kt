@@ -62,7 +62,8 @@ internal fun BudgetSettingScreen(
             onCallBackFieldTap = {
                 budgetSettingViewModel.onCallBackAction(it)
             },
-            currencyVisualTransformation = currencyVisualTransformation
+            currencyVisualTransformation = currencyVisualTransformation,
+            screenName = "BudgetSettingScreen"
         ) {
             budgetSettingViewModel.submitBudget()
         }

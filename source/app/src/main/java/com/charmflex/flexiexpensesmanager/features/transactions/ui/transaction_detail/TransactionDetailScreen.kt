@@ -34,7 +34,8 @@ internal fun TransactionDetailScreen(
                 allowEdit = detail?.allowEdit ?: false
             )
         },
-        modifier = Modifier.padding(grid_x2)
+        modifier = Modifier.padding(grid_x2),
+        screenName = "TransactionDetailScreen"
     ) {
         if (detail != null) {
             FeColumnContainer(

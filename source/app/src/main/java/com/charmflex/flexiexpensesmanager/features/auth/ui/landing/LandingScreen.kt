@@ -70,7 +70,8 @@ internal fun LandingScreen(
             .fillMaxSize()
             .padding(grid_x2),
         horizontalAlignment = Alignment.CenterHorizontally,
-        isLoading = viewState.isLoading
+        isLoading = viewState.isLoading,
+        screenName = "LandingScreen"
     ) {
         Box(
             modifier = Modifier

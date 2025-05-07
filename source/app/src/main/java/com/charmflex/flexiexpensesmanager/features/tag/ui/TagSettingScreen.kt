@@ -45,6 +45,7 @@ internal fun TagSettingScreen(
         SettingEditorScreen(
             fields = viewState.tagEditorState?.fields ?: emptyList(),
             appBarTitle = stringResource(id = R.string.tag_setting_editor_app_bar_title_add_new),
+            screenName = "TagSettingScreen",
             onTextFieldChanged = { newValue, field ->
                 viewModel.onUpdateFields(
                     field,

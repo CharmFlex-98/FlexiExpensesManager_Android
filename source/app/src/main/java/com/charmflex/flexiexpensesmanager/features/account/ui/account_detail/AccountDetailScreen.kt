@@ -26,7 +26,8 @@ internal fun AccountDetailScreen(
                 title = accountViewState.title
             )
         },
-        modifier = Modifier.padding(grid_x2)
+        modifier = Modifier.padding(grid_x2),
+        screenName = "AccountDetailScreen"
     ) {
         DateFilterBar(
             modifier = Modifier.fillMaxWidth(),

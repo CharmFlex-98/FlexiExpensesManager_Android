@@ -42,7 +42,8 @@ internal fun CategoryStatScreen(viewModel: CategoryStatViewModel) {
             BasicTopBar(
                 title = stringResource(id = R.string.category_stat_detail_topbar_title)
             )
-        }
+        },
+        screenName = "CategoryStatScreen"
     ) {
         DateFilterBar(
             currentDateFilter = dateFilter,

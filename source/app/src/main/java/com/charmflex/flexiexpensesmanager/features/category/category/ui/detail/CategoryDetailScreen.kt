@@ -58,7 +58,8 @@ internal fun CategoryDetailScreen(
             BasicTopBar(
                 title = viewState.categoryName
             )
-        }
+        },
+        screenName = "CategoryDetailScreen"
     ) {
         LaunchedEffect(key1 = viewState.lineChartData.entries) {
             viewModel.chartEntryModelProducer.setEntries(

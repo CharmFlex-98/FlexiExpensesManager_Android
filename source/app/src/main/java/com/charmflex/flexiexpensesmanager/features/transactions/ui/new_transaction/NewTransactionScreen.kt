@@ -161,6 +161,7 @@ internal fun TransactionEditorScreen(
             }
             )
         },
+        screenName = "NewTransactionScreen",
         isLoading = viewState.isLoading || initLoader
     ) {
         if (initLoader.not()) Column(

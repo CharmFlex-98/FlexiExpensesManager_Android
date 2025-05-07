@@ -39,6 +39,7 @@ internal const val SETTING_EDITOR_BUDGET_AMOUNT = "SETTING_EDITOR_BUDGET_AMOUNT"
 internal fun SettingEditorScreen(
     fields: List<FEField>,
     appBarTitle: String,
+    screenName: String,
     currencyVisualTransformation: CurrencyVisualTransformation? = null,
     onTextFieldChanged: (String, FEField) -> Unit,
     onCallBackFieldTap: ((FEField) -> Unit)? = null,
@@ -59,7 +60,8 @@ internal fun SettingEditorScreen(
             .padding(grid_x2),
         topBar = {
             BasicTopBar(title = appBarTitle)
-        }
+        },
+        screenName = screenName
     ) {
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Top) {
             fields.forEach {

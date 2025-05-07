@@ -81,7 +81,8 @@ internal fun CategoryEditorScreen(viewModel: CategoryEditorViewModel) {
             .padding(grid_x2),
         topBar = {
             BasicTopBar(title = title)
-        }
+        },
+        screenName = "CategoryEditorScreen"
     ) {
         if (isEditorOpened) {
             SGTextField(
