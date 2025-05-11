@@ -4,6 +4,7 @@ import android.content.Context
 import com.posthog.PostHog
 import com.posthog.android.PostHogAndroid
 import com.posthog.android.PostHogAndroidConfig
+import com.posthog.android.replay.PostHogSessionReplayConfig
 import javax.inject.Inject
 
 internal class PostHogEventTracker @Inject constructor(
@@ -18,7 +19,9 @@ internal class PostHogEventTracker @Inject constructor(
         val postHogConfig = PostHogAndroidConfig(
             apiKey = POSTHOG_API_KEY,
             host = POSTHOG_HOST,
+            sessionReplayConfig = PostHogSessionReplayConfig(screenshot = true)
         )
+        postHogConfig.sessionReplay = true
         PostHogAndroid.setup(appContext, postHogConfig)
     }
 
